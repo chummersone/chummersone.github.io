@@ -1,12 +1,433 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Q-format Converter</title>
-  </head>
-  <body>
-    <h1>Q-format Converter</h1>
+    <head>
+        <meta charset="utf-8">
+        <title>Q-format Converter</title>
+        <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
+        <style>
+            html {
+                padding: 10px;
+                box-sizing: border-box;
+                font-family: sans-serif;
+                font-size: 14px;
+            }
+
+            h1 {
+                margin: 20px 0;
+            }
+
+            p {
+                margin: 15px 0;
+            }
+
+            fieldset {
+                max-width: 350px;
+                width: 100%;
+                display: inline-block;
+                vertical-align: top;
+            }
+
+            legend {
+                font-weight: bold;
+            }
+
+            div#container {
+                text-align: center;
+            }
+
+            input[type=text], input[type=number], select, textarea {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+                resize: vertical;
+            }
+
+            /* Style the label to display next to the inputs */
+            label {
+                display: inline-block;
+            }
+
+            /* Style the container */
+            fieldset {
+                border-radius: 5px;
+                background-color: #f2f2f2;
+                padding: 20px;
+            }
+
+            .col {
+                margin-top: 6px;
+                display: inline-block;
+            }
+
+            /* Floating column for labels: 25% width */
+            .col.w25 {
+                width: 25%;
+            }
+
+            /* Floating column for inputs: 75% width */
+            .col.w75 {
+                width: 75%;
+            }
+
+            .control-grp {
+                margin: 5px 0;
+            }
+
+            /* Clear floats after the columns */
+            .control-grp::after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            .control-grp .col {
+                vertical-align: middle;
+            }
+
+            input#integer, input#float {
+                font-family: monospace;
+            }
+
+            /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+            @media screen and (max-width: 600px) {
+                .col.w25, .col.w75 {
+                    width: 100%;
+                    margin-top: 0;
+                }
+            }
+        </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+                integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+                crossorigin="anonymous">
+        </script>
+        <script>
+            $(function() {
+
+                const numBitsID = '#num_bits';
+                const numFracBitsID = '#num_frac_bits';
+                const signedID = '#signed';
+                const formatID = '#format';
+                const integerID = '#integer';
+                const floatID = '#float';
+
+                function recalculate() {
+                    if (userChangedFloat) {
+                        calculateIntegerValue();
+                    } else {
+                        calculateFloatValue();
+                    }
+                }
+
+                function maxfloat() {
+                    var signCorrection = 0;
+                    if (currentSigned) {
+                        signCorrection = 1;
+                    }
+                    return (2 ** (currentNumBits - currentNumFracBits - signCorrection)) - (2 ** -currentNumFracBits);
+                }
+
+                function minfloat() {
+                    var signCorrection = 0;
+                    if (currentSigned) {
+                        return - (2 ** (currentNumBits - currentNumFracBits - 1));
+                    } else {
+                        return 0;
+                    }
+                    
+                }
+
+                function getFormNumBits() {
+                    return parseInt($(numBitsID + ' option:selected').val());
+                }
+
+                function setFormNumBits(val, calculate = true) {
+                    if (!(val == null)) {
+                        $(numBitsID + ' option:selected').val(val.toString());
+                    } else {
+                        val = getFormNumBits();
+                    }
+                    if (val < currentNumFracBits) {
+                        var newNumFracBits = currentNumFracBits - (currentNumBits - val);
+                        setFormNumFracBits(newNumFracBits);
+                    }
+                    currentNumBits = val;
+                    $(numFracBitsID).attr('max', val);
+                    if (calculate) {
+                        recalculate();
+                    }
+                }
+
+                function getFormNumFracBits() {
+                    return parseInt($(numFracBitsID).val());
+                }
+
+                function setFormNumFracBits(val, calculate = true) {
+                    if (!(val == null)) {
+                        $(numFracBitsID).val(val.toString());
+                    } else {
+                        val = getFormNumFracBits();
+                    }
+                    currentNumFracBits = val;
+                    if (calculate) {
+                        recalculate();
+                    }
+                }
+
+                function getFormSigned() {
+                    return $(signedID).prop('checked');
+                }
+
+                function setFormSigned(val, calculate = true) {
+                    if (!(val == null)) {
+                        $(signedID).prop('checked', val);
+                    } else {
+                        val = getFormSigned();
+                    }
+                    currentSigned = val;
+                    if (calculate) {
+                        recalculate();
+                    }
+                }
+
+                function getFormFormat() {
+                    return $(formatID + ' option:selected').val();
+                }
+
+                function setFormFormat(val, calculate = true) {
+                    if (!(val == null)) {
+                        $(formatID).val(val);
+                    } else {
+                        val = getFormFormat();
+                    }
+                    var maxlength = 0;
+                    switch (val) {
+                        case 'hex':
+                            maxlength = Math.ceil(currentNumBits / 4);
+                            break;
+                        case 'bin':
+                            maxlength = currentNumBits;
+                            break;
+                        default:
+                            maxlength = (2 ** currentNumBits).toString().length + 1;
+                    }
+                    $(integerID).attr('maxlength', maxlength.toString());
+                    currentFormat = val;
+                    setFormInteger(currentInteger, false);
+                }
+
+                function getFormInteger() {
+                    var intstr = $(integerID).val().toLowerCase();
+                    if (intstr.startsWith('0b')) {
+                        setFormFormat('bin', false);
+                        intstr = intstr.substring(2);
+                    } else if (intstr.startsWith('0x')) {
+                        setFormFormat('hex', false);
+                        intstr = intstr.substring(2);
+                    }
+                    var intval = 0;
+                    switch (currentFormat) {
+                        case 'hex':
+                            intval = parseInt(intstr, 16);
+                            break;
+                        case 'bin':
+                            intval = parseInt(intstr, 2);
+                            break;
+                        default:
+                            intval = parseInt(intstr, 10);
+                    }
+                    return intval;
+                }
+
+                function setFormInteger(val, calculate = true) {
+                    if (val == null) {
+                        val = getFormInteger();
+                    }
+                    var intstr = '';
+                    var pad = parseInt($(integerID).attr('maxlength'));
+                    if (!isNaN(val)) {
+                        switch (currentFormat) {
+                            case 'hex':
+                                intstr = val.toString(16).padStart(pad, '0');
+                                break;
+                            case 'bin':
+                                intstr = val.toString(2).padStart(pad, '0');
+                                break;
+                            default:
+                                intstr = val.toString();
+                        }
+                        $(integerID).val(intstr);
+                    }
+                    currentInteger = val;
+                    if (calculate) {
+                        recalculate();
+                    }
+                }
+
+                function getFormFloat() {
+                    return parseFloat($(floatID).val());
+                }
+
+                function setFormFloat(val, calculate = true) {
+                    if (!(val == null)) {
+                        $(floatID).val(val.toString());
+                    } else {
+                        val = getFormFloat();
+                    }
+                    currentFloat = val;
+                    if (calculate) {
+                        recalculate();
+                    }
+                    setFormInteger(currentInteger, false);
+                }
+
+                var currentNumBits = getFormNumBits();
+                var currentNumFracBits = getFormNumFracBits();
+                var currentSigned = getFormSigned();
+                var currentFormat = getFormFormat();
+                var currentInteger = getFormInteger();
+                var currentFloat = getFormFloat();
+                var userChangedFloat = false;
+
+                $(numBitsID).change(function() {
+                    setFormNumBits();
+                });
+
+                $(numFracBitsID).change(function() {
+                    setFormNumFracBits();
+                });
+
+                $(signedID).change(function() {
+                    setFormSigned();
+                });
+
+                $(formatID).change(function() {
+                    setFormFormat();
+                });
+
+                $(integerID).change(function() {
+                    userChangedFloat = false;
+                    setFormInteger();
+                });
+
+                $(floatID).change(function() {
+                    userChangedFloat = true;
+                    setFormFloat();
+                });
+
+                function calculateFloatValue() {
+                    var intval = currentInteger;
+                    if (currentSigned) {
+                        if ((0x1 << (currentNumBits - 1)) & currentInteger) {
+                            var wordMask = 0xFFFFFFFF;
+                            if (currentNumBits < 32) {
+                                wordMask = (1 << currentNumBits) - 1;
+                            }
+                            intval = (intval | (~wordMask));
+                        }
+                    }
+                    var newFloat = intval / (2 ** currentNumFracBits);
+                    setFormFloat(newFloat, false);
+                }
+
+                function calculateIntegerValue() {
+                    if (currentFloat > maxfloat() || currentFloat < minfloat()) {
+                        $(integerID).val('NaN');
+                    } else {
+                        var newInt = Math.abs(Math.round(currentFloat * (2 ** currentNumFracBits)));
+                        if (currentSigned) {
+                            if (currentFloat < 0) {
+                                newInt = (~newInt + 1) & ((1 << currentNumBits) - 1);
+                            }
+                        }
+                        setFormInteger(newInt, false);
+                    }
+                }
+                
+            });
+        </script>
+    </head>
+    <body>
+        <h1>Q-format Converter</h1>
+
+        <p>
+            Convert between floating-point values and their fixed-point integer representations.
+        </p>
+
+        <div id="container">
     
-    <p>To follow &hellip;</p>
-  </body>
+            <fieldset>
+                <legend>Q-Format Settings</legend>
+
+                <p>Choose your conversion options.</p>
+
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="num_bits">Word size in bits</label>
+                    </div><!--
+                    ---><div class="col w75">
+                        <select id="num_bits">
+                            <option value="16">16</option>
+                            <option value="24" selected>24</option>
+                            <option value="32">32</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="num_frac_bits">Fractional bits</label>
+                    </div><!--
+                ---><div class="col w75">
+                        <input id="num_frac_bits" type="number" value="23" min="0" max="24">
+                    </div>
+                </div>
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="signed">Signed?</label>
+                    </div><!--
+                    ---><div class="col w75">
+                        <input id="signed" type="checkbox" checked>
+                    </div>
+                </div>
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="format">Integer format</label>
+                    </div><!--
+                    ---><div class="col w75">
+                        <select id="format">
+                            <option value="hex" selected>Hexadecimal</option>
+                            <option value="dec">Decimal</option>
+                            <option value="bin">Binary</option>
+                        </select>
+                    </div>
+                </div>
+            </fieldset><!--
+
+        ---><fieldset>
+                <legend>Convert</legend>
+
+                <p>Type an integer of float in the boxes below. Click or tab away to update.</p>
+
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="integer">Integer</label>
+                    </div><!--
+                    ---><div class="col w75">
+                        <input id="integer" type="text" value="0" maxlength="6">
+                    </div>
+                </div>
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="float">Float</label>
+                    </div><!--
+                    ---><div class="col w75">
+                        <input id="float" type="text" value="0">
+                    </div>
+                </div>
+            </fieldset>
+        
+        </div>
+
+    </body>
 </html>
