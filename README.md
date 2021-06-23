@@ -4,4 +4,4 @@ Hi. Welcome to my GitHub page.
 
 ## Contents
 - [Q-format Converter](/qformat.html)
-- [My GutHub homepage](https://github.com/chummersone)
+- [My GitHub homepage](https://github.com/chummersone)
