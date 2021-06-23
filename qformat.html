@@ -154,6 +154,7 @@
                     }
                     currentNumBits = val;
                     $(numFracBitsID).attr('max', val);
+                    setFormFormat(currentFormat, false);
                     if (calculate) {
                         recalculate();
                     }
