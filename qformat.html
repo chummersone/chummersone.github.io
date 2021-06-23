@@ -9,7 +9,10 @@
                 padding: 10px;
                 box-sizing: border-box;
                 font-family: sans-serif;
-                font-size: 14px;
+            }
+
+            body {
+                font-size: 16px;
             }
 
             h1 {
@@ -21,7 +24,7 @@
             }
 
             fieldset {
-                max-width: 350px;
+                max-width: 420px;
                 width: 100%;
                 display: inline-block;
                 vertical-align: top;
@@ -88,6 +91,17 @@
 
             input#integer, input#float {
                 font-family: monospace;
+            }
+
+            @media screen and (min-width: 320px) {
+                body {
+                    font-size: calc(16px + 4 * ((100vw - 320px) / 680));
+                }
+            }
+            @media screen and (min-width: 1000px) {
+                body {
+                    font-size: 20px;
+                }
             }
 
             /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
