@@ -71,12 +71,12 @@
 
             /* Floating column for labels: 25% width */
             .col.w25 {
-                width: 27.5%;
+                width: 30%;
             }
 
             /* Floating column for inputs: 75% width */
             .col.w75 {
-                width: 72.5%;
+                width: 70%;
             }
 
             .control-grp {
@@ -285,10 +285,10 @@
                         val = getFormFloat();
                     }
                     currentFloat = val;
+                    setFormInteger(currentInteger, false);
                     if (calculate) {
                         recalculate();
                     }
-                    setFormInteger(currentInteger, false);
                 }
 
                 var currentNumBits = getFormNumBits();
@@ -338,6 +338,7 @@
                 }
 
                 function calculateIntegerValue() {
+                    console.log(maxfloat());
                     if (currentFloat > maxfloat() || currentFloat < minfloat()) {
                         $(integerID).val('NaN');
                     } else {
@@ -420,7 +421,7 @@
                         <label for="integer">Integer</label>
                     </div><!--
                     ---><div class="col w75">
-                        <input id="integer" type="text" value="0" maxlength="6">
+                        <input id="integer" type="text" value="000000" maxlength="6">
                     </div>
                 </div>
                 <div class="control-grp">
