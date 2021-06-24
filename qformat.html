@@ -329,10 +329,7 @@
                     var intval = currentInteger;
                     if (currentSigned) {
                         if ((0x1 << (currentNumBits - 1)) & currentInteger) {
-                            var wordMask = 0xFFFFFFFF;
-                            if (currentNumBits < 32) {
-                                wordMask = (1 << currentNumBits) - 1;
-                            }
+                            var wordMask = (1 << currentNumBits) - 1;
                             intval = (intval | (~wordMask));
                         }
                     }
