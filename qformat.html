@@ -55,6 +55,7 @@
             /* Style the label to display next to the inputs */
             label {
                 display: inline-block;
+                font-size: 0.9em;
             }
 
             /* Style the container */
@@ -359,7 +360,7 @@
         <h1>Q-format Converter</h1>
 
         <p>
-            Convert between floating-point values and their fixed-point integer representations.
+            Convert between floating-point values and their <em>Qm.n</em> fixed-point integer representations.
         </p>
 
         <div id="container">
@@ -371,7 +372,7 @@
 
                 <div class="control-grp">
                     <div class="col w25">
-                        <label for="num_bits">Word size in bits</label>
+                        <label for="num_bits">Word size in bits (<em>m+n</em>)</label>
                     </div><!--
                     ---><div class="col w75">
                         <select id="num_bits">
@@ -383,7 +384,7 @@
                 </div>
                 <div class="control-grp">
                     <div class="col w25">
-                        <label for="num_frac_bits">Fractional bits</label>
+                        <label for="num_frac_bits">Fractional bits (<em>n</em>)</label>
                     </div><!--
                 ---><div class="col w75">
                         <input id="num_frac_bits" type="number" value="23" min="0" max="24">
