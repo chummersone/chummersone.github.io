@@ -401,11 +401,15 @@
                  */
                 function calculateFloatValue() {
                     var intval = currentInteger;
-                    if (currentSigned) {
-                        if ((0x1 << (currentNumBits - 1)) & currentInteger) {
-                            var wordMask = (1 << currentNumBits) - 1;
-                            intval = (intval | (~wordMask));
+                    if (currentSigned && ((0x1 << (currentNumBits - 1)) & currentInteger)) {
+                        /* insert missing redundant sign bits */
+                        var wordMask;
+                        if (currentNumBits < 32) {
+                            wordMask = (1 << currentNumBits) - 1;
+                        } else {
+                            wordMask = 0xFFFFFFFF;
                         }
+                        intval = (intval | (~wordMask));
                     }
                     var newFloat = intval / (2 ** currentNumFracBits);
                     setFormFloat(newFloat, false);
@@ -420,12 +424,15 @@
                         $(integerID).val('NaN');
                     } else {
                         var newInt = Math.abs(Math.round(currentFloat * (2 ** currentNumFracBits)));
-                        if (currentSigned) {
-                            if (currentFloat < 0) {
-                                newInt = (~newInt + 1) & ((1 << currentNumBits) - 1);
+                        if (currentSigned && currentFloat < 0) {
+                            /* take two's complement ... */
+                            newInt = (~newInt + 1);
+                            if (currentNumBits < 32) {
+                                /* ... then mask */
+                                newInt &= ((1 << currentNumBits) - 1);
                             }
                         }
-                        setFormInteger(newInt, false);
+                        setFormInteger(newInt >>> 0, false);
                     }
                 }
 
