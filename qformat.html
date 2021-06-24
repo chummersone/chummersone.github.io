@@ -121,6 +121,9 @@
                 const integerID = '#integer';
                 const floatID = '#float';
 
+                /**
+                 * Recalculate the integer of float value, according to what was last modified.
+                 */
                 function recalculate() {
                     if (userChangedFloat) {
                         calculateIntegerValue();
@@ -129,6 +132,10 @@
                     }
                 }
 
+                /**
+                 * Calculate the maximum float value for the current Q-format.
+                 * @returns The maximum float value.
+                 */
                 function maxfloat() {
                     var signCorrection = 0;
                     if (currentSigned) {
@@ -137,6 +144,10 @@
                     return (2 ** (currentNumBits - currentNumFracBits - signCorrection)) - (2 ** -currentNumFracBits);
                 }
 
+                /**
+                 * Calculate the minimum float value for the current Q-format.
+                 * @returns The minimum float value.
+                 */
                 function minfloat() {
                     var signCorrection = 0;
                     if (currentSigned) {
@@ -144,13 +155,25 @@
                     } else {
                         return 0;
                     }
-                    
+
                 }
 
+                /**
+                 * Get the word size, in bits, from the DOM form.
+                 * @returns The word size in bits.
+                 */
                 function getFormNumBits() {
                     return parseInt($(numBitsID + ' option:selected').val());
                 }
 
+                /**
+                 * Set the number of bits. This function updates the UI, decrements the number of
+                 * fractional bits, if necessary, and updates other form control attributes and
+                 * values.
+                 * @param {number} val If provided, the new number of bits. Otherwise use the
+                 * value in the form.
+                 * @param {bool} calculate Calculate the integer or float value?
+                 */
                 function setFormNumBits(val, calculate = true) {
                     if (!(val == null)) {
                         $(numBitsID + ' option:selected').val(val.toString());
@@ -163,16 +186,27 @@
                     }
                     currentNumBits = val;
                     $(numFracBitsID).attr('max', val);
-                    setFormFormat(currentFormat, false);
+                    setFormFormat(currentFormat);
                     if (calculate) {
                         recalculate();
                     }
                 }
 
+                /**
+                 * Get the number of fractional bits from the DOM.
+                 * @returns The number of fractional bits.
+                 */
                 function getFormNumFracBits() {
                     return parseInt($(numFracBitsID).val());
                 }
 
+                /**
+                 * Set the number of fractional bits. This function updates the UI, and
+                 * updates other form controls.
+                 * @param {number} val If provided, the new number of bits. Otherwise use the
+                 * value in the form.
+                 * @param {bool} calculate Calculate the integer or float value?
+                 */
                 function setFormNumFracBits(val, calculate = true) {
                     if (!(val == null)) {
                         $(numFracBitsID).val(val.toString());
@@ -185,10 +219,20 @@
                     }
                 }
 
+                /**
+                 * Determine whether values are signed.
+                 * @returns Returns true if values are signed, otherwise false.
+                 */
                 function getFormSigned() {
                     return $(signedID).prop('checked');
                 }
 
+                /**
+                 * Update the signed-ness of the calculations, and optionally update the UI.
+                 * @param {bool} val If provided, whether the values are signed. Otherwise use
+                 * the value in the form.
+                 * @param {bool} calculate Calculate the integer or float value?
+                 */
                 function setFormSigned(val, calculate = true) {
                     if (!(val == null)) {
                         $(signedID).prop('checked', val);
@@ -201,11 +245,19 @@
                     }
                 }
 
+                /**
+                 * Get the integer display format from the DOM.
+                 * @returns The float value.
+                 */
                 function getFormFormat() {
                     return $(formatID + ' option:selected').val();
                 }
 
-                function setFormFormat(val, calculate = true) {
+                /**
+                 * Set the form integer display format. Update the form attributes and the UI.
+                 * @param {string} val The format.
+                 */
+                function setFormFormat(val) {
                     if (!(val == null)) {
                         $(formatID).val(val);
                     } else {
@@ -227,13 +279,17 @@
                     setFormInteger(currentInteger, false);
                 }
 
+                /**
+                 * Get the integer value from the DOM.
+                 * @returns The integer value.
+                 */
                 function getFormInteger() {
                     var intstr = $(integerID).val().toLowerCase();
                     if (intstr.startsWith('0b')) {
-                        setFormFormat('bin', false);
+                        setFormFormat('bin');
                         intstr = intstr.substring(2);
                     } else if (intstr.startsWith('0x')) {
-                        setFormFormat('hex', false);
+                        setFormFormat('hex');
                         intstr = intstr.substring(2);
                     }
                     var intval = 0;
@@ -250,6 +306,12 @@
                     return intval;
                 }
 
+                /**
+                 * Update the integer displayed in the DOM.
+                 * @param {number} val If provided, use this value as the new integer.
+                 * Otherwise use the value in the form.
+                 * @param {bool} calculate 
+                 */
                 function setFormInteger(val, calculate = true) {
                     if (val == null) {
                         val = getFormInteger();
@@ -275,10 +337,20 @@
                     }
                 }
 
+                /**
+                 * Get the float value from the DOM.
+                 * @returns The float value.
+                 */
                 function getFormFloat() {
                     return parseFloat($(floatID).val());
                 }
 
+                /**
+                 * Update the float displayed in the DOM.
+                 * @param {number} val If provided, use this value as the new float.
+                 * Otherwise use the value in the form.
+                 * @param {bool} calculate 
+                 */
                 function setFormFloat(val, calculate = true) {
                     if (!(val == null)) {
                         $(floatID).val(val.toString());
@@ -300,32 +372,35 @@
                 var currentFloat = getFormFloat();
                 var userChangedFloat = false;
 
-                $(numBitsID).change(function() {
+                $(numBitsID).change(function () {
                     setFormNumBits();
                 });
 
-                $(numFracBitsID).change(function() {
+                $(numFracBitsID).change(function () {
                     setFormNumFracBits();
                 });
 
-                $(signedID).change(function() {
+                $(signedID).change(function () {
                     setFormSigned();
                 });
 
-                $(formatID).change(function() {
+                $(formatID).change(function () {
                     setFormFormat();
                 });
 
-                $(integerID).change(function() {
+                $(integerID).change(function () {
                     userChangedFloat = false;
                     setFormInteger();
                 });
 
-                $(floatID).change(function() {
+                $(floatID).change(function () {
                     userChangedFloat = true;
                     setFormFloat();
                 });
 
+                /**
+                 * Calculate the new floating-point value.
+                 */
                 function calculateFloatValue() {
                     var intval = currentInteger;
                     if (currentSigned) {
@@ -338,6 +413,9 @@
                     setFormFloat(newFloat, false);
                 }
 
+                /**
+                 * Calculate the new integer value.
+                 */
                 function calculateIntegerValue() {
                     console.log(maxfloat());
                     if (currentFloat > maxfloat() || currentFloat < minfloat()) {
@@ -352,10 +430,11 @@
                         setFormInteger(newInt, false);
                     }
                 }
-                
+
             });
         </script>
     </head>
+
     <body>
         <h1>Q-format Converter</h1>
 
@@ -364,7 +443,7 @@
         </p>
 
         <div id="container">
-    
+
             <fieldset>
                 <legend>Q-Format Settings</legend>
 
@@ -434,8 +513,9 @@
                     </div>
                 </div>
             </fieldset>
-        
+
         </div>
 
     </body>
+
 </html>
