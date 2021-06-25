@@ -76,6 +76,10 @@
                 background-color: white;
             }
 
+            input:disabled {
+                background-color: #ccc;
+            }
+
             /* Style the label to display next to the inputs */
             label {
                 display: inline-block;
@@ -144,6 +148,8 @@
                 const formatID = '#format';
                 const integerID = '#integer';
                 const floatID = '#float';
+                const realFloatID = '#realfloat';
+                const floatErrorID = '#floaterror';
 
                 /**
                  * Recalculate the integer of float value, according to what was last modified.
@@ -348,7 +354,7 @@
                  */
                 function getFormInteger() {
                     var intstr = $(integerID).val().toLowerCase();
-                    $(integerID).removeClass('error');
+                    clearError(integerID);
                     $('div.error').remove();
                     if (intstr.startsWith('0b')) {
                         setFormFormat('bin');
@@ -370,13 +376,13 @@
                     }
                     var intval = parseInt(intstr, base);
                     if (isNaN(intval)) {
-                        $(integerID).addClass('error');
+                        setError(integerID);
                     } else {
-                        $(integerID).removeClass('error');
-                    }
-                    if (currentSigned && ((0x1 << (currentNumBits - 1)) & intval)) {
-                        /* insert missing redundant sign bits for 32-bit internal representation */
-                        intval = (intval | (~wordmask()));
+                        clearError(integerID);
+                        if (currentSigned && ((0x1 << (currentNumBits - 1)) & intval)) {
+                            /* insert missing redundant sign bits for 32-bit internal representation */
+                            intval = (intval | (~wordmask()));
+                        }
                     }
                     return intval;
                 }
@@ -415,6 +421,9 @@
                                 intstr = val.toString();
                         }
                         $(integerID).val(intstr);
+                        realFloatVal = currentInteger / (2 ** currentNumFracBits);
+                        $(realFloatID).val(realFloatVal.toString());
+                        $(floatErrorID).val(Math.abs(realFloatVal - currentFloat).toString());
                     }
                     if (calculate) {
                         recalculate();
@@ -426,13 +435,13 @@
                  * @returns The float value.
                  */
                 function getFormFloat() {
-                    $(floatID).removeClass('error');
+                    clearError(floatID);
                     $('div.error').remove();
                     var floatval = parseFloat($(floatID).val());
                     if (isNaN(floatval)) {
-                        $(floatID).addClass('error');
+                        setError(floatID);
                     } else {
-                        $(floatID).removeClass('error');
+                        clearError(floatID);
                     }
                     return floatval;
                 }
@@ -462,6 +471,7 @@
                 var currentFormat = getFormFormat();
                 var currentInteger = getFormInteger();
                 var currentFloat = getFormFloat();
+                var realFloatVal = currentFloat;
                 var userChangedFloat = false;
 
                 $(numBitsID).change(function () {
@@ -490,21 +500,32 @@
                     setFormFloat();
                 });
 
+                function setError(elem) {
+                    $(elem).addClass('error');
+                    $(realFloatID).val('');
+                    $(floatErrorID).val('');
+                }
+
+                function clearError(elem) {
+                    $(elem).removeClass('error');
+                }
+
                 /**
                  * Calculate the new floating-point value.
                  */
                 function calculateFloatValue() {
                     if (!isNaN(currentInteger)) {
-                        $(integerID).removeClass('error');
-                    }
-                    $('div.error').remove();
-                    if (currentInteger > maxinteger() || currentInteger < mininteger()) {
-                        $(integerID).addClass('error');
+                        clearError(integerID);
                         $('div.error').remove();
-                        $(integerID).after($('<div class="error">Out of range</div>'))
+                        if (currentInteger > maxinteger() || currentInteger < mininteger()) {
+                            setError(integerID);
+                            $(integerID).after($('<div class="error">Out of range</div>'));
+                        } else {
+                            var newFloat = currentInteger / (2 ** currentNumFracBits);
+                            setFormFloat(newFloat, false);
+                        }
                     } else {
-                        var newFloat = currentInteger / (2 ** currentNumFracBits);
-                        setFormFloat(newFloat, false);
+                        setError(integerID);
                     }
                 }
 
@@ -513,15 +534,17 @@
                  */
                 function calculateIntegerValue() {
                     if (!isNaN(currentFloat)) {
-                        $(floatID).removeClass('error');
-                    }
-                    if (currentFloat > maxfloat() || currentFloat < minfloat()) {
-                        $(floatID).addClass('error');
-                        $('div.error').remove();
-                        $(floatID).after($('<div class="error">Out of range</div>'))
+                        clearError(floatID);
+                        if (currentFloat > maxfloat() || currentFloat < minfloat()) {
+                            setError(floatID);
+                            $('div.error').remove();
+                            $(floatID).after($('<div class="error">Out of range</div>'));
+                        } else {
+                            var newInt = Math.round(currentFloat * (2 ** currentNumFracBits));
+                            setFormInteger(newInt, false);
+                        }
                     } else {
-                        var newInt = Math.round(currentFloat * (2 ** currentNumFracBits));
-                        setFormInteger(newInt, false);
+                        setError(floatID);
                     }
                 }
 
@@ -615,6 +638,24 @@
                     </div><!--
                     ---><div class="col w75">
                         <input id="float" type="text" value="0">
+                    </div>
+                </div>
+
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="realfloat">Real float value</label>
+                    </div><!--
+                    ---><div class="col w75">
+                        <input id="realfloat" type="text" value="0" disabled>
+                    </div>
+                </div>
+
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="floaterror">Real float error (abs)</label>
+                    </div><!--
+                    ---><div class="col w75">
+                        <input id="floaterror" type="text" value="0" disabled>
                     </div>
                 </div>
 
