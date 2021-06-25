@@ -24,6 +24,7 @@
 
             p {
                 margin: 15px 0;
+                text-align: left;
             }
 
             fieldset {
@@ -32,6 +33,9 @@
                 display: inline-block;
                 vertical-align: top;
                 margin: 2px;
+                border-radius: 5px;
+                background-color: #f2f2f2;
+                padding: 20px;
             }
 
             legend {
@@ -39,13 +43,29 @@
             }
 
             div#container {
-                text-align: center;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
             }
 
             input[type=text] {
                 text-overflow: ellipsis;
             }
 
+            input[type=text].error,
+            input[type=number].error,
+            select.error,
+            textarea.error {
+                border-color: darkred;
+                background-color: #da8383;
+            }
+
+            div.error {
+                display: block;
+                font-size: smaller;
+                color: darkred;
+            }
+            
             input[type=text], input[type=number], select, textarea {
                 width: 100%;
                 padding: 12px;
@@ -53,24 +73,25 @@
                 border-radius: 4px;
                 box-sizing: border-box;
                 resize: vertical;
+                background-color: white;
             }
 
             /* Style the label to display next to the inputs */
             label {
                 display: inline-block;
-                font-size: 0.9em;
+                padding-right: 5px;
+                text-align: center;
+                width: 100%;
             }
 
-            /* Style the container */
-            fieldset {
-                border-radius: 5px;
-                background-color: #f2f2f2;
-                padding: 20px;
+            label::after {
+                content: ':';
             }
 
             .col {
                 margin-top: 6px;
                 display: inline-block;
+                text-align: center;
             }
 
             /* Floating column for labels: 25% width */
@@ -161,6 +182,31 @@
                 }
 
                 /**
+                 * Calculate the maximum integer value for the current Q-format.
+                 * @returns The maximum integer value.
+                 */
+                function maxinteger() {
+                    var signCorrection = 0;
+                    if (currentSigned) {
+                        signCorrection = 1;
+                    }
+                    return (2 ** (currentNumBits - signCorrection)) - 1;
+                }
+
+                /**
+                 * Calculate the minimum integer value for the current Q-format.
+                 * @returns The minimum integer value.
+                 */
+                function mininteger() {
+                    var signCorrection = 0;
+                    if (currentSigned) {
+                        return - (2 ** (currentNumBits - 1));
+                    } else {
+                        return 0;
+                    }
+                }
+
+                /**
                  * Calculate a bit mask for the current word.
                  * @returns The bit mask.
                  */
@@ -201,6 +247,7 @@
                     currentNumBits = val;
                     $(numFracBitsID).attr('max', val);
                     setFormFormat(currentFormat);
+                    updateMinMax();
                     if (calculate) {
                         recalculate();
                     }
@@ -228,6 +275,7 @@
                         val = getFormNumFracBits();
                     }
                     currentNumFracBits = val;
+                    updateMinMax();
                     if (calculate) {
                         recalculate();
                     }
@@ -254,6 +302,7 @@
                         val = getFormSigned();
                     }
                     currentSigned = val;
+                    updateMinMax();
                     if (calculate) {
                         recalculate();
                     }
@@ -299,6 +348,8 @@
                  */
                 function getFormInteger() {
                     var intstr = $(integerID).val().toLowerCase();
+                    $(integerID).removeClass('error');
+                    $('div.error').remove();
                     if (intstr.startsWith('0b')) {
                         setFormFormat('bin');
                         intstr = intstr.substring(2);
@@ -318,6 +369,11 @@
                             base = 10;
                     }
                     var intval = parseInt(intstr, base);
+                    if (isNaN(intval)) {
+                        $(integerID).addClass('error');
+                    } else {
+                        $(integerID).removeClass('error');
+                    }
                     if (currentSigned && ((0x1 << (currentNumBits - 1)) & intval)) {
                         /* insert missing redundant sign bits for 32-bit internal representation */
                         intval = (intval | (~wordmask()));
@@ -370,7 +426,15 @@
                  * @returns The float value.
                  */
                 function getFormFloat() {
-                    return parseFloat($(floatID).val());
+                    $(floatID).removeClass('error');
+                    $('div.error').remove();
+                    var floatval = parseFloat($(floatID).val());
+                    if (isNaN(floatval)) {
+                        $(floatID).addClass('error');
+                    } else {
+                        $(floatID).removeClass('error');
+                    }
+                    return floatval;
                 }
 
                 /**
@@ -430,24 +494,47 @@
                  * Calculate the new floating-point value.
                  */
                 function calculateFloatValue() {
-                    var newFloat = currentInteger / (2 ** currentNumFracBits);
-                    setFormFloat(newFloat, false);
+                    if (!isNaN(currentInteger)) {
+                        $(integerID).removeClass('error');
+                    }
+                    $('div.error').remove();
+                    if (currentInteger > maxinteger() || currentInteger < mininteger()) {
+                        $(integerID).addClass('error');
+                        $('div.error').remove();
+                        $(integerID).after($('<div class="error">Out of range</div>'))
+                    } else {
+                        var newFloat = currentInteger / (2 ** currentNumFracBits);
+                        setFormFloat(newFloat, false);
+                    }
                 }
 
                 /**
                  * Calculate the new integer value.
                  */
                 function calculateIntegerValue() {
-                    console.log(maxfloat());
+                    if (!isNaN(currentFloat)) {
+                        $(floatID).removeClass('error');
+                    }
                     if (currentFloat > maxfloat() || currentFloat < minfloat()) {
-                        $(integerID).val('Out of range');
+                        $(floatID).addClass('error');
+                        $('div.error').remove();
+                        $(floatID).after($('<div class="error">Out of range</div>'))
                     } else {
                         var newInt = Math.round(currentFloat * (2 ** currentNumFracBits));
                         setFormInteger(newInt, false);
                     }
                 }
 
+                /**
+                 * Update the displayed min and max float values.
+                 */
+                function updateMinMax() {
+                    $('span#maxfloat').text(maxfloat().toString());
+                    $('span#minfloat').text(minfloat().toString());
+                }
+
                 recalculate();
+                updateMinMax();
 
             });
         </script>
@@ -530,6 +617,11 @@
                         <input id="float" type="text" value="0">
                     </div>
                 </div>
+
+                <p>
+                    Maximum float value: <span id="maxfloat"></span><br>
+                    Minimum float value: <span id="minfloat"></span>
+                </p>
             </fieldset>
 
         </div>
