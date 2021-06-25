@@ -78,6 +78,8 @@
 
             input:disabled {
                 background-color: #ccc;
+                -webkit-text-fill-color: #222;
+                opacity: 1; /* required on iOS */
             }
 
             /* Style the label to display next to the inputs */
@@ -653,7 +655,7 @@
                         <input id="integer" type="text" value="0" maxlength="6">
                     </div>
                 </div>
-                
+
                 <div class="control-grp">
                     <div class="col w25">
                         <label for="float">Float</label>
