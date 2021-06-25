@@ -552,8 +552,8 @@
                  * Update the displayed min and max float values.
                  */
                 function updateMinMax() {
-                    $('span#maxfloat').text(maxfloat().toString());
-                    $('span#minfloat').text(minfloat().toString());
+                    $('input#maxfloat').val(maxfloat().toString());
+                    $('input#minfloat').val(minfloat().toString());
                 }
 
                 recalculate();
@@ -589,6 +589,7 @@
                         </select>
                     </div>
                 </div>
+
                 <div class="control-grp">
                     <div class="col w25">
                         <label for="num_frac_bits">Fractional bits (<em>n</em>)</label>
@@ -597,6 +598,7 @@
                         <input id="num_frac_bits" type="number" value="23" min="0" max="24">
                     </div>
                 </div>
+
                 <div class="control-grp">
                     <div class="col w25">
                         <label for="signed">Signed?</label>
@@ -605,6 +607,7 @@
                         <input id="signed" type="checkbox" checked>
                     </div>
                 </div>
+
                 <div class="control-grp">
                     <div class="col w25">
                         <label for="format">Integer format</label>
@@ -615,6 +618,24 @@
                             <option value="dec">Decimal</option>
                             <option value="bin">Binary</option>
                         </select>
+                    </div>
+                </div>
+
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="maxfloat">Maximum float value</label>
+                    </div><!--
+                    ---><div class="col w75">
+                        <input id="maxfloat" type="text" value="0" disabled>
+                    </div>
+                </div>
+
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="minfloat">Minimum float value</label>
+                    </div><!--
+                    ---><div class="col w75">
+                        <input id="minfloat" type="text" value="0" disabled>
                     </div>
                 </div>
             </fieldset><!--
@@ -632,6 +653,7 @@
                         <input id="integer" type="text" value="0" maxlength="6">
                     </div>
                 </div>
+                
                 <div class="control-grp">
                     <div class="col w25">
                         <label for="float">Float</label>
@@ -658,11 +680,6 @@
                         <input id="floaterror" type="text" value="0" disabled>
                     </div>
                 </div>
-
-                <p>
-                    Maximum float value: <span id="maxfloat"></span><br>
-                    Minimum float value: <span id="minfloat"></span>
-                </p>
             </fieldset>
 
         </div>
