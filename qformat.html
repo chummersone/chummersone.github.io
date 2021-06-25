@@ -41,6 +41,10 @@
                 text-align: center;
             }
 
+            input[type=text] {
+                text-overflow: ellipsis;
+            }
+
             input[type=text], input[type=number], select, textarea {
                 width: 100%;
                 padding: 12px;
@@ -153,7 +157,18 @@
                     } else {
                         return 0;
                     }
+                }
 
+                /**
+                 * Calculate a bit mask for the current word.
+                 * @returns The bit mask.
+                 */
+                function wordmask() {
+                    if (currentNumBits < 32) {
+                        return ((1 << currentNumBits) - 1);
+                    } else {
+                        return 0xFFFFFFFF;
+                    }
                 }
 
                 /**
@@ -290,16 +305,21 @@
                         setFormFormat('hex');
                         intstr = intstr.substring(2);
                     }
-                    var intval = 0;
+                    var base = 0;
                     switch (currentFormat) {
                         case 'hex':
-                            intval = parseInt(intstr, 16);
+                            base = 16;
                             break;
                         case 'bin':
-                            intval = parseInt(intstr, 2);
+                            base = 2;
                             break;
                         default:
-                            intval = parseInt(intstr, 10);
+                            base = 10;
+                    }
+                    var intval = parseInt(intstr, base);
+                    if (currentSigned && ((0x1 << (currentNumBits - 1)) & intval)) {
+                        /* insert missing redundant sign bits for 32-bit internal representation */
+                        intval = (intval | (~wordmask()));
                     }
                     return intval;
                 }
@@ -314,9 +334,19 @@
                     if (val == null) {
                         val = getFormInteger();
                     }
-                    var intstr = '';
+                    currentInteger = val;
                     var pad = parseInt($(integerID).attr('maxlength'));
                     if (!isNaN(val)) {
+                        switch (currentFormat) {
+                            case 'hex':
+                            case 'bin':
+                                /* mask out-of-range bits */
+                                val = val & wordmask();
+                                /* force to unsigned to prevent a negative symbol */
+                                val = val >>> 0;
+                                break;
+                        }
+                        var intstr = '';
                         switch (currentFormat) {
                             case 'hex':
                                 intstr = val.toString(16).padStart(pad, '0');
@@ -329,7 +359,6 @@
                         }
                         $(integerID).val(intstr);
                     }
-                    currentInteger = val;
                     if (calculate) {
                         recalculate();
                     }
@@ -400,18 +429,7 @@
                  * Calculate the new floating-point value.
                  */
                 function calculateFloatValue() {
-                    var intval = currentInteger;
-                    if (currentSigned && ((0x1 << (currentNumBits - 1)) & currentInteger)) {
-                        /* insert missing redundant sign bits */
-                        var wordMask;
-                        if (currentNumBits < 32) {
-                            wordMask = (1 << currentNumBits) - 1;
-                        } else {
-                            wordMask = 0xFFFFFFFF;
-                        }
-                        intval = (intval | (~wordMask));
-                    }
-                    var newFloat = intval / (2 ** currentNumFracBits);
+                    var newFloat = currentInteger / (2 ** currentNumFracBits);
                     setFormFloat(newFloat, false);
                 }
 
@@ -421,20 +439,14 @@
                 function calculateIntegerValue() {
                     console.log(maxfloat());
                     if (currentFloat > maxfloat() || currentFloat < minfloat()) {
-                        $(integerID).val('NaN');
+                        $(integerID).val('Out of range');
                     } else {
-                        var newInt = Math.abs(Math.round(currentFloat * (2 ** currentNumFracBits)));
-                        if (currentSigned && currentFloat < 0) {
-                            /* take two's complement ... */
-                            newInt = (~newInt + 1);
-                            if (currentNumBits < 32) {
-                                /* ... then mask */
-                                newInt &= ((1 << currentNumBits) - 1);
-                            }
-                        }
-                        setFormInteger(newInt >>> 0, false);
+                        var newInt = Math.round(currentFloat * (2 ** currentNumFracBits));
+                        setFormInteger(newInt, false);
                     }
                 }
+
+                recalculate();
 
             });
         </script>
@@ -506,7 +518,7 @@
                         <label for="integer">Integer</label>
                     </div><!--
                     ---><div class="col w75">
-                        <input id="integer" type="text" value="000000" maxlength="6">
+                        <input id="integer" type="text" value="0" maxlength="6">
                     </div>
                 </div>
                 <div class="control-grp">
