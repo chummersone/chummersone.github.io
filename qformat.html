@@ -52,6 +52,10 @@
                 text-overflow: ellipsis;
             }
 
+            input {
+                text-align: right;
+            }
+
             input[type=text].error,
             input[type=number].error,
             select.error,
@@ -78,7 +82,7 @@
 
             input:disabled {
                 background-color: #ccc;
-                -webkit-text-fill-color: #222;
+                -webkit-text-fill-color: #444;
                 opacity: 1; /* required on iOS */
             }
 
@@ -152,6 +156,7 @@
                 const floatID = '#float';
                 const realFloatID = '#realfloat';
                 const floatErrorID = '#floaterror';
+                const errorDbID = '#errordb';
 
                 /**
                  * Recalculate the integer of float value, according to what was last modified.
@@ -425,7 +430,9 @@
                         $(integerID).val(intstr);
                         realFloatVal = currentInteger / (2 ** currentNumFracBits);
                         $(realFloatID).val(realFloatVal.toString());
-                        $(floatErrorID).val(Math.abs(realFloatVal - currentFloat).toString());
+                        var floatErr = Math.abs(realFloatVal - currentFloat);
+                        $(floatErrorID).val(floatErr.toString());
+                        $(errorDbID).val(20*Math.log10(floatErr).toFixed(3));
                     }
                     if (calculate) {
                         recalculate();
@@ -667,7 +674,7 @@
 
                 <div class="control-grp">
                     <div class="col w25">
-                        <label for="realfloat">Real float value</label>
+                        <label for="realfloat">Fixed-point value</label>
                     </div><!--
                     ---><div class="col w75">
                         <input id="realfloat" type="text" value="0" disabled>
@@ -676,10 +683,19 @@
 
                 <div class="control-grp">
                     <div class="col w25">
-                        <label for="floaterror">Real float error (abs)</label>
+                        <label for="floaterror">Representation error</label>
                     </div><!--
                     ---><div class="col w75">
                         <input id="floaterror" type="text" value="0" disabled>
+                    </div>
+                </div>
+
+                <div class="control-grp">
+                    <div class="col w25">
+                        <label for="errordb">Representation error (dB)</label>
+                    </div><!--
+                    ---><div class="col w75">
+                        <input id="errordb" type="text" value="0" disabled>
                     </div>
                 </div>
             </fieldset>
