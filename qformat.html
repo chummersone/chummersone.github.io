@@ -157,6 +157,7 @@
                 const realFloatID = '#realfloat';
                 const floatErrorID = '#floaterror';
                 const errorDbID = '#errordb';
+                const labelFormatID = '#labelformat';
 
                 /**
                  * Recalculate the integer of float value, according to what was last modified.
@@ -340,16 +341,21 @@
                         val = getFormFormat();
                     }
                     var maxlength = 0;
+                    var floatlabel = '';
                     switch (val) {
                         case 'hex':
                             maxlength = Math.ceil(currentNumBits / 4);
+                            floatlabel = 'hexadecimal';
                             break;
                         case 'bin':
                             maxlength = currentNumBits;
+                            floatlabel = 'binary';
                             break;
                         default:
                             maxlength = (2 ** currentNumBits).toString().length + 1;
+                            floatlabel = 'decimal';
                     }
+                    $(labelFormatID).text(floatlabel);
                     $(integerID).attr('maxlength', maxlength.toString());
                     currentFormat = val;
                     setFormInteger(currentInteger, false);
@@ -656,7 +662,7 @@
 
                 <div class="control-grp">
                     <div class="col w25">
-                        <label for="integer">Integer</label>
+                        <label for="integer">Integer (<span id="labelformat">hexadecimal</span>)</label>
                     </div><!--
                     ---><div class="col w75">
                         <input id="integer" type="text" value="0" maxlength="6">
