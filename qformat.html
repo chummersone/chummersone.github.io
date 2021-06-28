@@ -2,6 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <meta name="description" content="Convert between floating-point values and their Qm.n fixed-point integer representations, and calculate the representation error.">
+        <meta name="keywords" content="q-fomat, fixed-point, floating-point, convert, calculate">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Q-format Converter</title>
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
@@ -515,12 +517,18 @@
                     setFormFloat();
                 });
 
+                /**
+                 * Set an error on the form element.
+                 */
                 function setError(elem) {
                     $(elem).addClass('error');
                     $(realFloatID).val('');
                     $(floatErrorID).val('');
                 }
 
+                /**
+                 * Clear the error on the form element.
+                 */
                 function clearError(elem) {
                     $(elem).removeClass('error');
                 }
@@ -582,7 +590,7 @@
         <h1>Q-format Converter</h1>
 
         <p>
-            Convert between floating-point values and their <em>Qm.n</em> fixed-point integer representations.
+            Convert between floating-point values and their <em>Qm.n</em> fixed-point integer representations, and calculate the representation error.
         </p>
 
         <div id="container">
