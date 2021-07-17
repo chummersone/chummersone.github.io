@@ -142,14 +142,26 @@
             }
 
             table {
-                border-collapse: collapse;
                 margin: 0 auto;
+                border-collapse: collapse;
+                border-radius: 4px;
+                overflow: hidden;
             }
 
-            td, th {
-                border: 1px solid #999;
+            th, td {
                 padding: 5px;
+                background: #ccc;
+                border-bottom: 1px solid white;
+                border-right: 1px solid white;
                 text-align: right;
+            }
+
+            tr:last-of-type td, tr:last-of-type th {
+                border-bottom: none;
+            }
+
+            td:last-of-type {
+                border-right: none;
             }
 
             /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
@@ -603,30 +615,45 @@
                  * Update the bit positions table.
                  */
                 function updateBitPositionsTable() {
+
+                    function getMidway($sel) {
+                        var midway = Math.floor($sel.length / 2);
+                        return midway;
+                    }
+
+                    function getBitPosition($sel, index) {
+                        var bitPosition = 0;
+                        var midway = getMidway($sel);
+                        if (index >= 0 && index < midway) {
+                            bitPosition = currentNumBits - index - 1;
+                        } else {
+                            bitPosition = currentNumBits - index - 1 - (currentNumBits - $sel.length);
+                        }
+                        return bitPosition;
+                    }
+
                     var $bitPosSelection = $('table#bit-pos tr#bit-positions td');
-                    var midwayPos = Math.floor($bitPosSelection.length / 2);
                     $('table#bit-pos tr#bit-positions td').each(function (index) {
-                        if (index >= 0 && index < midwayPos) {
-                            $(this).text((currentNumBits - index - 1).toString());
+                        if (index != getMidway($bitPosSelection)) {
+                            var bitPosition = getBitPosition($bitPosSelection, index);
+                            $(this).text(bitPosition.toString());
+                        } else {
+                            $(this).html('&hellip;');
                         }
                     });
 
                     var $bitValuesSelection = $('table#bit-pos tr#bit-values td');
-                    var midwayValues = Math.floor($bitValuesSelection.length / 2);
                     $bitValuesSelection.each(function (index) {
-                        var bitPosition = 0;
-                        if (index >= 0 && index < midwayValues) {
-                            bitPosition = currentNumBits - index - 1;
-                        } else {
-                            bitPosition = currentNumBits - index - 1 - (currentNumBits - $bitValuesSelection.length);
-                        }
+                        var bitPosition = getBitPosition($bitValuesSelection, index);
                         power = (bitPosition - currentNumFracBits).toString();
-                        if (index != midwayValues) {
+                        if (index != getMidway($bitValuesSelection)) {
                             var content = "2<sup>" + power + "</sup>";
                             if (index == 0 && currentSigned) {
                                 content = "&minus;" + content;
                             }
                             $(this).html(content);
+                        }else {
+                            $(this).html('&hellip;');
                         }
                     });
                 }
@@ -714,6 +741,31 @@
                         <input id="minfloat" type="text" value="0" disabled>
                     </div>
                 </div>
+
+                <p>Bit positions and values:</p>
+
+                <table id="bit-pos">
+                    <tr id="bit-positions">
+                        <th>Bit Position</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr id="bit-values">
+                        <th>Bit Value</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
             </fieldset><!--
 
         ---><fieldset>
@@ -765,36 +817,6 @@
                         <input id="errordb" type="text" value="0" disabled>
                     </div>
                 </div>
-            </fieldset><!--
-
-        ---><fieldset>
-                <legend>Bit Positions</legend>
-
-                <p>Display the bit positions and corresponding values.</p>
-
-                <table id="bit-pos">
-                    <tr id="bit-positions">
-                        <th>Bit Position</th>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>&hellip;</td>
-                        <td>2</td>
-                        <td>1</td>
-                        <td>0</td>
-                    </tr>
-                    <tr id="bit-values">
-                        <th>Bit Value</th>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>&hellip;</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
-            
             </fieldset>
 
         </div>
