@@ -11,6 +11,7 @@
         <meta property="og:locale" content="en_GB" />
         <meta property="og:description" content="Convert between floating-point and Qm.n fixed-point values">
         <meta property="og:site_name" content="chummersone.github.io" />
+        <meta property="og:type" content="website" />
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
         <style>
             html {
@@ -43,6 +44,10 @@
                 border-radius: 5px;
                 background-color: #f2f2f2;
                 padding: 20px;
+            }
+
+            fieldset.full-width {
+                max-width: 846px;
             }
 
             legend {
@@ -138,6 +143,17 @@
 
             input#integer, input#float {
                 font-family: monospace;
+            }
+
+            table {
+                border-collapse: collapse;
+                margin: 0 auto;
+            }
+
+            td, th {
+                border: 1px solid #999;
+                padding: 5px;
+                text-align: right;
             }
 
             /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
@@ -269,6 +285,7 @@
                     $(numFracBitsID).attr('max', val);
                     setFormFormat(currentFormat);
                     updateMinMax();
+                    updateBitPositionsTable();
                     if (calculate) {
                         recalculate();
                     }
@@ -297,6 +314,7 @@
                     }
                     currentNumFracBits = val;
                     updateMinMax();
+                    updateBitPositionsTable();
                     if (calculate) {
                         recalculate();
                     }
@@ -324,6 +342,7 @@
                     }
                     currentSigned = val;
                     updateMinMax();
+                    updateBitPositionsTable();
                     if (calculate) {
                         recalculate();
                     }
@@ -584,8 +603,41 @@
                     $('input#minfloat').val(minfloat().toString());
                 }
 
+                /**
+                 * Update the bit positions table.
+                 */
+                function updateBitPositionsTable() {
+                    var $bitPosSelection = $('table#bit-pos tr#bit-positions td');
+                    var midwayPos = Math.floor($bitPosSelection.length / 2);
+                    $('table#bit-pos tr#bit-positions td').each(function (index) {
+                        if (index >= 0 && index < midwayPos) {
+                            $(this).text((currentNumBits - index - 1).toString());
+                        }
+                    });
+
+                    var $bitValuesSelection = $('table#bit-pos tr#bit-values td');
+                    var midwayValues = Math.floor($bitValuesSelection.length / 2);
+                    $bitValuesSelection.each(function (index) {
+                        var bitPosition = 0;
+                        if (index >= 0 && index < midwayValues) {
+                            bitPosition = currentNumBits - index - 1;
+                        } else {
+                            bitPosition = currentNumBits - index - 1 - (currentNumBits - $bitValuesSelection.length);
+                        }
+                        power = (bitPosition - currentNumFracBits).toString();
+                        if (index != midwayValues) {
+                            var content = "2<sup>" + power + "</sup>";
+                            if (index == 0 && currentSigned) {
+                                content = "&minus;" + content;
+                            }
+                            $(this).html(content);
+                        }
+                    });
+                }
+
                 recalculate();
                 updateMinMax();
+                updateBitPositionsTable();
 
             });
         </script>
@@ -717,6 +769,42 @@
                         <input id="errordb" type="text" value="0" disabled>
                     </div>
                 </div>
+            </fieldset><!--
+
+        ---><fieldset class="full-width">
+                <legend>Bit Positions</legend>
+
+                <table id="bit-pos">
+                    <tr id="bit-positions">
+                        <th>Bit Position</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>&hellip;</td>
+                        <td>4</td>
+                        <td>3</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>0</td>
+                    </tr>
+                    <tr id="bit-values">
+                        <th>Bit Value</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>&hellip;</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            
             </fieldset>
 
         </div>
