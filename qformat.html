@@ -268,6 +268,69 @@
                 }
 
                 /**
+                 * Convert a float value to its fixed-point integer representation.
+                 * @param {number} val The float value.
+                 * @param {number} numFracBits The number of fractional bits.
+                 */
+                function float2fixed(val, numFracBits) {
+                    return Math.round(val * (2 ** numFracBits));
+                }
+
+                /**
+                 * Convert a fixed-point integer to its float value.
+                 * @param {number} val The fixed-point integer value.
+                 * @param {number} numFracBits The number of fractional bits.
+                 */
+                function fixed2float(val, numFracBits) {
+                    return val / (2 ** numFracBits);
+                }
+
+                /**
+                 * Format the integer.
+                 * @param {number} val The integer value.
+                 * @param {string} format The integer format: 'hex', 'bin', 'dec'.
+                 * @param {number} width The integer width.
+                 */
+                 function formatInteger(val, format, width) {
+                    if (!isNaN(val)) {
+                        switch (format) {
+                            case 'hex':
+                            case 'bin':
+                                /* mask out-of-range bits */
+                                val = val & wordmask();
+                                /* force to unsigned to prevent a negative symbol */
+                                val = val >>> 0;
+                                break;
+                        }
+                        var intstr = '';
+                        switch (format) {
+                            case 'hex':
+                                intstr = val.toString(16).padStart(width, '0');
+                                break;
+                            case 'bin':
+                                intstr = val.toString(2).padStart(width, '0');
+                                break;
+                            default:
+                                intstr = val.toString();
+                        }
+                    } else {
+                        intstr = NaN;
+                    }
+                    return intstr;
+                }
+
+                /**
+                 * Update all form controls.
+                 */
+                function update(calculate = true) {
+                    updateMinMax();
+                    updateBitPositionsTable();
+                    if (calculate) {
+                        recalculate();
+                    }
+                }
+
+                /**
                  * Get the word size, in bits, from the DOM form.
                  * @returns The word size in bits.
                  */
@@ -296,11 +359,7 @@
                     currentNumBits = val;
                     $(numFracBitsID).attr('max', val);
                     setFormFormat(currentFormat);
-                    updateMinMax();
-                    updateBitPositionsTable();
-                    if (calculate) {
-                        recalculate();
-                    }
+                    update(calculate);
                 }
 
                 /**
@@ -325,11 +384,7 @@
                         val = getFormNumFracBits();
                     }
                     currentNumFracBits = val;
-                    updateMinMax();
-                    updateBitPositionsTable();
-                    if (calculate) {
-                        recalculate();
-                    }
+                    update(calculate);
                 }
 
                 /**
@@ -353,11 +408,7 @@
                         val = getFormSigned();
                     }
                     currentSigned = val;
-                    updateMinMax();
-                    updateBitPositionsTable();
-                    if (calculate) {
-                        recalculate();
-                    }
+                    update(calculate);
                 }
 
                 /**
@@ -426,8 +477,13 @@
                             base = 10;
                     }
                     var intval = parseInt(intstr, base);
+                    if (base == 10) {
+                        if (intval > maxinteger() || intval < mininteger()) {
+                            intval = NaN;
+                        }
+                    }
                     if (isNaN(intval)) {
-                        setError(integerID);
+                        setError(integerID, 'Out of range');
                     } else {
                         clearError(integerID);
                         if (currentSigned && ((0x1 << (currentNumBits - 1)) & intval)) {
@@ -451,32 +507,15 @@
                     currentInteger = val;
                     var pad = parseInt($(integerID).attr('maxlength'));
                     if (!isNaN(val)) {
-                        switch (currentFormat) {
-                            case 'hex':
-                            case 'bin':
-                                /* mask out-of-range bits */
-                                val = val & wordmask();
-                                /* force to unsigned to prevent a negative symbol */
-                                val = val >>> 0;
-                                break;
-                        }
-                        var intstr = '';
-                        switch (currentFormat) {
-                            case 'hex':
-                                intstr = val.toString(16).padStart(pad, '0');
-                                break;
-                            case 'bin':
-                                intstr = val.toString(2).padStart(pad, '0');
-                                break;
-                            default:
-                                intstr = val.toString();
-                        }
+                        var intstr = formatInteger(val, currentFormat, pad);
                         $(integerID).val(intstr);
-                        realFloatVal = currentInteger / (2 ** currentNumFracBits);
+                        realFloatVal = fixed2float(currentInteger, currentNumFracBits);
                         $(realFloatID).val(realFloatVal.toString());
                         var floatErr = Math.abs(realFloatVal - currentFloat);
                         $(floatErrorID).val(floatErr.toString());
                         $(errorDbID).val(20*Math.log10(floatErr).toFixed(3));
+                    } else {
+                        calculate = false;
                     }
                     if (calculate) {
                         recalculate();
@@ -492,7 +531,7 @@
                     $('div.error').remove();
                     var floatval = parseFloat($(floatID).val());
                     if (isNaN(floatval)) {
-                        setError(floatID);
+                        setError(floatID, 'Parse error');
                     } else {
                         clearError(floatID);
                     }
@@ -556,10 +595,16 @@
                 /**
                  * Set an error on the form element.
                  */
-                function setError(elem) {
+                function setError(elem, msg) {
                     $(elem).addClass('error');
                     $(realFloatID).val('');
                     $(floatErrorID).val('');
+                    $(elem).siblings('div.error').remove();
+                    $(elem).after('<div class="error">' + msg + '</div>');
+
+                    $(realFloatID).val('NaN');
+                    $(floatErrorID).val('NaN');
+                    $(errorDbID).val('NaN');
                 }
 
                 /**
@@ -567,6 +612,7 @@
                  */
                 function clearError(elem) {
                     $(elem).removeClass('error');
+                    $(elem).siblings('div.error').remove();
                 }
 
                 /**
@@ -575,16 +621,16 @@
                 function calculateFloatValue() {
                     if (!isNaN(currentInteger)) {
                         clearError(integerID);
+                        clearError(floatID);
                         $('div.error').remove();
                         if (currentInteger > maxinteger() || currentInteger < mininteger()) {
-                            setError(integerID);
-                            $(integerID).after($('<div class="error">Out of range</div>'));
+                            setError(integerID, 'Out of range');
                         } else {
-                            var newFloat = currentInteger / (2 ** currentNumFracBits);
+                            var newFloat = fixed2float(currentInteger, currentNumFracBits);
                             setFormFloat(newFloat, false);
                         }
                     } else {
-                        setError(integerID);
+                        setError(integerID, 'Error');
                     }
                 }
 
@@ -593,17 +639,16 @@
                  */
                 function calculateIntegerValue() {
                     if (!isNaN(currentFloat)) {
+                        clearError(integerID);
                         clearError(floatID);
                         if (currentFloat > maxfloat() || currentFloat < minfloat()) {
-                            setError(floatID);
-                            $('div.error').remove();
-                            $(floatID).after($('<div class="error">Out of range</div>'));
+                            setError(floatID, 'Out of range');
                         } else {
-                            var newInt = Math.round(currentFloat * (2 ** currentNumFracBits));
+                            var newInt = float2fixed(currentFloat, currentNumFracBits);
                             setFormInteger(newInt, false);
                         }
                     } else {
-                        setError(floatID);
+                        setError(floatID, 'Error');
                     }
                 }
 
@@ -662,9 +707,7 @@
                     });
                 }
 
-                recalculate();
-                updateMinMax();
-                updateBitPositionsTable();
+                update();
 
             });
         </script>
