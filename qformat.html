@@ -320,6 +320,42 @@
                 }
 
                 /**
+                 * Convert a string to its corresponding integer value.
+                 * @param {string} intstr The integer value represented with a string.
+                 * @param {string} format The integer format: 'hex', 'bin', 'dec'.
+                 * @returns The integer value.
+                 */
+                 function str2int(intstr, toFormat) {
+                    intstr = intstr.toLowerCase();
+                    if (intstr.startsWith('0b')) {
+                        intstr = intstr.substring(2);
+                        toFormat = 'bin';
+                    } else if (intstr.startsWith('0x')) {
+                        toFormat = 'hex';
+                        intstr = intstr.substring(2);
+                    }
+                    var base = 0;
+                    switch (toFormat) {
+                        case 'hex':
+                            base = 16;
+                            break;
+                        case 'bin':
+                            base = 2;
+                            break;
+                        default:
+                            base = 10;
+                    }
+                    var intval = parseInt(intstr, base);
+                    if (!isNaN(intval) && base != 10) {
+                        if (currentSigned && ((0x1 << (currentNumBits - 1)) & intval)) {
+                            /* insert missing redundant sign bits for 32-bit internal representation */
+                            intval = (intval | (~wordmask()));
+                        }
+                    }
+                    return intval;
+                }
+
+                /**
                  * Update all form controls.
                  */
                 function update(calculate = true) {
@@ -455,41 +491,14 @@
                  * @returns The integer value.
                  */
                 function getFormInteger() {
-                    var intstr = $(integerID).val().toLowerCase();
-                    clearError(integerID);
-                    $('div.error').remove();
-                    if (intstr.startsWith('0b')) {
-                        setFormFormat('bin');
-                        intstr = intstr.substring(2);
-                    } else if (intstr.startsWith('0x')) {
-                        setFormFormat('hex');
-                        intstr = intstr.substring(2);
-                    }
-                    var base = 0;
-                    switch (currentFormat) {
-                        case 'hex':
-                            base = 16;
-                            break;
-                        case 'bin':
-                            base = 2;
-                            break;
-                        default:
-                            base = 10;
-                    }
-                    var intval = parseInt(intstr, base);
-                    if (base == 10) {
-                        if (intval > maxinteger() || intval < mininteger()) {
-                            intval = NaN;
-                        }
-                    }
+                    var intval = str2int($(integerID).val(), currentFormat);
                     if (isNaN(intval)) {
+                        setError(integerID, 'Parse error');
+                    } else if (intval > maxinteger() || intval < mininteger()) {
                         setError(integerID, 'Out of range');
+                        intval = NaN;
                     } else {
                         clearError(integerID);
-                        if (currentSigned && ((0x1 << (currentNumBits - 1)) & intval)) {
-                            /* insert missing redundant sign bits for 32-bit internal representation */
-                            intval = (intval | (~wordmask()));
-                        }
                     }
                     return intval;
                 }
@@ -507,6 +516,7 @@
                     currentInteger = val;
                     var pad = parseInt($(integerID).attr('maxlength'));
                     if (!isNaN(val)) {
+                        clearError(integerID);
                         var intstr = formatInteger(val, currentFormat, pad);
                         $(integerID).val(intstr);
                         realFloatVal = fixed2float(currentInteger, currentNumFracBits);
@@ -527,11 +537,12 @@
                  * @returns The float value.
                  */
                 function getFormFloat() {
-                    clearError(floatID);
-                    $('div.error').remove();
                     var floatval = parseFloat($(floatID).val());
                     if (isNaN(floatval)) {
                         setError(floatID, 'Parse error');
+                    } else if (floatval > maxfloat() || floatval < minfloat()) {
+                        setError(floatID, 'Out of range');
+                        floatval = NaN;
                     } else {
                         clearError(floatID);
                     }
@@ -542,13 +553,16 @@
                  * Update the float displayed in the DOM.
                  * @param {number} val If provided, use this value as the new float.
                  * Otherwise use the value in the form.
-                 * @param {bool} calculate 
+                 * @param {bool} calculate Calculate updated values?
                  */
                 function setFormFloat(val, calculate = true) {
                     if (!(val == null)) {
                         $(floatID).val(val.toString());
                     } else {
                         val = getFormFloat();
+                    }
+                    if (!isNaN(val)) {
+                        clearError(floatID);
                     }
                     currentFloat = val;
                     setFormInteger(currentInteger, false);
@@ -596,6 +610,8 @@
                  * Set an error on the form element.
                  */
                 function setError(elem, msg) {
+                    clearError(elem);
+
                     $(elem).addClass('error');
                     $(realFloatID).val('');
                     $(floatErrorID).val('');
@@ -619,37 +635,16 @@
                  * Calculate the new floating-point value.
                  */
                 function calculateFloatValue() {
-                    if (!isNaN(currentInteger)) {
-                        clearError(integerID);
-                        clearError(floatID);
-                        $('div.error').remove();
-                        if (currentInteger > maxinteger() || currentInteger < mininteger()) {
-                            setError(integerID, 'Out of range');
-                        } else {
-                            var newFloat = fixed2float(currentInteger, currentNumFracBits);
-                            setFormFloat(newFloat, false);
-                        }
-                    } else {
-                        setError(integerID, 'Error');
-                    }
+                    var newFloat = fixed2float(currentInteger, currentNumFracBits);
+                    setFormFloat(newFloat, false);
                 }
 
                 /**
                  * Calculate the new integer value.
                  */
                 function calculateIntegerValue() {
-                    if (!isNaN(currentFloat)) {
-                        clearError(integerID);
-                        clearError(floatID);
-                        if (currentFloat > maxfloat() || currentFloat < minfloat()) {
-                            setError(floatID, 'Out of range');
-                        } else {
-                            var newInt = float2fixed(currentFloat, currentNumFracBits);
-                            setFormInteger(newInt, false);
-                        }
-                    } else {
-                        setError(floatID, 'Error');
-                    }
+                    var newInt = float2fixed(currentFloat, currentNumFracBits);
+                    setFormInteger(newInt, false);
                 }
 
                 /**
