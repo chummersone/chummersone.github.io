@@ -582,6 +582,7 @@
 
                 $(numBitsID).change(function () {
                     setFormNumBits();
+                    $(integerID).trigger('change');
                 });
 
                 $(numFracBitsID).change(function () {
