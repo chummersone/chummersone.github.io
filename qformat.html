@@ -123,9 +123,17 @@
                 width: 70%;
             }
 
+            .col.w75.locked::after {
+                content: "🔒";
+                position: absolute;
+                right: -20px;
+                top: 12px;
+            }
+
             .control-grp {
                 margin: 8px 0;
                 width: 100%;
+                position: relative;
             }
 
             /* Clear floats after the columns */
@@ -194,176 +202,83 @@
                 const errorDbID = '#errordb';
                 const labelFormatID = '#labelformat';
 
-                /**
-                 * Recalculate the integer of float value, according to what was last modified.
-                 */
-                function recalculate() {
-                    if (userChangedFloat) {
-                        calculateIntegerValue();
-                    } else {
-                        calculateFloatValue();
-                    }
-                }
+                var currentNumBits = 0;
+                getFormNumBits();
+                var currentNumFracBits = 0;
+                getFormNumFracBits();
+                var currentSigned = false;
+                getFormSigned();
+                var currentFormat = 'hex';
+                getFormFormat();
+                var currentInteger = 0;
+                getFormInteger();
+                var currentFloat = 0;
+                getFormFloat();
+                var userChangedFloat = false;
+
+                $(numBitsID).change(function () {
+                    getFormNumBits();
+                    update();
+                });
+
+                $(numFracBitsID).change(function () {
+                    getFormNumFracBits();
+                    update();
+                });
+
+                $(signedID).change(function () {
+                    getFormSigned();
+                    update();
+                });
+
+                $(formatID).change(function () {
+                    getFormFormat();
+                    update();
+                });
+
+                $(integerID).change(function () {
+                    userChangedFloat = false;
+                    $(integerID).closest('.col.w75').addClass('locked');
+                    $(floatID).closest('.col.w75').removeClass('locked');
+                    getFormInteger();
+                    update();
+                });
+
+                $(floatID).change(function () {
+                    userChangedFloat = true;
+                    $(integerID).closest('.col.w75').removeClass('locked');
+                    $(floatID).closest('.col.w75').addClass('locked');
+                    getFormFloat();
+                    update();
+                });
 
                 /**
-                 * Calculate the maximum float value for the current Q-format.
-                 * @returns The maximum float value.
+                 * Update the form elements.
                  */
-                function maxfloat() {
-                    var signCorrection = 0;
-                    if (currentSigned) {
-                        signCorrection = 1;
-                    }
-                    return (2 ** (currentNumBits - currentNumFracBits - signCorrection)) - (2 ** -currentNumFracBits);
-                }
-
-                /**
-                 * Calculate the minimum float value for the current Q-format.
-                 * @returns The minimum float value.
-                 */
-                function minfloat() {
-                    var signCorrection = 0;
-                    if (currentSigned) {
-                        return - (2 ** (currentNumBits - currentNumFracBits - 1));
-                    } else {
-                        return 0;
-                    }
-                }
-
-                /**
-                 * Calculate the maximum integer value for the current Q-format.
-                 * @returns The maximum integer value.
-                 */
-                function maxinteger() {
-                    var signCorrection = 0;
-                    if (currentSigned) {
-                        signCorrection = 1;
-                    }
-                    return (2 ** (currentNumBits - signCorrection)) - 1;
-                }
-
-                /**
-                 * Calculate the minimum integer value for the current Q-format.
-                 * @returns The minimum integer value.
-                 */
-                function mininteger() {
-                    var signCorrection = 0;
-                    if (currentSigned) {
-                        return - (2 ** (currentNumBits - 1));
-                    } else {
-                        return 0;
-                    }
-                }
-
-                /**
-                 * Calculate a bit mask for the current word.
-                 * @returns The bit mask.
-                 */
-                function wordmask() {
-                    if (currentNumBits < 32) {
-                        return ((1 << currentNumBits) - 1);
-                    } else {
-                        return 0xFFFFFFFF;
-                    }
-                }
-
-                /**
-                 * Convert a float value to its fixed-point integer representation.
-                 * @param {number} val The float value.
-                 * @param {number} numFracBits The number of fractional bits.
-                 */
-                function float2fixed(val, numFracBits) {
-                    return Math.round(val * (2 ** numFracBits));
-                }
-
-                /**
-                 * Convert a fixed-point integer to its float value.
-                 * @param {number} val The fixed-point integer value.
-                 * @param {number} numFracBits The number of fractional bits.
-                 */
-                function fixed2float(val, numFracBits) {
-                    return val / (2 ** numFracBits);
-                }
-
-                /**
-                 * Format the integer.
-                 * @param {number} val The integer value.
-                 * @param {string} format The integer format: 'hex', 'bin', 'dec'.
-                 * @param {number} width The integer width.
-                 */
-                 function formatInteger(val, format, width) {
-                    if (!isNaN(val)) {
-                        switch (format) {
-                            case 'hex':
-                            case 'bin':
-                                /* mask out-of-range bits */
-                                val = val & wordmask();
-                                /* force to unsigned to prevent a negative symbol */
-                                val = val >>> 0;
-                                break;
-                        }
-                        var intstr = '';
-                        switch (format) {
-                            case 'hex':
-                                intstr = val.toString(16).padStart(width, '0');
-                                break;
-                            case 'bin':
-                                intstr = val.toString(2).padStart(width, '0');
-                                break;
-                            default:
-                                intstr = val.toString();
-                        }
-                    } else {
-                        intstr = NaN;
-                    }
-                    return intstr;
-                }
-
-                /**
-                 * Convert a string to its corresponding integer value.
-                 * @param {string} intstr The integer value represented with a string.
-                 * @param {string} format The integer format: 'hex', 'bin', 'dec'.
-                 * @returns The integer value.
-                 */
-                 function str2int(intstr, toFormat) {
-                    intstr = intstr.toLowerCase();
-                    if (intstr.startsWith('0b')) {
-                        intstr = intstr.substring(2);
-                        toFormat = 'bin';
-                    } else if (intstr.startsWith('0x')) {
-                        toFormat = 'hex';
-                        intstr = intstr.substring(2);
-                    }
-                    var base = 0;
-                    switch (toFormat) {
-                        case 'hex':
-                            base = 16;
-                            break;
-                        case 'bin':
-                            base = 2;
-                            break;
-                        default:
-                            base = 10;
-                    }
-                    var intval = parseInt(intstr, base);
-                    if (!isNaN(intval) && base != 10) {
-                        if (currentSigned && ((0x1 << (currentNumBits - 1)) & intval)) {
-                            /* insert missing redundant sign bits for 32-bit internal representation */
-                            intval = (intval | (~wordmask()));
-                        }
-                    }
-                    return intval;
-                }
-
-                /**
-                 * Update all form controls.
-                 */
-                function update(calculate = true) {
+                function update() {
                     updateMinMax();
                     updateBitPositionsTable();
-                    if (calculate) {
-                        recalculate();
+                    recalculate();
+                }
+
+                /**
+                 * Recalculate the form values.
+                 */
+                function recalculate() {
+                    setFormFormat();
+                    setFormNumBits();
+                    if (userChangedFloat) {
+                        currentInteger = float2fixed(currentFloat);
+                    } else {
+                        currentFloat = fixed2float(currentInteger);
                     }
+                    setFormFloat();
+                    setFormInteger();
+                    var realFloatVal = fixed2float(currentInteger);
+                    $(realFloatID).val(realFloatVal.toString());
+                    var floatErr = Math.abs(realFloatVal - currentFloat);
+                    $(floatErrorID).val(floatErr.toString());
+                    $(errorDbID).val(20*Math.log10(floatErr).toFixed(3));
                 }
 
                 /**
@@ -371,103 +286,67 @@
                  * @returns The word size in bits.
                  */
                 function getFormNumBits() {
-                    return parseInt($(numBitsID + ' option:selected').val());
+                    currentNumBits = parseInt($(numBitsID + ' option:selected').val());
                 }
 
                 /**
                  * Set the number of bits. This function updates the UI, decrements the number of
                  * fractional bits, if necessary, and updates other form control attributes and
                  * values.
-                 * @param {number} val If provided, the new number of bits. Otherwise use the
-                 * value in the form.
-                 * @param {bool} calculate Calculate the integer or float value?
                  */
-                function setFormNumBits(val, calculate = true) {
-                    if (!(val == null)) {
-                        $(numBitsID + ' option:selected').val(val.toString());
-                    } else {
-                        val = getFormNumBits();
+                function setFormNumBits() {
+                    $(numBitsID + ' option:selected').val(currentNumBits.toString());
+                    if (currentNumBits < currentNumFracBits) {
+                        currentNumFracBits -= (currentNumFracBits - currentNumBits + 1);
+                        setFormNumFracBits();
                     }
-                    if (val < currentNumFracBits) {
-                        var newNumFracBits = currentNumFracBits - (currentNumBits - val);
-                        setFormNumFracBits(newNumFracBits);
-                    }
-                    currentNumBits = val;
-                    $(numFracBitsID).attr('max', val);
-                    setFormFormat(currentFormat);
-                    update(calculate);
+                    $(numFracBitsID).attr('max', currentNumBits);
                 }
 
                 /**
                  * Get the number of fractional bits from the DOM.
-                 * @returns The number of fractional bits.
                  */
                 function getFormNumFracBits() {
-                    return parseInt($(numFracBitsID).val());
+                    currentNumFracBits = parseInt($(numFracBitsID).val());
                 }
 
                 /**
                  * Set the number of fractional bits. This function updates the UI, and
                  * updates other form controls.
-                 * @param {number} val If provided, the new number of bits. Otherwise use the
-                 * value in the form.
-                 * @param {bool} calculate Calculate the integer or float value?
                  */
-                function setFormNumFracBits(val, calculate = true) {
-                    if (!(val == null)) {
-                        $(numFracBitsID).val(val.toString());
-                    } else {
-                        val = getFormNumFracBits();
-                    }
-                    currentNumFracBits = val;
-                    update(calculate);
+                function setFormNumFracBits() {
+                    $(numFracBitsID).val(currentNumFracBits.toString());
                 }
 
                 /**
                  * Determine whether values are signed.
-                 * @returns Returns true if values are signed, otherwise false.
                  */
                 function getFormSigned() {
-                    return $(signedID).prop('checked');
+                    currentSigned = $(signedID).prop('checked');
                 }
 
                 /**
-                 * Update the signed-ness of the calculations, and optionally update the UI.
-                 * @param {bool} val If provided, whether the values are signed. Otherwise use
-                 * the value in the form.
-                 * @param {bool} calculate Calculate the integer or float value?
+                 * Update the signed-ness of the calculations.
                  */
-                function setFormSigned(val, calculate = true) {
-                    if (!(val == null)) {
-                        $(signedID).prop('checked', val);
-                    } else {
-                        val = getFormSigned();
-                    }
-                    currentSigned = val;
-                    update(calculate);
+                function setFormSigned() {
+                    $(signedID).prop('checked', currentSigned);
                 }
 
                 /**
                  * Get the integer display format from the DOM.
-                 * @returns The float value.
                  */
                 function getFormFormat() {
-                    return $(formatID + ' option:selected').val();
+                    currentFormat = $(formatID + ' option:selected').val();
                 }
 
                 /**
                  * Set the form integer display format. Update the form attributes and the UI.
-                 * @param {string} val The format.
                  */
-                function setFormFormat(val) {
-                    if (!(val == null)) {
-                        $(formatID).val(val);
-                    } else {
-                        val = getFormFormat();
-                    }
+                function setFormFormat() {
+                    $(formatID).val(currentFormat);
                     var maxlength = 0;
                     var floatlabel = '';
-                    switch (val) {
+                    switch (currentFormat) {
                         case 'hex':
                             maxlength = Math.ceil(currentNumBits / 4);
                             floatlabel = 'hexadecimal';
@@ -482,130 +361,67 @@
                     }
                     $(labelFormatID).text(floatlabel);
                     $(integerID).attr('maxlength', maxlength.toString());
-                    currentFormat = val;
-                    setFormInteger(currentInteger, false);
+                }
+
+                /**
+                 * Check that the integer is valid.
+                 */
+                function checkInteger() {
+                    if (isNaN(currentInteger)) {
+                        setError(integerID, 'Parse Error')
+                    } else if (currentInteger > maxinteger() || currentInteger < mininteger()) {
+                        setError(integerID, 'Out of Range')
+                    } else {
+                        clearError(integerID);
+                    }
                 }
 
                 /**
                  * Get the integer value from the DOM.
-                 * @returns The integer value.
                  */
                 function getFormInteger() {
-                    var intval = str2int($(integerID).val(), currentFormat);
-                    if (isNaN(intval)) {
-                        setError(integerID, 'Parse error');
-                    } else if (intval > maxinteger() || intval < mininteger()) {
-                        setError(integerID, 'Out of range');
-                        intval = NaN;
-                    } else {
-                        clearError(integerID);
-                    }
-                    return intval;
+                    currentInteger = str2int($(integerID).val());
+                    checkInteger();
                 }
 
                 /**
                  * Update the integer displayed in the DOM.
-                 * @param {number} val If provided, use this value as the new integer.
-                 * Otherwise use the value in the form.
-                 * @param {bool} calculate 
                  */
-                function setFormInteger(val, calculate = true) {
-                    if (val == null) {
-                        val = getFormInteger();
-                    }
-                    currentInteger = val;
+                function setFormInteger() {
+                    checkInteger();
                     var pad = parseInt($(integerID).attr('maxlength'));
-                    if (!isNaN(val)) {
-                        clearError(integerID);
-                        var intstr = formatInteger(val, currentFormat, pad);
-                        $(integerID).val(intstr);
-                        realFloatVal = fixed2float(currentInteger, currentNumFracBits);
-                        $(realFloatID).val(realFloatVal.toString());
-                        var floatErr = Math.abs(realFloatVal - currentFloat);
-                        $(floatErrorID).val(floatErr.toString());
-                        $(errorDbID).val(20*Math.log10(floatErr).toFixed(3));
+                    var intstr = formatInteger(currentInteger, pad);
+                    $(integerID).val(intstr);
+                }
+
+                /**
+                 * Check that the float is valid.
+                 */
+                function checkFloat() {
+                    if (isNaN(currentFloat)) {
+                        setError(floatID, 'Parse Error');
+                    } else if (currentFloat > maxfloat() || currentFloat < minfloat()) {
+                        setError(floatID, 'Out of Range');
                     } else {
-                        calculate = false;
-                    }
-                    if (calculate) {
-                        recalculate();
+                        clearError(floatID);
                     }
                 }
 
                 /**
                  * Get the float value from the DOM.
-                 * @returns The float value.
                  */
                 function getFormFloat() {
-                    var floatval = parseFloat($(floatID).val());
-                    if (isNaN(floatval)) {
-                        setError(floatID, 'Parse error');
-                    } else if (floatval > maxfloat() || floatval < minfloat()) {
-                        setError(floatID, 'Out of range');
-                        floatval = NaN;
-                    } else {
-                        clearError(floatID);
-                    }
-                    return floatval;
+                    currentFloat = parseFloat($(floatID).val());
+                    checkFloat();
                 }
 
                 /**
                  * Update the float displayed in the DOM.
-                 * @param {number} val If provided, use this value as the new float.
-                 * Otherwise use the value in the form.
-                 * @param {bool} calculate Calculate updated values?
                  */
-                function setFormFloat(val, calculate = true) {
-                    if (!(val == null)) {
-                        $(floatID).val(val.toString());
-                    } else {
-                        val = getFormFloat();
-                    }
-                    if (!isNaN(val)) {
-                        clearError(floatID);
-                    }
-                    currentFloat = val;
-                    setFormInteger(currentInteger, false);
-                    if (calculate) {
-                        recalculate();
-                    }
+                function setFormFloat() {
+                    checkFloat();
+                    $(floatID).val(currentFloat.toString());
                 }
-
-                var currentNumBits = getFormNumBits();
-                var currentNumFracBits = getFormNumFracBits();
-                var currentSigned = getFormSigned();
-                var currentFormat = getFormFormat();
-                var currentInteger = getFormInteger();
-                var currentFloat = getFormFloat();
-                var realFloatVal = currentFloat;
-                var userChangedFloat = false;
-
-                $(numBitsID).change(function () {
-                    setFormNumBits();
-                    $(integerID).trigger('change');
-                });
-
-                $(numFracBitsID).change(function () {
-                    setFormNumFracBits();
-                });
-
-                $(signedID).change(function () {
-                    setFormSigned();
-                });
-
-                $(formatID).change(function () {
-                    setFormFormat();
-                });
-
-                $(integerID).change(function () {
-                    userChangedFloat = false;
-                    setFormInteger();
-                });
-
-                $(floatID).change(function () {
-                    userChangedFloat = true;
-                    setFormFloat();
-                });
 
                 /**
                  * Set an error on the form element.
@@ -633,19 +449,150 @@
                 }
 
                 /**
-                 * Calculate the new floating-point value.
+                 * Calculate the maximum float value for the current Q-format.
+                 * @returns The maximum float value.
                  */
-                function calculateFloatValue() {
-                    var newFloat = fixed2float(currentInteger, currentNumFracBits);
-                    setFormFloat(newFloat, false);
+                 function maxfloat() {
+                    var signCorrection = 0;
+                    if (currentSigned) {
+                        signCorrection = 1;
+                    }
+                    return (2 ** (currentNumBits - currentNumFracBits - signCorrection)) - (2 ** -currentNumFracBits);
                 }
 
                 /**
-                 * Calculate the new integer value.
+                 * Calculate the minimum float value for the current Q-format.
+                 * @returns The minimum float value.
                  */
-                function calculateIntegerValue() {
-                    var newInt = float2fixed(currentFloat, currentNumFracBits);
-                    setFormInteger(newInt, false);
+                function minfloat() {
+                    var signCorrection = 0;
+                    if (currentSigned) {
+                        return - (2 ** (currentNumBits - currentNumFracBits - 1));
+                    } else {
+                        return 0;
+                    }
+                }
+
+                /**
+                 * Calculate the maximum integer value for the current Q-format.
+                 * @returns The maximum integer value.
+                 */
+                 function maxinteger() {
+                    var signCorrection = 0;
+                    if (currentSigned) {
+                        signCorrection = 1;
+                    }
+                    return (2 ** (currentNumBits - signCorrection)) - 1;
+                }
+
+                /**
+                 * Calculate the minimum integer value for the current Q-format.
+                 * @returns The minimum integer value.
+                 */
+                function mininteger() {
+                    var signCorrection = 0;
+                    if (currentSigned) {
+                        return - (2 ** (currentNumBits - 1));
+                    } else {
+                        return 0;
+                    }
+                }
+
+                /**
+                 * Convert a fixed-point integer to its float value.
+                 * @param {number} val The fixed-point integer value.
+                 */
+                 function fixed2float(val) {
+                    return val / (2 ** currentNumFracBits);
+                }
+
+                /**
+                 * Convert a float value to its fixed-point integer representation.
+                 * @param {number} val The float value.
+                 */
+                 function float2fixed(val) {
+                    return Math.round(val * (2 ** currentNumFracBits));
+                }
+
+                /**
+                 * Calculate a bit mask for the current word.
+                 * @returns The bit mask.
+                 */
+                 function wordmask() {
+                    if (currentNumBits < 32) {
+                        return ((1 << currentNumBits) - 1);
+                    } else {
+                        return 0xFFFFFFFF;
+                    }
+                }
+
+                /**
+                 * Convert a string to its corresponding integer value.
+                 * @param {string} intstr The integer value represented with a string.
+                 * @returns The integer value.
+                 */
+                 function str2int(intstr) {
+                    intstr = intstr.toLowerCase();
+                    if (intstr.startsWith('0b')) {
+                        currentFormat = 'bin';
+                        intstr = intstr.substring(2);
+                        setFormFormat();
+                    } else if (intstr.startsWith('0x')) {
+                        currentFormat = 'hex';
+                        intstr = intstr.substring(2);
+                        setFormFormat();
+                    }
+                    var base = 0;
+                    switch (currentFormat) {
+                        case 'hex':
+                            base = 16;
+                            break;
+                        case 'bin':
+                            base = 2;
+                            break;
+                        default:
+                            base = 10;
+                    }
+                    var intval = parseInt(intstr, base);
+                    if (!isNaN(intval) && base != 10) {
+                        if (currentSigned && ((0x1 << (currentNumBits - 1)) & intval)) {
+                            /* insert missing redundant sign bits for 32-bit internal representation */
+                            intval = (intval | (~wordmask()));
+                        }
+                    }
+                    return intval;
+                }
+
+                /**
+                 * Format the integer.
+                 * @param {number} val The integer value.
+                 */
+                 function formatInteger(val, width) {
+                    if (!isNaN(val)) {
+                        switch (currentFormat) {
+                            case 'hex':
+                            case 'bin':
+                                /* mask out-of-range bits */
+                                val = val & wordmask();
+                                /* force to unsigned to prevent a negative symbol */
+                                val = val >>> 0;
+                                break;
+                        }
+                        var intstr = '';
+                        switch (currentFormat) {
+                            case 'hex':
+                                intstr = val.toString(16).padStart(width, '0');
+                                break;
+                            case 'bin':
+                                intstr = val.toString(2).padStart(width, '0');
+                                break;
+                            default:
+                                intstr = val.toString();
+                        }
+                    } else {
+                        intstr = NaN;
+                    }
+                    return intstr;
                 }
 
                 /**
