@@ -228,6 +228,9 @@
 
                 $(signedID).change(function () {
                     getFormSigned();
+                    if (~userChangedFloat) {
+                        getFormInteger();
+                    }
                     update();
                 });
 
