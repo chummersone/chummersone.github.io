@@ -21,8 +21,20 @@
                 font-size: 16px;
             }
 
+            html, body, input, fieldset, select {
+                background-color: #444;
+            }
+
+            input:disabled, table, tr, th, td {
+                background-color: #666;
+            }
+
             body {
                 font: inherit;
+            }
+
+            body, input, select, p, label, th, td, legend {
+                color: #ccc;
             }
 
             h1 {
@@ -42,7 +54,6 @@
                 vertical-align: top;
                 margin: 2px;
                 border-radius: 5px;
-                background-color: #f2f2f2;
                 padding: 20px;
             }
 
@@ -75,7 +86,7 @@
             div.error {
                 display: block;
                 font-size: smaller;
-                color: darkred;
+                color: #da8383;
             }
             
             input[type=text], input[type=number], select, textarea {
@@ -85,17 +96,12 @@
                 border-radius: 4px;
                 box-sizing: border-box;
                 resize: vertical;
-                background-color: white;
             }
 
             input:disabled {
-                background-color: #ccc;
-                -webkit-text-fill-color: #444;
+                -webkit-text-fill-color: #aaa;
+                color: #aaa;
                 opacity: 1; /* required on iOS */
-            }
-
-            input, select, p, label, th, td, legend {
-                color: black;
             }
 
             /* Style the label to display next to the inputs */
@@ -165,11 +171,9 @@
 
             th, td {
                 padding: 5px;
-                background: #ccc;
-                border-bottom: 1px solid white;
-                border-right: 1px solid white;
+                border-bottom: 1px solid #888;
+                border-right: 1px solid #888;
                 text-align: right;
-                color: #444;
             }
 
             tr:last-of-type td, tr:last-of-type th {
