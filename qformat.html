@@ -276,8 +276,6 @@
                  * Recalculate the form values.
                  */
                 function recalculate() {
-                    setFormFormat();
-                    setFormNumBits();
                     if (userChangedFloat) {
                         currentInteger = float2fixed(currentFloat);
                     } else {
@@ -307,11 +305,14 @@
                  */
                 function setFormNumBits() {
                     $(numBitsID + ' option:selected').val(currentNumBits.toString());
+                    $(numFracBitsID).find('option').remove().end();
+                    for (let i = currentNumBits; i >= 0; i--) {
+                        $(numFracBitsID).append('<option value="' + i.toString() + '">' + i.toString() + '</option>')
+                    }
                     if (currentNumBits < currentNumFracBits) {
                         currentNumFracBits -= (currentNumFracBits - currentNumBits + 1);
-                        setFormNumFracBits();
                     }
-                    $(numFracBitsID).attr('max', currentNumBits);
+                    setFormNumFracBits();
                 }
 
                 /**
@@ -610,6 +611,8 @@
                  * Update the displayed min and max float values.
                  */
                 function updateMinMax() {
+                    setFormFormat();
+                    setFormNumBits();
                     $('input#maxfloat').val(maxfloat().toString());
                     $('input#minfloat').val(minfloat().toString());
                 }
@@ -699,7 +702,9 @@
                         <label for="num_frac_bits">Fractional bits (<em>n</em>)</label>
                     </div><!--
                 ---><div class="col w75">
-                        <input id="num_frac_bits" type="number" value="23" min="0" max="24">
+                        <select id="num_frac_bits">
+                            <option value="23" selected>23</option>
+                        </select>
                     </div>
                 </div>
 
