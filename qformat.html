@@ -27,6 +27,9 @@
 
             input:disabled, table, tr, th, td {
                 background-color: #666;
+                -webkit-text-fill-color: #bbb;
+                color: #bbb;
+                opacity: 1; /* required on iOS */
             }
 
             body {
@@ -94,14 +97,7 @@
                 padding: 12px;
                 border: 1px solid #ccc;
                 border-radius: 4px;
-                box-sizing: border-box;
                 resize: vertical;
-            }
-
-            input:disabled {
-                -webkit-text-fill-color: #aaa;
-                color: #aaa;
-                opacity: 1; /* required on iOS */
             }
 
             /* Style the label to display next to the inputs */
@@ -157,7 +153,7 @@
                 vertical-align: middle;
             }
 
-            input#integer, input#float {
+            input[type="text"] {
                 font-family: monospace;
             }
 
@@ -169,10 +165,22 @@
                 width: 100%;
             }
 
+            table#bit-pos, table#bit-pos tbody {
+                display: block;
+            }
+
+            table#bit-pos tbody tr {
+                display: inline-block;
+            }
+
+            table#bit-pos tbody tr td, table#bit-pos tbody tr th {
+                display: block;
+            }
+
             th, td {
                 padding: 5px;
-                border-bottom: 1px solid #888;
-                border-right: 1px solid #888;
+                /*border-bottom: 1px solid #ccc;
+                border-right: 1px solid #ccc;*/
                 text-align: right;
             }
 
@@ -189,6 +197,22 @@
                 .col.w25, .col.w75 {
                     width: 100%;
                     margin-top: 0;
+                }
+
+                table#bit-pos {
+                    display: table;
+                }
+
+                table#bit-pos tbody {
+                    display: table-row-group;
+                }
+
+                table#bit-pos tbody tr {
+                    display: table-row;
+                }
+
+                table#bit-pos tbody tr td, table#bit-pos tbody tr th {
+                    display: table-cell;
                 }
             }
         </style>
@@ -638,8 +662,8 @@
                         return bitPosition;
                     }
 
-                    var $bitPosSelection = $('table#bit-pos tr#bit-positions td');
-                    $('table#bit-pos tr#bit-positions td').each(function (index) {
+                    var $bitPosSelection = $('table#bit-pos td:nth-of-type(1)');
+                    $bitPosSelection.each(function (index) {
                         if (index != getMidway($bitPosSelection)) {
                             var bitPosition = getBitPosition($bitPosSelection, index);
                             $(this).text(bitPosition.toString());
@@ -648,12 +672,12 @@
                         }
                     });
 
-                    var $bitValuesSelection = $('table#bit-pos tr#bit-values td');
+                    var $bitValuesSelection = $('table#bit-pos td:nth-of-type(2)');
                     $bitValuesSelection.each(function (index) {
                         var bitPosition = getBitPosition($bitValuesSelection, index);
                         power = (bitPosition - currentNumFracBits).toString();
                         if (index != getMidway($bitValuesSelection)) {
-                            var content = "2<sup>" + power + "</sup>";
+                            var content = "2<sup>" + power.replace("-", "&minus;") + "</sup>";
                             if (index == 0 && currentSigned) {
                                 content = "&minus;" + content;
                             }
@@ -752,23 +776,35 @@
                     <label>Bit positions and values</label>
 
                     <table id="bit-pos">
-                        <tr id="bit-positions">
+                        <tr>
                             <th>Bit Position</th>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <th>Bit Value</th>
+                        </tr>
+                        <tr>
                             <td></td>
                             <td></td>
                         </tr>
-                        <tr id="bit-values">
-                            <th>Bit Value</th>
+                        <tr>
                             <td></td>
                             <td></td>
+                        </tr>
+                        <tr>
                             <td></td>
                             <td></td>
+                        </tr>
+                        <tr>
                             <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
                             <td></td>
                             <td></td>
                         </tr>
