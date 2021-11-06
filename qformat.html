@@ -234,6 +234,7 @@
                 const errorDbID = '#errordb';
                 const labelFormatID = '#labelformat';
 
+                var oldNumBits = 0;
                 var currentNumBits = 0;
                 getFormNumBits();
                 var currentNumFracBits = 0;
@@ -319,6 +320,7 @@
                  * @returns The word size in bits.
                  */
                 function getFormNumBits() {
+                    oldNumBits = currentNumBits;
                     currentNumBits = parseInt($(numBitsID + ' option:selected').val());
                 }
 
@@ -334,7 +336,7 @@
                         $(numFracBitsID).append('<option value="' + i.toString() + '">' + i.toString() + '</option>')
                     }
                     if (currentNumBits < currentNumFracBits) {
-                        currentNumFracBits -= (currentNumFracBits - currentNumBits + 1);
+                        currentNumFracBits -= (oldNumBits - currentNumBits);
                     }
                     setFormNumFracBits();
                 }
