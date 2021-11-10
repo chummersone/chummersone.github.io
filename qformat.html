@@ -21,11 +21,11 @@
                 font-size: 16px;
             }
 
-            html, body, input, fieldset, select {
+            html, body, input, fieldset, select, textarea {
                 background-color: #222;
             }
 
-            input:disabled, table, tr, th, td {
+            input:disabled, table, tr, th, td, textarea:disabled {
                 background-color: #444;
                 -webkit-text-fill-color: #bbb;
                 color: #bbb;
@@ -36,7 +36,7 @@
                 font: inherit;
             }
 
-            body, input, select, p, label, th, td, legend {
+            body, input, select, p, label, th, td, legend, textarea {
                 color: #ccc;
             }
 
@@ -153,7 +153,7 @@
                 vertical-align: middle;
             }
 
-            input[type="text"] {
+            input[type="text"], textarea {
                 font-family: monospace;
             }
 
@@ -179,8 +179,6 @@
 
             th, td {
                 padding: 5px;
-                /*border-bottom: 1px solid #ccc;
-                border-right: 1px solid #ccc;*/
                 text-align: right;
             }
 
@@ -233,9 +231,12 @@
                 const floatErrorID = '#floaterror';
                 const errorDbID = '#errordb';
                 const labelFormatID = '#labelformat';
+                const batchIntegerID = '#batch-int';
+                const batchFloatID = '#batch-float';
 
                 var oldNumBits = 0;
                 var currentNumBits = 0;
+                var oldNumBits = 0;
                 getFormNumBits();
                 var currentNumFracBits = 0;
                 getFormNumFracBits();
@@ -248,6 +249,7 @@
                 var currentFloat = 0;
                 getFormFloat();
                 var userChangedFloat = false;
+                var userChangedBatchFloat = false;
 
                 $(numBitsID).change(function () {
                     getFormNumBits();
@@ -288,6 +290,16 @@
                     update();
                 });
 
+                $(batchFloatID).blur(function () {
+                    userChangedBatchFloat = true;
+                    recalculateBatch();
+                });
+
+                $(batchIntegerID).blur(function () {
+                    userChangedBatchFloat = false;
+                    recalculateBatch();
+                });
+
                 /**
                  * Update the form elements.
                  */
@@ -295,6 +307,7 @@
                     updateMinMax();
                     updateBitPositionsTable();
                     recalculate();
+                    recalculateBatch();
                 }
 
                 /**
@@ -313,6 +326,45 @@
                     var floatErr = Math.abs(realFloatVal - currentFloat);
                     $(floatErrorID).val(floatErr.toString());
                     $(errorDbID).val(20*Math.log10(floatErr).toFixed(3));
+                }
+
+                /**
+                 * Recalculate the batch inputs.
+                 */
+                function recalculateBatch() {
+                    var src, dst;
+                    if (userChangedBatchFloat) {
+                        src = batchFloatID;
+                        dst = batchIntegerID;
+                    } else {
+                        src = batchIntegerID;
+                        dst = batchFloatID;
+                    }
+                    var batchIn = $(src).val();
+                    var rem = batchIn;
+                    var out = '';
+                    do {
+                        let val, delim;
+                        const re = /([^\s,]*?)([\s,]+)(.*)/imgs;
+                        let arr = [...rem.matchAll(re)][0];
+                        if (arr) {
+                            val = arr[1];
+                            delim = arr[2];
+                            rem = arr[3];
+                        } else {
+                            val = rem;
+                            delim = '';
+                            rem = false;
+                        }
+                        let strval;
+                        if (userChangedBatchFloat) {
+                            strval = int2str(float2fixed(parseFloat(val)));
+                        } else {
+                            strval = fixed2float(str2int(val)).toString();
+                        }
+                        out += strval + delim;
+                    } while (rem);
+                    $(dst).val(out);
                 }
 
                 /**
@@ -404,10 +456,10 @@
                 /**
                  * Check that the integer is valid.
                  */
-                function checkInteger() {
-                    if (isNaN(currentInteger)) {
+                function checkInteger(val = currentInteger) {
+                    if (isNaN(val)) {
                         setError(integerID, 'Parse Error')
-                    } else if (currentInteger > maxinteger() || currentInteger < mininteger()) {
+                    } else if (val > maxinteger() || val < mininteger()) {
                         setError(integerID, 'Out of Range')
                     } else {
                         clearError(integerID);
@@ -423,22 +475,30 @@
                 }
 
                 /**
+                 * Format an integer value.
+                 */
+                function int2str(val) {
+                    var pad = parseInt($(integerID).attr('maxlength'));
+                    var intstr = formatInteger(val, pad);
+                    return intstr;
+                }
+
+                /**
                  * Update the integer displayed in the DOM.
                  */
                 function setFormInteger() {
                     checkInteger();
-                    var pad = parseInt($(integerID).attr('maxlength'));
-                    var intstr = formatInteger(currentInteger, pad);
+                    var intstr = int2str(currentInteger);
                     $(integerID).val(intstr);
                 }
 
                 /**
                  * Check that the float is valid.
                  */
-                function checkFloat() {
-                    if (isNaN(currentFloat)) {
+                function checkFloat(val = currentFloat) {
+                    if (isNaN(val)) {
                         setError(floatID, 'Parse Error');
-                    } else if (currentFloat > maxfloat() || currentFloat < minfloat()) {
+                    } else if (val > maxfloat() || val < minfloat()) {
                         setError(floatID, 'Out of Range');
                     } else {
                         clearError(floatID);
@@ -863,6 +923,19 @@
                         <input id="errordb" type="text" value="0" disabled>
                     </div>
                 </div>
+            </fieldset><!--
+
+        ---><fieldset>
+                <legend>Batch Convert</legend>
+
+                <p>Type integers or floats in the boxes below separated by commas, spaces or new lines. Click or tab away to update.</p>
+
+                <label for="batch-int">Integers</label>
+                <textarea id="batch-int" rows="6"></textarea>
+
+                <label for="batch-float">Floats</label>
+                <textarea id="batch-float" rows="6"></textarea>
+
             </fieldset>
 
         </div>
