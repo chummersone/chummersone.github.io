@@ -345,30 +345,32 @@
                         dst = batchFloatID;
                     }
                     var batchIn = $(src).val();
-                    var rem = batchIn;
-                    var out = '';
-                    do {
-                        let val, delim;
-                        const re = /([^\s,]*?)([\s,]+)(.*)/imgs;
-                        let arr = [...rem.matchAll(re)][0];
-                        if (arr) {
-                            val = arr[1];
-                            delim = arr[2];
-                            rem = arr[3];
-                        } else {
-                            val = rem;
-                            delim = '';
-                            rem = false;
-                        }
-                        let strval;
-                        if (userChangedBatchFloat) {
-                            strval = int2str(float2fixed(parseFloat(val)));
-                        } else {
-                            strval = fixed2float(str2int(val)).toString();
-                        }
-                        out += strval + delim;
-                    } while (rem);
-                    $(dst).val(out);
+                    if (batchIn != '') {
+                        var rem = batchIn;
+                        var out = '';
+                        do {
+                            let val, delim;
+                            const re = /([^\s,]*?)([\s,]+)(.*)/imgs;
+                            let arr = [...rem.matchAll(re)][0];
+                            if (arr) {
+                                val = arr[1];
+                                delim = arr[2];
+                                rem = arr[3];
+                            } else {
+                                val = rem;
+                                delim = '';
+                                rem = false;
+                            }
+                            let strval;
+                            if (userChangedBatchFloat) {
+                                strval = int2str(float2fixed(parseFloat(val)));
+                            } else {
+                                strval = fixed2float(str2int(val)).toString();
+                            }
+                            out += strval + delim;
+                        } while (rem);
+                        $(dst).val(out);
+                    }
                 }
 
                 /**
