@@ -1,0 +1,239 @@
+html {
+    padding: 10px;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    font-size: 16px;
+}
+
+html, body, input, fieldset, select, textarea, div.ui-tabs {
+    background-color: #222;
+}
+
+ul, ol {
+    padding-left: 40px;
+}
+
+ul.ui-tabs-nav {
+    background-color: #444;
+}
+
+input:disabled, table, tr, th, td, textarea:disabled {
+    background-color: #444;
+    -webkit-text-fill-color: #bbb;
+    color: #bbb;
+    opacity: 1; /* required on iOS */
+}
+
+body {
+    font: inherit;
+}
+
+body, input, select, p, label, th, td, legend, textarea {
+    color: #ccc;
+}
+
+h1 {
+    margin: 20px 0;
+    font-size: 2em;
+}
+
+p {
+    margin: 15px 0;
+    text-align: left;
+}
+
+fieldset {
+    width: 100%;
+    display: inline-block;
+    vertical-align: top;
+    margin: 2px;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+legend + * {
+    margin-top: 0;
+}
+
+legend {
+    font-weight: bold;
+}
+
+div.tab-panel {
+    column-width: 424px;
+    column-count: 3;
+    column-gap: normal;
+}
+
+div.tab-panel#converter {
+    column-count: 3;
+}
+
+div.tab-panel#arithmetic {
+    column-count: 4;
+}
+
+div#tabs {
+    width: 100%;
+}
+
+.ui-tabs-panel {
+    text-align: center;
+    width: 100%;
+}
+
+input[type=text] {
+    text-overflow: ellipsis;
+}
+
+input {
+    text-align: right;
+}
+
+input[type=text].error,
+input[type=number].error,
+select.error,
+textarea.error {
+    border-color: darkred;
+    background-color: #da8383;
+}
+
+div.error {
+    display: block;
+    font-size: smaller;
+    color: #da8383;
+}
+
+input[type=text], input[type=number], select, textarea {
+    width: 100%;
+    padding: 12px;
+    resize: vertical;
+}
+
+input[type=text], input[type=number], select, textarea, table {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Style the label to display next to the inputs */
+label {
+    display: inline-block;
+    padding-right: 5px;
+    text-align: center;
+    width: 100%;
+    margin: 0px 0;
+}
+
+label::after {
+    content: ':';
+}
+
+.col {
+    margin-top: 6px;
+    display: inline-block;
+    text-align: center;
+}
+
+/* Floating column for labels: 25% width */
+.col.w25 {
+    width: 30%;
+}
+
+/* Floating column for inputs: 75% width */
+.col.w75 {
+    width: 70%;
+}
+
+.col.w75.locked::after {
+    content: "🔒";
+    position: absolute;
+    right: -20px;
+    bottom: 12px;
+}
+
+.control-grp {
+    margin: 8px 0;
+    width: 100%;
+    position: relative;
+}
+
+/* Clear floats after the columns */
+.control-grp::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.control-grp .col {
+    vertical-align: middle;
+}
+
+input[type="text"], textarea {
+    font-family: monospace;
+}
+
+table {
+    margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+table#bit-pos, table#bit-pos tbody {
+    display: block;
+    font-size: 96%;
+}
+
+table#bit-pos tbody tr {
+    display: inline-block;
+}
+
+table#bit-pos tbody tr td, table#bit-pos tbody tr th {
+    display: block;
+}
+
+th, td {
+    padding: 5px;
+    text-align: right;
+}
+
+tr:last-of-type td, tr:last-of-type th {
+    border-bottom: none;
+}
+
+td:last-of-type {
+    border-right: none;
+}
+
+.span-cols {
+    column-span: all;
+}
+
+sup {
+    margin-left: 0.1em;
+}
+
+/* Responsive layout - when the screen is less than 444px wide */
+@media screen and (max-width: 474px) {
+    .col.w25, .col.w75 {
+        width: 100%;
+        margin-top: 0;
+    }
+
+    table#bit-pos {
+        display: table;
+    }
+
+    table#bit-pos tbody {
+        display: table-row-group;
+    }
+
+    table#bit-pos tbody tr {
+        display: table-row;
+    }
+
+    table#bit-pos tbody tr td, table#bit-pos tbody tr th {
+        display: table-cell;
+    }
+}
