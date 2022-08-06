@@ -2,1058 +2,489 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="description" content="Convert between floating-point values and their Qm.n fixed-point integer representations, and calculate the representation error.">
-        <meta name="keywords" content="q-fomat, fixed-point, floating-point, convert, calculate">
+        <meta name="description" content="Convert between floating-point values and their Qm.n fixed-point integer representations, and calculate the representation error. Perform arithmetic operations on fixed-point values.">
+        <meta name="keywords" content="q-fomat, fixed-point, floating-point, convert, calculate, calculator, arithmetic">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Q-format Converter</title>
-        <meta property="og:title" content="Q-format Converter" />
+        <title>Q-format Converter &amp; Calculator</title>
+        <meta property="og:title" content="Q-format Converter &amp; Calculator" />
         <meta property="og:url" content="https://chummersone.github.io/qformat.html" />
         <meta property="og:locale" content="en_GB" />
         <meta property="og:description" content="Convert between floating-point and Qm.n fixed-point values">
         <meta property="og:site_name" content="chummersone.github.io" />
         <meta property="og:type" content="website" />
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
-        <style>
-            html {
-                padding: 10px;
-                box-sizing: border-box;
-                font-family: sans-serif;
-                font-size: 16px;
-            }
-
-            html, body, input, fieldset, select, textarea {
-                background-color: #222;
-            }
-
-            input:disabled, table, tr, th, td, textarea:disabled {
-                background-color: #444;
-                -webkit-text-fill-color: #bbb;
-                color: #bbb;
-                opacity: 1; /* required on iOS */
-            }
-
-            body {
-                font: inherit;
-            }
-
-            body, input, select, p, label, th, td, legend, textarea {
-                color: #ccc;
-            }
-
-            h1 {
-                margin: 20px 0;
-                font-size: 2em;
-            }
-
-            p {
-                margin: 15px 0;
-                text-align: left;
-            }
-
-            fieldset {
-                max-width: 420px;
-                width: 100%;
-                display: inline-block;
-                vertical-align: top;
-                margin: 2px;
-                border-radius: 5px;
-                padding: 20px;
-            }
-
-            legend + * {
-                margin-top: 0;
-            }
-
-            legend {
-                font-weight: bold;
-            }
-
-            div#container {
-                display: flex;
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-
-            input[type=text] {
-                text-overflow: ellipsis;
-            }
-
-            input {
-                text-align: right;
-            }
-
-            input[type=text].error,
-            input[type=number].error,
-            select.error,
-            textarea.error {
-                border-color: darkred;
-                background-color: #da8383;
-            }
-
-            div.error {
-                display: block;
-                font-size: smaller;
-                color: #da8383;
-            }
-            
-            input[type=text], input[type=number], select, textarea {
-                width: 100%;
-                padding: 12px;
-                resize: vertical;
-            }
-
-            input[type=text], input[type=number], select, textarea, table {
-                border: 1px solid #ccc;
-                border-radius: 4px;
-            }
-
-            /* Style the label to display next to the inputs */
-            label {
-                display: inline-block;
-                padding-right: 5px;
-                text-align: center;
-                width: 100%;
-                margin: 0px 0;
-            }
-
-            label::after {
-                content: ':';
-            }
-
-            .col {
-                margin-top: 6px;
-                display: inline-block;
-                text-align: center;
-            }
-
-            /* Floating column for labels: 25% width */
-            .col.w25 {
-                width: 30%;
-            }
-
-            /* Floating column for inputs: 75% width */
-            .col.w75 {
-                width: 70%;
-            }
-
-            .col.w75.locked::after {
-                content: "🔒";
-                position: absolute;
-                right: -20px;
-                bottom: 12px;
-            }
-
-            .control-grp {
-                margin: 8px 0;
-                width: 100%;
-                position: relative;
-            }
-
-            /* Clear floats after the columns */
-            .control-grp::after {
-                content: "";
-                display: table;
-                clear: both;
-            }
-
-            .control-grp .col {
-                vertical-align: middle;
-            }
-
-            input[type="text"], textarea {
-                font-family: monospace;
-            }
-
-            table {
-                margin: 0 auto;
-                border-collapse: separate;
-                border-spacing: 0;
-                overflow: hidden;
-                width: 100%;
-            }
-
-            table#bit-pos, table#bit-pos tbody {
-                display: block;
-                font-size: 96%;
-            }
-
-            table#bit-pos tbody tr {
-                display: inline-block;
-            }
-
-            table#bit-pos tbody tr td, table#bit-pos tbody tr th {
-                display: block;
-            }
-
-            th, td {
-                padding: 5px;
-                text-align: right;
-            }
-
-            tr:last-of-type td, tr:last-of-type th {
-                border-bottom: none;
-            }
-
-            td:last-of-type {
-                border-right: none;
-            }
-
-            /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
-            @media screen and (max-width: 444px) {
-                .col.w25, .col.w75 {
-                    width: 100%;
-                    margin-top: 0;
-                }
-
-                table#bit-pos {
-                    display: table;
-                }
-
-                table#bit-pos tbody {
-                    display: table-row-group;
-                }
-
-                table#bit-pos tbody tr {
-                    display: table-row;
-                }
-
-                table#bit-pos tbody tr td, table#bit-pos tbody tr th {
-                    display: table-cell;
-                }
-            }
-        </style>
+        <link rel="stylesheet" href="qformat.css?v=1">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"
                 integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
                 crossorigin="anonymous">
         </script>
-        <script>
-            /**
-            * Class for float<->fixed-point conversion.
-            */
-            class FixedPointConverter {
-
-                /** 
-                * Initialise a new fixed-point converter.
-                * @param {Integer} numFracBits - Number of fractional bits.
-                * @param {Integer} numBits - Word size in bits.
-                */
-                constructor(numFracBits, numBits, signed) {
-                    this._numFracBits = numFracBits;
-                    this._numBits = numBits;
-                    this._signed = signed;
-                    this._float = 0;
-                    this._fixed = 0;
-                    this._int = 0;
-                    this.floatChanged = true;
-                    this._update();
-                }
-
-                /** 
-                * Get the integer value.
-                */
-                get int() {
-                    return this._int;
-                }
-
-                /** 
-                * Get the integer value.
-                * @param {Integer} x - Integer value.
-                */
-                set int(x) {
-                    this._int = x;
-                    this.floatChanged = false;
-                    this._update();
-                }
-
-                /** 
-                * Get the floating-point value.
-                */
-                get float() {
-                    return this._float;
-                }
-
-                /** 
-                * Set the floating-point value.
-                * @param {Number} x - Floating-point value.
-                */
-                set float(x) {
-                    this._float = x;
-                    this.floatChanged = true;
-                    this._update();
-                }
-
-                /** 
-                * Get the integer value in hexadecimal format (i.e. as a string).
-                */
-                get hex() {
-                    if (!isNaN(this._int)) {
-                        var val = this._maskInt(this._int);
-                        return val.toString(16).padStart(this.numHexChars, '0');
-                    } else {
-                        return NaN;
-                    }
-                }
-
-                /** 
-                * Set the integer value from a hexadecimal-format string.
-                * @param {String} x - Hexadecimal integer value.
-                */
-                set hex(x) {
-                    this.int = this._str2int(x, 16);
-                }
-
-                /** 
-                * Get the integer value in binary format (i.e. as a string).
-                */
-                get bin() {
-                    if (!isNaN(this._int)) {
-                        var val = this._maskInt(this._int);
-                        return val.toString(2).padStart(this._numBits, '0');
-                    } else {
-                        return NaN;
-                    }
-                }
-
-                /** 
-                * Set the integer value from a binary-format string.
-                * @param {String} x - Binary integer value.
-                */
-                set bin(x) {
-                    this.int = this._str2int(x, 2);
-                }
-
-                /** 
-                * Get the fixed-point value.
-                */
-                get fixed() {
-                    if (this.intInRange && this.floatInRange) {
-                        return this._fixed;
-                    } else {
-                        return NaN;
-                    }
-                    
-                }
-
-                /** 
-                * Get the number of fractional bits.
-                */
-                get numFracBits() {
-                    return this._numFracBits;
-                }
-
-                /** 
-                * Set the number of fractional bits.
-                * @param {Integer} x - Number of fractional bits.
-                */
-                set numFracBits(x) {
-                    this._numFracBits = x;
-                    this._update();
-                }
-                
-                /** 
-                * Get the word size in bits.
-                */
-                get numBits() {
-                    return this._numBits;
-                }
-
-                /** 
-                * Set the word size in bits.
-                * @param {Integer} x - Word size in bits.
-                */
-                set numBits(x) {
-                    this._numBits = x;
-                    this._update();
-                }
-
-                /** 
-                * The value is signed?
-                */
-                get signed() {
-                    return this._signed;
-                }
-
-                /** 
-                * Make the value signed.
-                * @param {Boolean} x - Value is signed.
-                */
-                set signed(x) {
-                    this._signed = x;
-                    this._update();
-                }
-
-                /** 
-                * Get the number of hexadecimal characters.
-                */
-                get numHexChars() {
-                    return Math.ceil(this._numBits / 4)
-                }
-
-                /** 
-                * Get the maximum number of decimal characters.
-                */
-                get maxNumDecChars() {
-                    return (2 ** this._numBits).toString().length + 1;
-                }
-
-                /** 
-                * Get the representation error.
-                */
-                get error() {
-                    return Math.abs(this._float - this._fixed);
-                }
-
-                /** 
-                * Get the representation error in dB.
-                */
-                get error_dB() {
-                    return 20 * Math.log10(this.error);
-                }
-
-                /** 
-                * Signed-ness correction when calculating value range.
-                */
-                get _signCorrection() {
-                    if (this._signed) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
-                }
-
-                /** 
-                * Minimum floating-point value.
-                */
-                get minFloat() {
-                    if (this._signed) {
-                        return - (2 ** (this._numBits - this._numFracBits - 1));
-                    } else {
-                        return 0.0;
-                    }
-                }
-
-                /** 
-                * Maximum floating-point value.
-                */
-                get maxFloat() {
-                    return (2 ** (this._numBits - this._numFracBits - this._signCorrection)) - (2 ** -this._numFracBits);
-                }
-
-                /** 
-                * Minimum integer value.
-                */
-                get minInteger() {
-                    if (this._signed) {
-                        return - (2 ** (this._numBits - 1));
-                    } else {
-                        return 0;
-                    }
-                }
-
-                /** 
-                * Maximum integer value.
-                */
-                get maxInteger() {
-                    return (2 ** (this._numBits - this._signCorrection)) - 1;
-                }
-
-                /** 
-                * Floating-point value is in valid range.
-                */
-                get floatInRange() {
-                    return this._float <= this.maxFloat && this._float >= this.minFloat;
-                }
-
-                /** 
-                * Integer value is in valid range.
-                */
-                get intInRange() {
-                    return this._int <= this.maxInteger && this._int >= this.minInteger;
-                }
-
-                /** 
-                * Bit-mask for the integer value.
-                */
-                get _wordMask() {
-                    if (this._numBits < 32) {
-                        return ((1 << this._numBits) - 1);
-                    } else {
-                        return 0xFFFFFFFF;
-                    }
-                }
-
-                /** 
-                * Convert a string value to an integer.
-                * @param {String} intstr - Integer value represented in a string.
-                * @param {Integer} base - Numeric base for the conversion.
-                * @return {Integer} Integer value.
-                */
-                _str2int(intstr, base) {
-                    var intval = parseInt(intstr, base);
-                    if (!isNaN(intval) && base != 10) {
-                        if (this._signed && ((0x1 << (this._numBits - 1)) & intval)) {
-                            /* insert missing redundant sign bits for 32-bit internal representation */
-                            intval = (intval | (~this._wordMask));
-                        }
-                    }
-                    return intval;
-                }
-
-                /** 
-                * Mask out-of-range bits.
-                * @param {Integer} val - Value to mask.
-                * @return {Integer} Masked integer value.
-                */
-                _maskInt(val) {
-                    if (!isNaN(val)) {
-                        /* mask out-of-range bits */
-                        val = val & this._wordMask;
-                        /* force to unsigned to prevent a negative symbol */
-                        val = val >>> 0;
-                    }
-                    return val;
-                }
-
-                /** 
-                * Convert a fixed-point integer to its floating-point equivalent.
-                * @param {Integer} val - Fixed-point value to convert.
-                * @return {Number} Floating-point value.
-                */
-                _fixed2float(val) {
-                    return val / (2 ** this._numFracBits);
-                }
-
-                /** 
-                * Convert a floating-point number to its fixed-point integer equivalent.
-                * @param {Integer} val - Fixed-point value to convert.
-                * @return {Number} Floating-point value.
-                */
-                _float2fixed(val) {
-                    return Math.round(val * (2 ** this._numFracBits));
-                }
-
-                /** 
-                * Update values.
-                */
-                _update() {
-                    if (this.floatChanged) {
-                        this._int = this._float2fixed(this._float);
-                    } else {
-                        this._float = this._fixed2float(this._int);
-                    }
-                    this._fixed = this._fixed2float(this._int);
-                }
-
-            }
-
-            $(function() {
-
-                const numBitsID = '#num_bits';
-                const numFracBitsID = '#num_frac_bits';
-                const signedID = '#signed';
-                const formatID = '#format';
-                const integerID = '#integer';
-                const floatID = '#float';
-                const realFloatID = '#realfloat';
-                const floatErrorID = '#floaterror';
-                const errorDbID = '#errordb';
-                const labelFormatID = '#labelformat';
-                const maxfloatID = '#maxfloat';
-                const minfloatID = '#minfloat';
-                const batchIntegerID = '#batch-int';
-                const batchFloatID = '#batch-float';
-                var format = 'hex';
-                var base = 16;
-
-                var fixedPointVal = new FixedPointConverter(23, 24, true);
-                var batchConvert = new FixedPointConverter(23, 24, true);
-
-                /** 
-                * Update the main control values.
-                */
-                function updateControls() {
-
-                    // update the number of fractional bits control
-                    $(numFracBitsID).find('option').remove().end();
-                    for (let i = fixedPointVal.numBits; i >= 0; i--) {
-                        $(numFracBitsID).append('<option value="' + i.toString() + '">' + i.toString() + '</option>')
-                    }
-                    $(numFracBitsID).val(fixedPointVal.numFracBits.toString());
-
-                    // update control values
-                    $(numBitsID + ' option:selected').val(fixedPointVal.numBits.toString());
-                    $(signedID).prop('checked', fixedPointVal.signed);
-                    $(realFloatID).val(fixedPointVal.fixed.toString());
-                    $(floatErrorID).val(fixedPointVal.error.toString());
-                    $(errorDbID).val(fixedPointVal.error_dB.toFixed(3));
-                    $(maxfloatID).val(fixedPointVal.maxFloat.toString());
-                    $(minfloatID).val(fixedPointVal.minFloat.toString());
-
-                    // raise errors in UI
-                    var error = false;
-                    if (fixedPointVal.floatChanged) {
-                        clearError(integerID);
-                        if (isNaN(fixedPointVal.float)) {
-                            setError(floatID, 'Parse Error');
-                            error = true;
-                        } else if (!fixedPointVal.floatInRange) {
-                            setError(floatID, 'Out of Range');
-                            error = true;
-                        } else {
-                            clearError(floatID);
-                        }
-                    } else {
-                        clearError(floatID)
-                        $(floatID).val(fixedPointVal.float.toString());
-                        if (isNaN(fixedPointVal.int)) {
-                            setError(integerID, 'Parse Error');
-                            error = true;
-                        } else if (!fixedPointVal.intInRange) {
-                            setError(integerID, 'Out of Range');
-                            error = true;
-                        } else {
-                            clearError(integerID);
-                        }
-                    }
-                    if (!error) {
-                        switch (format) {
-                            case 'hex':
-                                $(integerID).attr('maxlength', fixedPointVal.numHexChars.toString());
-                                $(integerID).val(fixedPointVal.hex);
-                                break;
-                            case 'bin':
-                                $(integerID).attr('maxlength', fixedPointVal.numBits.toString());
-                                $(integerID).val(fixedPointVal.bin);
-                                break;
-                            default:
-                                $(integerID).attr('maxlength', fixedPointVal.maxNumDecChars.toString());
-                                $(integerID).val(fixedPointVal.int.toString());
-                        }
-                    }
-
-                    // update batch conversion
-                    recalculateBatch();
-                }
-
-                // updates following change of word size
-                $(numBitsID).change(function () {
-                    var oldNumBits = fixedPointVal.numBits;
-                    fixedPointVal.numBits = parseInt($(this).val());
-                    if (fixedPointVal.numBits < fixedPointVal.numFracBits) {
-                        fixedPointVal.numFracBits -= (oldNumBits - fixedPointVal.numBits);
-                    }
-                    $(numFracBitsID).val(fixedPointVal.numFracBits.toString());
-                    batchConvert.numBits = fixedPointVal.numBits;
-                    batchConvert.numFracBits = fixedPointVal.numFracBits;
-                    updateBitPositionsTable();
-                    updateControls();
-                });
-
-                // updates following change of number of fractional bits
-                $(numFracBitsID).change(function () {
-                    fixedPointVal.numFracBits = parseInt($(this).val());
-                    batchConvert.numFracBits = fixedPointVal.numFracBits;
-                    updateBitPositionsTable();
-                    updateControls();
-                });
-
-                // updates following change of signedness
-                $(signedID).change(function () {
-                    fixedPointVal.signed = $(this).prop('checked');
-                    batchConvert.signed = fixedPointVal.signed;
-                    updateBitPositionsTable();
-                    updateControls();
-                });
-
-                // updates following change of integer format
-                $(formatID).change(function () {
-                    format = $(this).val();
-                    switch (format) {
-                        case 'hex':
-                            floatlabel = 'hexadecimal';
-                            base = 16;
-                            break;
-                        case 'bin':
-                            floatlabel = 'binary';
-                            base = 2;
-                            break;
-                        default:
-                            floatlabel = 'decimal';
-                            base = 10;
-                    }
-                    $(labelFormatID).text(floatlabel);
-                    updateControls();
-                });
-
-                // updates following change of integer value
-                $(integerID).change(function () {
-                    switch (format) {
-                        case 'hex':
-                            fixedPointVal.hex = $(this).val();
-                            break;
-                        case 'bin':
-                            fixedPointVal.bin = $(this).val();
-                            break;
-                        default:
-                            fixedPointVal.int = parseInt($(this).val());
-                    }
-                    $(integerID).closest('.col.w75').addClass('locked');
-                    $(floatID).closest('.col.w75').removeClass('locked');
-                    
-                    updateControls();
-                });
-
-                // updates following change of floating-point value
-                $(floatID).change(function () {
-                    var val = parseFloat($(this).val());
-                    fixedPointVal.float = val;
-                    $(integerID).closest('.col.w75').removeClass('locked');
-                    $(floatID).closest('.col.w75').addClass('locked');
-                    updateControls();
-                });
-
-                // updates following change to batch floats
-                $(batchFloatID).change(function () {
-                    batchConvert.floatChanged = true;
-                    recalculateBatch();
-                });
-
-                // updates following change of batch integers
-                $(batchIntegerID).change(function () {
-                    batchConvert.floatChanged = false;
-                    recalculateBatch();
-                });
-
-                /**
-                 * Recalculate the batch inputs.
-                 */
-                function recalculateBatch() {
-                    var src, dst;
-                    if (batchConvert.floatChanged) {
-                        src = batchFloatID;
-                        dst = batchIntegerID;
-                    } else {
-                        src = batchIntegerID;
-                        dst = batchFloatID;
-                    }
-                    var batchIn = $(src).val();
-                    if (batchIn != '') {
-                        var rem = batchIn;
-                        var out = '';
-                        do {
-                            let val, delim;
-                            const re = /([^\s,;]*?)([\s,;]+)(.*)/imgs;
-                            let arr = [...rem.matchAll(re)][0];
-                            if (arr) {
-                                val = arr[1];
-                                delim = arr[2];
-                                rem = arr[3];
-                            } else {
-                                val = rem;
-                                delim = '';
-                                rem = false;
-                            }
-                            let strval;
-                            if (batchConvert.floatChanged) {
-                                batchConvert.float = parseFloat(val);
-                                switch (format) {
-                                    case 'hex':
-                                        strval = batchConvert.hex;
-                                        break;
-                                    case 'bin':
-                                        strval = batchConvert.bin;
-                                        break;
-                                    default:
-                                        strval = batchConvert.int.toString();
-                                }
-                                if (!batchConvert.floatInRange) {
-                                    strval = 'NaN';
-                                }
-                            } else {
-                                switch (format) {
-                                    case 'hex':
-                                        batchConvert.hex = val;
-                                        break;
-                                    case 'bin':
-                                        batchConvert.bin = val;
-                                        break;
-                                    default:
-                                        batchConvert.int = parseInt(val);
-                                }
-                                if (batchConvert.intInRange) {
-                                    strval = batchConvert.fixed;
-                                } else {
-                                    strval = 'NaN';
-                                }
-                            }
-                            out += strval + delim;
-                        } while (rem);
-                        $(dst).val(out);
-                    }
-                }
-
-                /**
-                 * Set an error on the form element.
-                 */
-                function setError(elem, msg) {
-                    clearError(elem);
-
-                    $(elem).addClass('error');
-                    $(realFloatID).val('');
-                    $(floatErrorID).val('');
-                    $(elem).siblings('div.error').remove();
-                    $(elem).after('<div class="error">' + msg + '</div>');
-
-                    $(realFloatID).val('NaN');
-                    $(floatErrorID).val('NaN');
-                    $(errorDbID).val('NaN');
-                }
-
-                /**
-                 * Clear the error on the form element.
-                 */
-                function clearError(elem) {
-                    $(elem).removeClass('error');
-                    $(elem).siblings('div.error').remove();
-                }
-
-                /**
-                 * Update the bit positions table.
-                 */
-                function updateBitPositionsTable() {
-
-                    function getMidway($sel) {
-                        var midway = Math.floor($sel.length / 2);
-                        return midway;
-                    }
-
-                    function getBitPosition($sel, index) {
-                        var bitPosition = 0;
-                        var midway = getMidway($sel);
-                        if (index >= 0 && index < midway) {
-                            bitPosition = fixedPointVal.numBits - index - 1;
-                        } else {
-                            bitPosition = fixedPointVal.numBits - index - 1 - (fixedPointVal.numBits - $sel.length);
-                        }
-                        return bitPosition;
-                    }
-
-                    var $bitPosSelection = $('table#bit-pos td:nth-of-type(1)');
-                    $bitPosSelection.each(function (index) {
-                        if (index != getMidway($bitPosSelection)) {
-                            var bitPosition = getBitPosition($bitPosSelection, index);
-                            $(this).text(bitPosition.toString());
-                        } else {
-                            $(this).html('&hellip;');
-                        }
-                    });
-
-                    var $bitValuesSelection = $('table#bit-pos td:nth-of-type(2)');
-                    $bitValuesSelection.each(function (index) {
-                        var bitPosition = getBitPosition($bitValuesSelection, index);
-                        power = (bitPosition - fixedPointVal.numFracBits).toString();
-                        if (index != getMidway($bitValuesSelection)) {
-                            var content = "2<sup>" + power.replace("-", "&minus;") + "</sup>";
-                            if (index == 0 && fixedPointVal.signed) {
-                                content = "&minus;" + content;
-                            }
-                            $(this).html(content);
-                        }else {
-                            $(this).html('&hellip;');
-                        }
-                    });
-                }
-
-                // do these once the page has loaded
-                updateBitPositionsTable();
-                updateControls();
-
-            });
-        </script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+        <script src="qformat.js?v=1"></script>
+        <script src="qformat.converter.js?v=1"></script>
+        <script src="qformat.calculator.js?v=1"></script>
     </head>
 
     <body>
-        <h1>Q-format Converter</h1>
+        <h1>Q-format Converter &amp; Calculator</h1>
 
         <p>
-            Convert between floating-point values and their <em>Qm.n</em> fixed-point integer representations, and calculate the representation error.
+            <ul>
+                <li>Convert between floating-point values and their <em>Qm.n</em> fixed-point integer representations,
+                    and calculate the representation error.</li>
+                <li>Perform arithmetic operations on fixed-point values.</li>
+            </ul>
         </p>
 
         <div id="container">
+            <div id="tabs">
+                <ul>
+                <li><a href="#converter">Converter</a></li>
+                <li><a href="#arithmetic">Calculator<sup><em>beta</em></sup></a></li>
+                </ul>
+                <div class="tab-panel" id="converter">
 
-            <fieldset>
-                <legend>Q-Format Settings</legend>
+                    <fieldset>
+                        <legend>Q-Format Settings</legend>
 
-                <p>Choose your conversion options.</p>
+                        <p>Choose your conversion options.</p>
 
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="num_bits">Word size in bits (<em>m+n</em>)</label>
-                    </div><!--
-                    ---><div class="col w75">
-                        <select id="num_bits">
-                            <option value="16">16</option>
-                            <option value="24" selected>24</option>
-                            <option value="32">32</option>
-                        </select>
-                    </div>
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="num_bits">Word size in bits (<em>m+n</em>)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <select id="num_bits">
+                                    <option value="16">16</option>
+                                    <option value="24" selected>24</option>
+                                    <option value="32">32</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="num_frac_bits">Fractional bits (<em>n</em>)</label>
+                            </div><!--
+                        ---><div class="col w75">
+                                <select id="num_frac_bits">
+                                    <option value="23" selected>23</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="signed">Signed?</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="signed" type="checkbox" checked>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="format">Integer format</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <select id="format">
+                                    <option value="hex" selected>Hexadecimal</option>
+                                    <option value="dec">Decimal</option>
+                                    <option value="bin">Binary</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="maxfloat">Maximum float value</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="maxfloat" type="text" value="0" disabled>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="minfloat">Minimum float value</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="minfloat" type="text" value="0" disabled>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <label>Bit positions and values</label>
+
+                            <table id="bit-pos">
+                                <tr>
+                                    <th>Bit Position</th>
+                                    <th>Bit Value</th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </fieldset><!--
+
+                ---><fieldset>
+                        <legend>Convert</legend>
+
+                        <p>Type an integer or float in the boxes below. Click or tab away to update.</p>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="integer">Integer (<span id="labelformat">hexadecimal</span>)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="integer" type="text" value="0" maxlength="6">
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="float">Float</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="float" type="text" value="0">
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="realfloat">Fixed-point value</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="realfloat" type="text" value="0" disabled>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="floaterror">Representation error</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="floaterror" type="text" value="0" disabled>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="errordb">Representation error (dB)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="errordb" type="text" value="0" disabled>
+                            </div>
+                        </div>
+                    </fieldset><!--
+
+                ---><fieldset>
+                        <legend>Batch Convert</legend>
+
+                        <p>Type integers or floats in the boxes below separated by commas, spaces or new lines. Click or tab away to update.</p>
+
+                        <label for="batch-int">Integers</label>
+                        <textarea id="batch-int" rows="6"></textarea>
+
+                        <label for="batch-float">Floats</label>
+                        <textarea id="batch-float" rows="6"></textarea>
+
+                    </fieldset>
+
                 </div>
 
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="num_frac_bits">Fractional bits (<em>n</em>)</label>
-                    </div><!--
-                ---><div class="col w75">
-                        <select id="num_frac_bits">
-                            <option value="23" selected>23</option>
-                        </select>
-                    </div>
+                <div class="tab-panel" id="arithmetic">
+
+                    <p class="span-cols">
+                        Overflowing results are mitigated by <em>saturation</em> or <em>wrapping</em>.
+                        <em>Saturation</em> clamps the result to the arithmetic range of the output Q-format.
+                        This will retain the sign of the result, whilst affecting the magnitude. <em>Wrapping</em>
+                        is implemented by incrementing or decrementing the integer result by
+                        2<sup><em>m</em>+<em>n</em></sup> until it is within the range of the output Q-format.
+                        This may change the sign <em>and</em> magnitude of the result.
+                    </p>
+
+                    <fieldset>
+                        <legend>Left Operand</legend>
+
+                        <p>Choose the format and value of the left operand.</p>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="left_operand_int">Integer value (<span id="labelformat_lhs">hexadecimal</span>)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="left_operand_int" type="text" value="0">
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="left_operand_float">Float value</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="left_operand_float" type="text" value="0">
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="left_operand_num_bits">Word size in bits (<em>m+n</em>)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <select id="left_operand_num_bits">
+                                    <option value="16">16</option>
+                                    <option value="24" selected>24</option>
+                                    <option value="32">32</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="left_operand_num_frac_bits">Fractional bits (<em>n</em>)</label>
+                            </div><!--
+                        ---><div class="col w75">
+                                <select id="left_operand_num_frac_bits">
+                                    <option value="23" selected>23</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="left_operand_signed">Signed?</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="left_operand_signed" type="checkbox" checked>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="left_operand_format">Integer format</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <select id="left_operand_format">
+                                    <option value="hex" selected>Hexadecimal</option>
+                                    <option value="dec">Decimal</option>
+                                    <option value="bin">Binary</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </fieldset><!--
+
+                 --><fieldset>
+                        <legend>Operator</legend>
+
+                        <p>Choose the operation, the arithmetic behaviour (if applicable), and the output word size.</p>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="operator">Operator</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <select id="operator">
+                                    <option value="add" selected>add</option>
+                                    <option value="subtract">subtract</option>
+                                    <option value="multiply">multiply</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="behaviour">Behaviour</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <select id="behaviour">
+                                    <option value="saturate" selected>Saturate</option>
+                                    <option value="wrap">Wrap</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="arithmetic_out_num_bits">Output word size in bits (<em>m+n</em>)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <select id="arithmetic_out_num_bits">
+                                    <option value="16">16</option>
+                                    <option value="24" selected>24</option>
+                                    <option value="32">32</option>
+                                    <option value="40">40</option>
+                                    <option value="48" selected>48</option>
+                                    <option value="56">56</option>
+                                    <option value="64">64</option>
+                                </select>
+                            </div>
+                        </div>
+   
+                    </fieldset><!--
+
+                 --><fieldset>
+                        <legend>Right Operand</legend>
+
+                        <p>Choose the format and value of the right operand.</p>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="right_operand_int">Integer value (<span id="labelformat_rhs">hexadecimal</span>)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="right_operand_int" type="text" value="0">
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="right_operand_float">Float value</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="right_operand_float" type="text" value="0">
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="right_operand_num_bits">Word size in bits (<em>m+n</em>)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <select id="right_operand_num_bits">
+                                    <option value="16">16</option>
+                                    <option value="24" selected>24</option>
+                                    <option value="32">32</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="right_operand_num_frac_bits">Fractional bits (<em>n</em>)</label>
+                            </div><!--
+                        ---><div class="col w75">
+                                <select id="right_operand_num_frac_bits">
+                                    <option value="23" selected>23</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="right_operand_signed">Signed?</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="right_operand_signed" type="checkbox" checked>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="right_operand_format">Integer format</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <select id="right_operand_format">
+                                    <option value="hex" selected>Hexadecimal</option>
+                                    <option value="dec">Decimal</option>
+                                    <option value="bin">Binary</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </fieldset><!--
+
+                 --><fieldset>
+                        <legend>Result</legend>
+
+                        <p>The result of the operation.</p>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="arithmetic_result_fixed">Result (Fixed-point)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="arithmetic_result_fixed" type="text" value="0" disabled>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="arithmetic_result_int">Result (Hexadecimal)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="arithmetic_result_int" type="text" value="0" disabled>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="arithmetic_result_float">Result (Float)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="arithmetic_result_float" type="text" value="0" disabled>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="arithmetic_result_num_frac_bits">Fractional bits (<em>n</em>)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="arithmetic_result_num_frac_bits" type="text" value="0" disabled>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="arithmetic_result_floaterror">Error</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="arithmetic_result_floaterror" type="text" value="0" disabled>
+                            </div>
+                        </div>
+
+                        <div class="control-grp">
+                            <div class="col w25">
+                                <label for="arithmetic_result_errordb">Error (dB)</label>
+                            </div><!--
+                            ---><div class="col w75">
+                                <input id="arithmetic_result_errordb" type="text" value="0" disabled>
+                            </div>
+                        </div>
+                    </fieldset><!--
+
+                 --></fieldset>
+
                 </div>
-
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="signed">Signed?</label>
-                    </div><!--
-                    ---><div class="col w75">
-                        <input id="signed" type="checkbox" checked>
-                    </div>
-                </div>
-
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="format">Integer format</label>
-                    </div><!--
-                    ---><div class="col w75">
-                        <select id="format">
-                            <option value="hex" selected>Hexadecimal</option>
-                            <option value="dec">Decimal</option>
-                            <option value="bin">Binary</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="maxfloat">Maximum float value</label>
-                    </div><!--
-                    ---><div class="col w75">
-                        <input id="maxfloat" type="text" value="0" disabled>
-                    </div>
-                </div>
-
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="minfloat">Minimum float value</label>
-                    </div><!--
-                    ---><div class="col w75">
-                        <input id="minfloat" type="text" value="0" disabled>
-                    </div>
-                </div>
-
-                <div class="control-grp">
-                    <label>Bit positions and values</label>
-
-                    <table id="bit-pos">
-                        <tr>
-                            <th>Bit Position</th>
-                            <th>Bit Value</th>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </table>
-                </div>
-            </fieldset><!--
-
-        ---><fieldset>
-                <legend>Convert</legend>
-
-                <p>Type an integer or float in the boxes below. Click or tab away to update.</p>
-
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="integer">Integer (<span id="labelformat">hexadecimal</span>)</label>
-                    </div><!--
-                    ---><div class="col w75">
-                        <input id="integer" type="text" value="0" maxlength="6">
-                    </div>
-                </div>
-
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="float">Float</label>
-                    </div><!--
-                    ---><div class="col w75">
-                        <input id="float" type="text" value="0">
-                    </div>
-                </div>
-
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="realfloat">Fixed-point value</label>
-                    </div><!--
-                    ---><div class="col w75">
-                        <input id="realfloat" type="text" value="0" disabled>
-                    </div>
-                </div>
-
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="floaterror">Representation error</label>
-                    </div><!--
-                    ---><div class="col w75">
-                        <input id="floaterror" type="text" value="0" disabled>
-                    </div>
-                </div>
-
-                <div class="control-grp">
-                    <div class="col w25">
-                        <label for="errordb">Representation error (dB)</label>
-                    </div><!--
-                    ---><div class="col w75">
-                        <input id="errordb" type="text" value="0" disabled>
-                    </div>
-                </div>
-            </fieldset><!--
-
-        ---><fieldset>
-                <legend>Batch Convert</legend>
-
-                <p>Type integers or floats in the boxes below separated by commas, spaces or new lines. Click or tab away to update.</p>
-
-                <label for="batch-int">Integers</label>
-                <textarea id="batch-int" rows="6"></textarea>
-
-                <label for="batch-float">Floats</label>
-                <textarea id="batch-float" rows="6"></textarea>
-
-            </fieldset>
-
+            </div>
         </div>
 
     </body>
