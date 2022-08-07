@@ -129,7 +129,7 @@ label {
     padding-right: 5px;
     text-align: center;
     width: 100%;
-    margin: 0px 0;
+    margin: 0.35ex 0;
 }
 
 label::after {
@@ -231,6 +231,7 @@ sup {
     content: "ⓘ";
     vertical-align: super;
     font-size: 70%;
+    margin-left: 0.1em;
 }
 
 .tooltip:before {
