@@ -236,11 +236,11 @@ sup {
 .tooltip:before {
     content: attr(data-text);
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 100%;
+    bottom: 50%;
+    transform: translateX(-25%);
+    left: 50%;
     margin-left: 15px;
-    width: 250px;
+    width: 180px;
     padding: 10px;
     border-radius: 5px;
     background: #000;
