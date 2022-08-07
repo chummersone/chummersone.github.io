@@ -44,12 +44,13 @@ p {
 
 fieldset {
     width: 100%;
-    display: block;
-    margin: 2px;
+    display: inline-block;
+    margin: 5px 0px;
     border-radius: 5px;
     padding: 20px;
-    break-inside: avoid-column;
-    position: relative;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
 }
 
 legend + * {
@@ -62,15 +63,21 @@ legend {
 
 div.tab-panel {
     column-width: 424px;
+    moz-column-count: 3;
+    -webkit-column-count: 3;
     column-count: 3;
     column-gap: normal;
 }
 
 div.tab-panel#converter {
+    moz-column-count: 3;
+    -webkit-column-count: 3;
     column-count: 3;
 }
 
 div.tab-panel#arithmetic {
+    moz-column-count: 4;
+    -webkit-column-count: 4;
     column-count: 4;
 }
 

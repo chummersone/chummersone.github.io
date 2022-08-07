@@ -14,7 +14,7 @@
         <meta property="og:type" content="website" />
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
-        <link rel="stylesheet" href="qformat.css?v=2">
+        <link rel="stylesheet" href="qformat.css?v=3">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"
                 integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
                 crossorigin="anonymous">
@@ -44,178 +44,182 @@
                 </ul>
                 <div class="tab-panel" id="converter">
 
-                    <fieldset>
-                        <legend>Q-Format Settings</legend>
+                    <div class="column-container">
+                        <fieldset>
+                            <legend>Q-Format Settings</legend>
 
-                        <p>Choose your conversion options.</p>
+                            <p>Choose your conversion options.</p>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="num_bits">Word size in bits (<em>m+n</em>)</label>
-                            </div><!--
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="num_bits">Word size in bits (<em>m+n</em>)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <select id="num_bits">
+                                        <option value="16">16</option>
+                                        <option value="24" selected>24</option>
+                                        <option value="32">32</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="num_frac_bits">Fractional bits (<em>n</em>)</label>
+                                </div><!--
                             ---><div class="col w75">
-                                <select id="num_bits">
-                                    <option value="16">16</option>
-                                    <option value="24" selected>24</option>
-                                    <option value="32">32</option>
-                                </select>
+                                    <select id="num_frac_bits">
+                                        <option value="23" selected>23</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="num_frac_bits">Fractional bits (<em>n</em>)</label>
-                            </div><!--
-                        ---><div class="col w75">
-                                <select id="num_frac_bits">
-                                    <option value="23" selected>23</option>
-                                </select>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="signed">Signed?</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="signed" type="checkbox" checked>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="signed">Signed?</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="signed" type="checkbox" checked>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="format">Integer format</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <select id="format">
+                                        <option value="hex" selected>Hexadecimal</option>
+                                        <option value="dec">Decimal</option>
+                                        <option value="bin">Binary</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="format">Integer format</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <select id="format">
-                                    <option value="hex" selected>Hexadecimal</option>
-                                    <option value="dec">Decimal</option>
-                                    <option value="bin">Binary</option>
-                                </select>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="maxfloat">Maximum float value</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="maxfloat" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="maxfloat">Maximum float value</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="maxfloat" type="text" value="0" disabled>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="minfloat">Minimum float value</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="minfloat" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="minfloat">Minimum float value</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="minfloat" type="text" value="0" disabled>
+                            <div class="control-grp">
+                                <label>Bit positions and values</label>
+
+                                <table id="bit-pos">
+                                    <tr>
+                                        <th>Bit Position</th>
+                                        <th>Bit Value</th>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </table>
                             </div>
-                        </div>
+                        </fieldset>
+                    </div>
+                    <div class="column-container">
+                        <fieldset>
+                            <legend>Convert</legend>
 
-                        <div class="control-grp">
-                            <label>Bit positions and values</label>
+                            <p>Type an integer or float in the boxes below. Click or tab away to update.</p>
 
-                            <table id="bit-pos">
-                                <tr>
-                                    <th>Bit Position</th>
-                                    <th>Bit Value</th>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </fieldset><!--
-
-                ---><fieldset>
-                        <legend>Convert</legend>
-
-                        <p>Type an integer or float in the boxes below. Click or tab away to update.</p>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="integer">Integer (<span id="labelformat">hexadecimal</span>)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="integer" type="text" value="0" maxlength="6">
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="integer">Integer (<span id="labelformat">hexadecimal</span>)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="integer" type="text" value="0" maxlength="6">
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="float">Float</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="float" type="text" value="0">
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="float">Float</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="float" type="text" value="0">
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="realfloat">Fixed-point value</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="realfloat" type="text" value="0" disabled>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="realfloat">Fixed-point value</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="realfloat" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="floaterror">Representation error</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="floaterror" type="text" value="0" disabled>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="floaterror">Representation error</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="floaterror" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="errordb">Representation error (dB)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="errordb" type="text" value="0" disabled>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="errordb">Representation error (dB)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="errordb" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
-                    </fieldset><!--
+                        </fieldset>
+                    </div>
+                    <div class="column-container">
+                        <fieldset>
+                            <legend>Batch Convert</legend>
 
-                ---><fieldset>
-                        <legend>Batch Convert</legend>
+                            <p>Type integers or floats in the boxes below separated by commas, spaces or new lines. Click or tab away to update.</p>
 
-                        <p>Type integers or floats in the boxes below separated by commas, spaces or new lines. Click or tab away to update.</p>
+                            <label for="batch-int">Integers</label>
+                            <textarea id="batch-int" rows="6"></textarea>
 
-                        <label for="batch-int">Integers</label>
-                        <textarea id="batch-int" rows="6"></textarea>
+                            <label for="batch-float">Floats</label>
+                            <textarea id="batch-float" rows="6"></textarea>
 
-                        <label for="batch-float">Floats</label>
-                        <textarea id="batch-float" rows="6"></textarea>
-
-                    </fieldset>
+                        </fieldset>
+                    </div>
 
                 </div>
 
@@ -230,258 +234,261 @@
                         This may change the sign <em>and</em> magnitude of the result.
                     </p>
 
-                    <fieldset>
-                        <legend>Left Operand</legend>
+                    <div class="column-container">
+                        <fieldset>
+                            <legend>Left Operand</legend>
 
-                        <p>Choose the format and value of the left operand.</p>
+                            <p>Choose the format and value of the left operand.</p>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="left_operand_int">Integer value (<span id="labelformat_lhs">hexadecimal</span>)</label>
-                            </div><!--
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="left_operand_int">Integer value (<span id="labelformat_lhs">hexadecimal</span>)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="left_operand_int" type="text" value="0">
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="left_operand_float">Float value</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="left_operand_float" type="text" value="0">
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="left_operand_num_bits">Word size in bits (<em>m+n</em>)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <select id="left_operand_num_bits">
+                                        <option value="16">16</option>
+                                        <option value="24" selected>24</option>
+                                        <option value="32">32</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="left_operand_num_frac_bits">Fractional bits (<em>n</em>)</label>
+                                </div><!--
                             ---><div class="col w75">
-                                <input id="left_operand_int" type="text" value="0">
+                                    <select id="left_operand_num_frac_bits">
+                                        <option value="23" selected>23</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="left_operand_float">Float value</label>
-                            </div><!--
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="left_operand_signed">Signed?</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="left_operand_signed" type="checkbox" checked>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="left_operand_format">Integer format</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <select id="left_operand_format">
+                                        <option value="hex" selected>Hexadecimal</option>
+                                        <option value="dec">Decimal</option>
+                                        <option value="bin">Binary</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                    <div class="column-container">
+                        <fieldset>
+                            <legend>Operator</legend>
+
+                            <p>Choose the operation, the arithmetic behaviour (if applicable), and the output word size.</p>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="operator">Operator</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <select id="operator">
+                                        <option value="add" selected>add</option>
+                                        <option value="subtract">subtract</option>
+                                        <option value="multiply">multiply</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="behaviour">Behaviour</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <select id="behaviour">
+                                        <option value="saturate" selected>Saturate</option>
+                                        <option value="wrap">Wrap</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="arithmetic_out_num_bits">Output word size in bits (<em>m+n</em>)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <select id="arithmetic_out_num_bits">
+                                        <option value="16">16</option>
+                                        <option value="24" selected>24</option>
+                                        <option value="32">32</option>
+                                        <option value="40">40</option>
+                                        <option value="48" selected>48</option>
+                                        <option value="56">56</option>
+                                        <option value="64">64</option>
+                                    </select>
+                                </div>
+                            </div>
+    
+                        </fieldset>
+                    </div>
+                    <div class="column-container">
+                        <fieldset>
+                            <legend>Right Operand</legend>
+
+                            <p>Choose the format and value of the right operand.</p>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="right_operand_int">Integer value (<span id="labelformat_rhs">hexadecimal</span>)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="right_operand_int" type="text" value="0">
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="right_operand_float">Float value</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="right_operand_float" type="text" value="0">
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="right_operand_num_bits">Word size in bits (<em>m+n</em>)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <select id="right_operand_num_bits">
+                                        <option value="16">16</option>
+                                        <option value="24" selected>24</option>
+                                        <option value="32">32</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="right_operand_num_frac_bits">Fractional bits (<em>n</em>)</label>
+                                </div><!--
                             ---><div class="col w75">
-                                <input id="left_operand_float" type="text" value="0">
+                                    <select id="right_operand_num_frac_bits">
+                                        <option value="23" selected>23</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="left_operand_num_bits">Word size in bits (<em>m+n</em>)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <select id="left_operand_num_bits">
-                                    <option value="16">16</option>
-                                    <option value="24" selected>24</option>
-                                    <option value="32">32</option>
-                                </select>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="right_operand_signed">Signed?</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="right_operand_signed" type="checkbox" checked>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="left_operand_num_frac_bits">Fractional bits (<em>n</em>)</label>
-                            </div><!--
-                        ---><div class="col w75">
-                                <select id="left_operand_num_frac_bits">
-                                    <option value="23" selected>23</option>
-                                </select>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="right_operand_format">Integer format</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <select id="right_operand_format">
+                                        <option value="hex" selected>Hexadecimal</option>
+                                        <option value="dec">Decimal</option>
+                                        <option value="bin">Binary</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="left_operand_signed">Signed?</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="left_operand_signed" type="checkbox" checked>
+                        </fieldset>
+                    </div>
+                    <div class="column-container">
+                        <fieldset>
+                            <legend>Result</legend>
+
+                            <p>The result of the operation.</p>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="arithmetic_result_fixed">Result (Fixed-point)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="arithmetic_result_fixed" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="left_operand_format">Integer format</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <select id="left_operand_format">
-                                    <option value="hex" selected>Hexadecimal</option>
-                                    <option value="dec">Decimal</option>
-                                    <option value="bin">Binary</option>
-                                </select>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="arithmetic_result_int">Result (Hexadecimal)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="arithmetic_result_int" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
 
-                    </fieldset><!--
-
-                 --><fieldset>
-                        <legend>Operator</legend>
-
-                        <p>Choose the operation, the arithmetic behaviour (if applicable), and the output word size.</p>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="operator">Operator</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <select id="operator">
-                                    <option value="add" selected>add</option>
-                                    <option value="subtract">subtract</option>
-                                    <option value="multiply">multiply</option>
-                                </select>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="arithmetic_result_float">Result (Float)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="arithmetic_result_float" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="behaviour">Behaviour</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <select id="behaviour">
-                                    <option value="saturate" selected>Saturate</option>
-                                    <option value="wrap">Wrap</option>
-                                </select>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="arithmetic_result_num_frac_bits">Fractional bits (<em>n</em>)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="arithmetic_result_num_frac_bits" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="arithmetic_out_num_bits">Output word size in bits (<em>m+n</em>)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <select id="arithmetic_out_num_bits">
-                                    <option value="16">16</option>
-                                    <option value="24" selected>24</option>
-                                    <option value="32">32</option>
-                                    <option value="40">40</option>
-                                    <option value="48" selected>48</option>
-                                    <option value="56">56</option>
-                                    <option value="64">64</option>
-                                </select>
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="arithmetic_result_floaterror">Error</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="arithmetic_result_floaterror" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
-   
-                    </fieldset><!--
 
-                 --><fieldset>
-                        <legend>Right Operand</legend>
-
-                        <p>Choose the format and value of the right operand.</p>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="right_operand_int">Integer value (<span id="labelformat_rhs">hexadecimal</span>)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="right_operand_int" type="text" value="0">
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="arithmetic_result_errordb">Error (dB)</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="arithmetic_result_errordb" type="text" value="0" disabled>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="right_operand_float">Float value</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="right_operand_float" type="text" value="0">
-                            </div>
-                        </div>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="right_operand_num_bits">Word size in bits (<em>m+n</em>)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <select id="right_operand_num_bits">
-                                    <option value="16">16</option>
-                                    <option value="24" selected>24</option>
-                                    <option value="32">32</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="right_operand_num_frac_bits">Fractional bits (<em>n</em>)</label>
-                            </div><!--
-                        ---><div class="col w75">
-                                <select id="right_operand_num_frac_bits">
-                                    <option value="23" selected>23</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="right_operand_signed">Signed?</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="right_operand_signed" type="checkbox" checked>
-                            </div>
-                        </div>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="right_operand_format">Integer format</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <select id="right_operand_format">
-                                    <option value="hex" selected>Hexadecimal</option>
-                                    <option value="dec">Decimal</option>
-                                    <option value="bin">Binary</option>
-                                </select>
-                            </div>
-                        </div>
-
-                    </fieldset><!--
-
-                 --><fieldset>
-                        <legend>Result</legend>
-
-                        <p>The result of the operation.</p>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="arithmetic_result_fixed">Result (Fixed-point)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="arithmetic_result_fixed" type="text" value="0" disabled>
-                            </div>
-                        </div>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="arithmetic_result_int">Result (Hexadecimal)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="arithmetic_result_int" type="text" value="0" disabled>
-                            </div>
-                        </div>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="arithmetic_result_float">Result (Float)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="arithmetic_result_float" type="text" value="0" disabled>
-                            </div>
-                        </div>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="arithmetic_result_num_frac_bits">Fractional bits (<em>n</em>)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="arithmetic_result_num_frac_bits" type="text" value="0" disabled>
-                            </div>
-                        </div>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="arithmetic_result_floaterror">Error</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="arithmetic_result_floaterror" type="text" value="0" disabled>
-                            </div>
-                        </div>
-
-                        <div class="control-grp">
-                            <div class="col w25">
-                                <label for="arithmetic_result_errordb">Error (dB)</label>
-                            </div><!--
-                            ---><div class="col w75">
-                                <input id="arithmetic_result_errordb" type="text" value="0" disabled>
-                            </div>
-                        </div>
-                    </fieldset><!--
-
-                 --></fieldset>
+                        </fieldset>
+                    </div>
 
                 </div>
             </div>
