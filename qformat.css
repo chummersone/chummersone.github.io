@@ -63,20 +63,20 @@ legend {
 
 div.tab-panel {
     column-width: 424px;
-    moz-column-count: 3;
+    -moz-column-count: 3;
     -webkit-column-count: 3;
     column-count: 3;
     column-gap: normal;
 }
 
 div.tab-panel#converter {
-    moz-column-count: 3;
+    -moz-column-count: 3;
     -webkit-column-count: 3;
     column-count: 3;
 }
 
 div.tab-panel#arithmetic {
-    moz-column-count: 4;
+    -moz-column-count: 4;
     -webkit-column-count: 4;
     column-count: 4;
 }
@@ -243,5 +243,9 @@ sup {
 
     table#bit-pos tbody tr td, table#bit-pos tbody tr th {
         display: table-cell;
+    }
+
+    .ui-tabs .ui-tabs-panel {
+        padding: 1em 0em;
     }
 }
