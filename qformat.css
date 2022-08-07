@@ -44,11 +44,12 @@ p {
 
 fieldset {
     width: 100%;
-    display: inline-block;
-    vertical-align: top;
+    display: block;
     margin: 2px;
     border-radius: 5px;
     padding: 20px;
+    break-inside: avoid-column;
+    position: relative;
 }
 
 legend + * {
