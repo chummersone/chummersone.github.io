@@ -222,6 +222,39 @@ sup {
     margin-left: 0.1em;
 }
 
+.tooltip {
+    position: relative;
+    border-bottom: 1px dashed #bbb;
+}
+
+.tooltip:after {
+    content: "ⓘ";
+    vertical-align: super;
+    font-size: 70%;
+}
+
+.tooltip:before {
+    content: attr(data-text);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 100%;
+    margin-left: 15px;
+    width: 250px;
+    padding: 10px;
+    border-radius: 5px;
+    background: #000;
+    color: #bbb;
+    text-align: left;
+    display: none;
+    font-size: 90%;
+}
+
+.tooltip:hover:before {
+    display: block;
+    z-index: 100;
+}
+
 /* Responsive layout - when the screen is less than 444px wide */
 @media screen and (max-width: 474px) {
     .col.w25, .col.w75 {

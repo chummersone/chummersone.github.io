@@ -205,8 +205,6 @@ $(function() {
         recalculateBatch();
     });
 
-    $( "#tabs" ).tabs();
-
     // do these once the page has loaded
     updateBitPositionsTable();
     updateConverter();

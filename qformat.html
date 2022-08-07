@@ -14,15 +14,34 @@
         <meta property="og:type" content="website" />
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
-        <link rel="stylesheet" href="qformat.css?v=5">
+        <link rel="stylesheet" href="qformat.css?v=6">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"
                 integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
                 crossorigin="anonymous">
         </script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-        <script src="qformat.js?v=1"></script>
-        <script src="qformat.converter.js?v=1"></script>
-        <script src="qformat.calculator.js?v=1"></script>
+        <script src="qformat.js?v=2"></script>
+        <script src="qformat.converter.js?v=2"></script>
+        <script src="qformat.calculator.js?v=2"></script>
+        <script>
+            $(function() {
+                var dataIndex = 'tab';
+                var dataStore = window.sessionStorage;
+                var tabIndex = 0;
+                try {
+                    tabIndex = dataStore.getItem(dataIndex);
+                } catch(e) {
+                    tabIndex = 0;
+                }
+                $('#tabs').tabs({
+                    active : tabIndex,
+                    activate : function(event, ui){
+                        var newTabIndex = ui.newTab.parent().children().index(ui.newTab);
+                        dataStore.setItem(dataIndex, newTabIndex);
+                    }
+                });
+            });
+        </script>
     </head>
 
     <body>
@@ -225,15 +244,6 @@
 
                 <div class="tab-panel" id="arithmetic">
 
-                    <p class="span-cols">
-                        Overflowing results are mitigated by <em>saturation</em> or <em>wrapping</em>.
-                        <em>Saturation</em> clamps the result to the arithmetic range of the output Q-format.
-                        This will retain the sign of the result, whilst affecting the magnitude. <em>Wrapping</em>
-                        is implemented by incrementing or decrementing the integer result by
-                        2<sup><em>m</em>+<em>n</em></sup> until it is within the range of the output Q-format.
-                        This may change the sign <em>and</em> magnitude of the result.
-                    </p>
-
                     <div class="column-container">
                         <fieldset>
                             <legend>Left Operand</legend>
@@ -310,7 +320,7 @@
                         <fieldset>
                             <legend>Operator</legend>
 
-                            <p>Choose the operation, the arithmetic behaviour (if applicable), and the output word size.</p>
+                            <p>Choose the operation, the arithmetic behaviour, and the output word size.</p>
 
                             <div class="control-grp">
                                 <div class="col w25">
@@ -327,7 +337,12 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
-                                    <label for="behaviour">Behaviour</label>
+                                    <label for="behaviour"><span class="tooltip" data-text="Overflowing results are mitigated by
+                                        saturation or wrapping. Saturation clamps the result to the arithmetic range of the output
+                                        Q-format. This will retain the sign of the result, whilst affecting the magnitude. Wrapping
+                                        is implemented by incrementing or decrementing the integer result by 2^(m+n) until the result
+                                        is within the range of the output Q-format. This may change the sign and magnitude of the
+                                        result.">Behaviour</span></label>
                                 </div><!--
                                 ---><div class="col w75">
                                     <select id="behaviour">
@@ -353,6 +368,10 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <p>
+                                
+                            </p>
     
                         </fieldset>
                     </div>
