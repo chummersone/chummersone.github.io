@@ -246,6 +246,6 @@ sup {
     }
 
     .ui-tabs .ui-tabs-panel {
-        padding: 1em 0em;
+        padding: 1em 0.2em;
     }
 }
