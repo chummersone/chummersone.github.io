@@ -8,14 +8,17 @@ $(function() {
     var format_rhs = 'hex';
     var operator = 'add';
     var behaviour = 'saturate';
+    var right_shift = 0;
+    var right_shift_round = true;
+    var old_num_bits = 0;
 
     /**
      * Update the result of the operation.
      */
     function updateResult() {
 
-        out.floatChanged = true;
-        out.signed = lhs.signed || rhs.signed;
+        updateRightShift();
+        out._signed = lhs.signed || rhs.signed;
 
         // operation
         switch (operator) {
@@ -46,11 +49,6 @@ $(function() {
         } else {
             out._numFracBits = lhs._numFracBits;
         }
-        $('#arithmetic_result_num_frac_bits').val(out.numFracBits.toString());
-        if (out.numFracBits > out.numBits) {
-            setError('#arithmetic_out_num_bits',
-                'Number of fractional bits in the result is ' + out.numFracBits.toString());
-        }
 
         // wrap/saturate
         var out_copy = new FixedPointConverter(out.numFracBits, out.numBits, out.signed);
@@ -66,20 +64,32 @@ $(function() {
             case 'wrap':
                 if (out.int > out.maxInteger) {
                     while (out_copy._int > out.maxInteger) {
-                        out_copy._int -= (2n ** BigInt(out_copy.numBits));
+                        out_copy._int -= (2n ** BigInt(out.numBits));
                     }
                 } else if (out.int < out.minInteger) {
                     while (out_copy._int < out.minInteger) {
-                        out_copy._int += (2n ** BigInt(out_copy.numBits));
+                        out_copy._int += (2n ** BigInt(out.numBits));
                     }
                 }
                 break;
         }
+
+        // shift
         out_copy.floatChanged = false;
+        if (right_shift_round && right_shift > 0) {
+            out_copy._int += BigInt(2 ** (right_shift - 1));
+        }
+        out_copy._int >>= BigInt(right_shift);
+        out_copy._numFracBits -= right_shift;
+        $('#arithmetic_result_num_frac_bits').val(out_copy.numFracBits.toString());
+        if (out_copy.numFracBits > out_copy.numBits) {
+            setError('#arithmetic_out_num_bits',
+                'Number of fractional bits in the result is ' + out_copy.numFracBits.toString());
+        }
+        
+        // calculate error
         out_copy._update();
         out_copy._float = out_float;
-
-        // calculate error
         $('#arithmetic_result_fixed').val(out_copy._fixed.toString());
         $('#arithmetic_result_int').val(out_copy.hex);
         $('#arithmetic_result_floaterror').val(out_copy.error.toString());
@@ -117,6 +127,20 @@ $(function() {
             function () { return format_rhs; },
             setError
         );
+    }
+
+    /**
+     * Update the right-shift choices.
+     */
+    function updateRightShift() {
+        $('#arithmetic_right_shift').find('option').remove().end();
+        for (let i = Math.max(lhs.numBits, rhs.numBits); i >= 0; i--) {
+            $('#arithmetic_right_shift').append('<option value="' + i.toString() + '">' + i.toString() + '</option>')
+        }
+        if (right_shift > out.numBits) {
+            right_shift -= Math.abs(old_num_bits - out.numBits);
+        }
+        $('#arithmetic_right_shift').val(right_shift.toString());
     }
 
     // updates following change of word size
@@ -195,7 +219,20 @@ $(function() {
 
     // updates following change of output num bits
     $('#arithmetic_out_num_bits').change(function () {
-        out.numBits = $(this).val();
+        old_num_bits = out.numBits;
+        out.numBits = parseInt($(this).val());
+        updateResult();
+    });
+
+    // updates following change of output right shift
+    $('#arithmetic_right_shift').change(function () {
+        right_shift = parseInt($(this).val());
+        updateResult();
+    });
+
+    // updates following change of right shift rounding
+    $('#right_shift_round').change(function () {
+        right_shift_round = $(this).prop('checked');
         updateResult();
     });
 

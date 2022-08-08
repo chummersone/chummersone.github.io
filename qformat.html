@@ -20,9 +20,9 @@
                 crossorigin="anonymous">
         </script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-        <script src="qformat.js?v=2"></script>
-        <script src="qformat.converter.js?v=2"></script>
-        <script src="qformat.calculator.js?v=2"></script>
+        <script src="qformat.js?v=3"></script>
+        <script src="qformat.converter.js?v=3"></script>
+        <script src="qformat.calculator.js?v=3"></script>
         <script>
             $(function() {
                 var dataIndex = 'tab';
@@ -328,9 +328,9 @@
                                 </div><!--
                                 ---><div class="col w75">
                                     <select id="operator">
-                                        <option value="add" selected>add</option>
-                                        <option value="subtract">subtract</option>
-                                        <option value="multiply">multiply</option>
+                                        <option value="add" selected>Add</option>
+                                        <option value="subtract">Subtract</option>
+                                        <option value="multiply">Multiply</option>
                                     </select>
                                 </div>
                             </div>
@@ -354,7 +354,9 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
-                                    <label for="arithmetic_out_num_bits">Output word size in bits (<em>m+n</em>)</label>
+                                    <label for="arithmetic_out_num_bits"><span class="tooltip" data-text="Size of the word
+                                        used for the calculation result. The precision can be reduced by choosing the right
+                                        shift below.">Calculation size in bits (<em>m+n</em>)</span></label>
                                 </div><!--
                                 ---><div class="col w75">
                                     <select id="arithmetic_out_num_bits">
@@ -366,6 +368,28 @@
                                         <option value="56">56</option>
                                         <option value="64">64</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="arithmetic_right_shift"><span class="tooltip" data-text="Perform an
+                                        arithmetic right shift after saturation or rounding.">
+                                        Right shift result</span></label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <select id="arithmetic_right_shift">
+                                        <option value="0" selected>0</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="right_shift_round">Right shift with rounding?</label>
+                                </div><!--
+                                ---><div class="col w75">
+                                    <input id="right_shift_round" type="checkbox" checked>
                                 </div>
                             </div>
 
