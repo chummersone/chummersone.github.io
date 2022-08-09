@@ -61,6 +61,10 @@ legend {
     font-weight: bold;
 }
 
+div#container {
+    margin-top: 15px;
+}
+
 div.tab-panel {
     column-width: 424px;
     -moz-column-count: 3;
