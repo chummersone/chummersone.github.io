@@ -157,7 +157,7 @@ class FixedPointConverter {
     * Get the number of hexadecimal characters.
     */
     get numHexChars() {
-        return Math.ceil(this._numBits / 4)
+        return Math.ceil(this._numBits / 4);
     }
 
     /** 
@@ -356,7 +356,7 @@ function updateFixedPointControls(_numBitsID, _numFracBitsID, _integerID, _float
     // update the number of fractional bits control
     $(_numFracBitsID).find('option').remove().end();
     for (let i = fixedPoint.numBits; i >= 0; i--) {
-        $(_numFracBitsID).append('<option value="' + i.toString() + '">' + i.toString() + '</option>')
+        $(_numFracBitsID).append('<option value="' + i.toString() + '">' + i.toString() + '</option>');
     }
     $(_numFracBitsID).val(fixedPoint.numFracBits.toString());
 
@@ -378,7 +378,7 @@ function updateFixedPointControls(_numBitsID, _numFracBitsID, _integerID, _float
             clearError(_floatID);
         }
     } else {
-        clearError(_floatID)
+        clearError(_floatID);
         $(_floatID).val(fixedPoint.float.toString());
         if (isNaN(Number(fixedPoint.int))) {
             errorFn(_integerID, 'Parse Error');

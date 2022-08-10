@@ -135,7 +135,7 @@ $(function() {
     function updateRightShift() {
         $('#arithmetic_right_shift').find('option').remove().end();
         for (let i = Math.max(lhs.numBits, rhs.numBits); i >= 0; i--) {
-            $('#arithmetic_right_shift').append('<option value="' + i.toString() + '">' + i.toString() + '</option>')
+            $('#arithmetic_right_shift').append('<option value="' + i.toString() + '">' + i.toString() + '</option>');
         }
         if (right_shift > out.numBits) {
             right_shift -= Math.abs(old_num_bits - out.numBits);
