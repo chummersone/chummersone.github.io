@@ -17,11 +17,15 @@ ul.ui-tabs-nav {
     background-color: #444;
 }
 
-input:disabled, table, tr, th, td, textarea:disabled {
+input[type=text][disabled], table, tr, th, td, textarea:disabled {
     background-color: #444;
     -webkit-text-fill-color: #bbb;
     color: #bbb;
     opacity: 1; /* required on iOS */
+}
+
+input[type=checkbox].flag {
+    filter: grayscale(100%);
 }
 
 body {

@@ -53,6 +53,7 @@ $(function() {
         // wrap/saturate
         var out_copy = new FixedPointConverter(out.numFracBits, out.numBits, out.signed);
         out_copy._int = BigInt(out._int);
+        var pre_behaviour = out_copy._int
         switch (behaviour) {
             case 'saturate':
                 if (out.int > out.maxInteger) {
@@ -72,6 +73,11 @@ $(function() {
                     }
                 }
                 break;
+        }
+        if (pre_behaviour != out_copy._int) {
+            $('#wrap_sat_flag').prop('checked', true);
+        } else {
+            $('#wrap_sat_flag').prop('checked', false);
         }
 
         // shift
@@ -236,6 +242,7 @@ $(function() {
         updateResult();
     });
 
+    $('input[type=checkbox].flag').click(function() { return false; });
     updateLeftOperand();
     updateRightOperand();
     updateResult();

@@ -14,15 +14,15 @@
         <meta property="og:type" content="website" />
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
-        <link rel="stylesheet" href="qformat.css?v=9">
+        <link rel="stylesheet" href="qformat.css?v=10">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"
                 integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
                 crossorigin="anonymous">
         </script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-        <script src="qformat.js?v=3"></script>
-        <script src="qformat.converter.js?v=3"></script>
-        <script src="qformat.calculator.js?v=3"></script>
+        <script src="qformat.js?v=4"></script>
+        <script src="qformat.converter.js?v=4"></script>
+        <script src="qformat.calculator.js?v=4"></script>
         <script>
             $(function() {
                 var dataIndex = 'tab';
@@ -508,6 +508,15 @@
                                 </div><!--
                                  --><div class="col w75">
                                     <input id="arithmetic_result_num_frac_bits" type="text" value="0" disabled>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="wrap_sat_flag">Wrapped / Saturated?</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <input class="flag" id="wrap_sat_flag" type="checkbox">
                                 </div>
                             </div>
 
