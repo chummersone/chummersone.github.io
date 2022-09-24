@@ -31,7 +31,7 @@ class FixedPointConverter {
     * @param {Integer} x - Integer value.
     */
     set int(x) {
-        this._int = BigInt(x);
+        this._int = this._str2int(x, 10);
         this.floatChanged = false;
         this._update();
     }
@@ -77,7 +77,7 @@ class FixedPointConverter {
     * Get the integer value in binary format (i.e. as a string).
     */
     get bin() {
-        if (!isNaN(this._int)) {
+        if (!isNaN(Number(this._int))) {
             var val = this._maskInt(this._int);
             return val.toString(2).padStart(this._numBits, '0');
         } else {
@@ -491,8 +491,8 @@ function addFormatHandler(_formatControlID, _labelID, callback) {
  * @param {Function} callback - Callback to execute after updating the form.
  */
 function addIntegerHandler(_intControlID, _floatID, _fixedPoint, _getFormat, callback) {
-    var _fmt = _getFormat();
     $(_intControlID).change(function () {
+        var _fmt = _getFormat();
         switch (_fmt) {
             case 'hex':
                 _fixedPoint.hex = $(this).val();

@@ -76,7 +76,7 @@ $(function() {
                             batchConvert.int = parseInt(val);
                     }
                     if (batchConvert.intInRange) {
-                        strval = batchConvert.fixed;
+                        strval = batchConvert.fixed.toString();
                     } else {
                         strval = 'NaN';
                     }
