@@ -17,6 +17,14 @@ ul.ui-tabs-nav {
     background-color: #444;
 }
 
+a:link, a:visited {
+    color: #007fff;
+}
+
+a:hover {
+    filter: brightness(150%);
+}
+
 input[type=text][disabled], table, tr, th, td, textarea:disabled {
     background-color: #444;
     -webkit-text-fill-color: #bbb;
@@ -32,7 +40,7 @@ body {
     font: inherit;
 }
 
-body, input, select, p, label, th, td, legend, textarea {
+body, input, select, p, label, th, td, legend, textarea, a:active {
     color: #ccc;
 }
 
