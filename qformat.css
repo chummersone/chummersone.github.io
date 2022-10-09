@@ -340,6 +340,10 @@ sup {
     .ui-tabs .ui-tabs-panel {
         padding: 1em 0.2em;
     }
+
+    p.equation span.eq::after {
+        right: 0.4em;
+    }
 }
 
 /* Responsive layout - when the screen is less than 700px wide */
