@@ -231,7 +231,7 @@ table {
     border-collapse: separate;
     border-spacing: 0;
     overflow: hidden;
-    width: 100%;
+    max-width: 100%;
 }
 
 td.centre, th.centre {
@@ -344,6 +344,10 @@ sup {
 
 /* Responsive layout - when the screen is less than 700px wide */
 @media screen and (max-width: 700px) {
+
+    table.responsive {
+        width: 100%;
+    }
 
 
 	table.responsive thead, table.responsive tbody,
