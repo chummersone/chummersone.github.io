@@ -238,8 +238,8 @@ td.centre, th.centre {
     text-align: center;
 }
 
-caption {
-    font-size: 85%;
+table, caption {
+    font-size: 90%;
 }
 
 caption::before {
@@ -248,7 +248,6 @@ caption::before {
 
 table#bit-pos, table#bit-pos tbody {
     display: block;
-    font-size: 96%;
 }
 
 table#bit-pos tbody tr {
