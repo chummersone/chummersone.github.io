@@ -40,7 +40,7 @@ body {
     font: inherit;
 }
 
-body, input, select, p, label, th, td, legend, textarea, a:active {
+body, input, select, p, label, th, td, legend, textarea, a:active, h1, h2, h3 {
     color: #ccc;
 }
 
@@ -49,9 +49,33 @@ h1 {
     font-size: 2em;
 }
 
+h2 {
+    margin: 18px 0;
+}
+
 p {
     margin: 15px 0;
+}
+
+h1, h2, h3, p {
     text-align: left;
+}
+
+p.equation {
+    text-align: center;
+}
+
+p.equation span.eq {
+    display: block;
+    margin-right: 40px;
+    line-height: 3ex;
+}
+
+p.equation span.eq::after {
+    content: "("attr(data-eqnum)")";
+    float: right;
+    position:absolute;
+    right: 1.6em;
 }
 
 fieldset {
@@ -95,6 +119,12 @@ div.tab-panel#arithmetic {
     -moz-column-count: 4;
     -webkit-column-count: 4;
     column-count: 4;
+}
+
+div.tab-panel#information {
+    -moz-column-count: 1;
+    -webkit-column-count: 1;
+    column-count: 1;
 }
 
 div#tabs {
@@ -204,6 +234,18 @@ table {
     width: 100%;
 }
 
+td.centre, th.centre {
+    text-align: center;
+}
+
+caption {
+    font-size: 85%;
+}
+
+caption::before {
+    content: "Table "attr(data-tablenum)": ";
+}
+
 table#bit-pos, table#bit-pos tbody {
     display: block;
     font-size: 96%;
@@ -298,4 +340,43 @@ sup {
     .ui-tabs .ui-tabs-panel {
         padding: 1em 0.2em;
     }
+}
+
+/* Responsive layout - when the screen is less than 700px wide */
+@media screen and (max-width: 700px) {
+
+
+	table.responsive thead, table.responsive tbody,
+    table.responsive th, table.responsive td, table.responsive tr
+    {
+		display: block;
+	}
+
+    table.responsive thead tr {
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+
+    table.responsive tr {
+        border: 1px solid #ccc;
+    }
+
+	table.responsive td {
+		border: none;
+		border-bottom: 1px solid #eee;
+		position: relative;
+		padding-left: 50%;
+	}
+
+	table.responsive td:before {
+		position: absolute;
+		top: 6px;
+		left: 6px;
+		width: 45%;
+		padding-right: 10px;
+		white-space: nowrap;
+        content: attr(data-label);
+	}
+
 }

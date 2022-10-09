@@ -14,7 +14,7 @@
         <meta property="og:type" content="website" />
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
-        <link rel="stylesheet" href="qformat.css?v=11">
+        <link rel="stylesheet" href="qformat.css?v=12">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"
                 integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
                 crossorigin="anonymous">
@@ -60,6 +60,7 @@
                 <ul>
                 <li><a href="#converter">Converter</a></li>
                 <li><a href="#arithmetic">Calculator</a></li>
+                <li><a href="#information">Information</a></li>
                 </ul>
                 <div class="tab-panel" id="converter">
 
@@ -394,9 +395,9 @@
                             </div>
 
                             <p>
-                                
+
                             </p>
-    
+
                         </fieldset>
                     </div>
                     <div class="column-container">
@@ -541,6 +542,223 @@
                             </div>
                         </fieldset>
                     </div>
+
+                </div>
+
+                <div class="tab-panel" id="information">
+
+                    <p>
+                        Many embedded DSPs and low-powered processors do not support floating-point arithmetic. Instead, they
+                        support only integer and <em>fixed-point</em> arithmetic. Fixed-point representations make fractional
+                        arithmetic possible using only integers.
+                    </p>
+
+                    <h2>Representation</h2>
+
+                    <p>
+                        So what is <em>fixed-point</em>? As the name implies, it describes a number where the decimal point is
+                        in a fixed position. Specifically, in this context, this refers to the position of the decimal point in the
+                        binary representation. For example, a fixed-point number that has 16 bits might use 4 bits for the integer
+                        part, and 12 bits for the fracitonal part. In <a href="https://en.wikipedia.org/wiki/Two%27s_complement">two's
+                        complement</a>, this implies that the integer is in the range from [&minus;8, 7], and the fractional part
+                        is in the range [0, 1).
+                    </p>
+
+                    <table class="responsive">
+                        <caption data-tablenum="1">Fixed-point binary representation.</caption>
+                        <thead>
+                            <tr>
+                                <th>Format</th>
+                                <th class="centre" colspan="16">Bit values</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Format">Integer</td>
+                                <td data-label="Bit 15">&minus;2<sup>15</sup></td>
+                                <td data-label="Bit 14">2<sup>14</sup></td>
+                                <td data-label="Bit 13">2<sup>13</sup></td>
+                                <td data-label="Bit 12">2<sup>12</sup></td>
+                                <td data-label="Bit 11">2<sup>11</sup></td>
+                                <td data-label="Bit 10">2<sup>10</sup></td>
+                                <td data-label="Bit 9">2<sup>9</sup></td>
+                                <td data-label="Bit 8">2<sup>8</sup></td>
+                                <td data-label="Bit 7">2<sup>7</sup></td>
+                                <td data-label="Bit 6">2<sup>6</sup></td>
+                                <td data-label="Bit 5">2<sup>5</sup></td>
+                                <td data-label="Bit 4">2<sup>4</sup></td>
+                                <td data-label="Bit 3">2<sup>3</sup></td>
+                                <td data-label="Bit 2">2<sup>2</sup></td>
+                                <td data-label="Bit 1">2<sup>1</sup></td>
+                                <td data-label="Bit 0">2<sup>0</sup></td>
+                            </tr>
+                            <tr>
+                                <td data-label="Format">12 fractional bits</td>
+                                <td data-label="Bit 15">&minus;2<sup>3</sup></td>
+                                <td data-label="Bit 14">2<sup>2</sup></td>
+                                <td data-label="Bit 13">2<sup>1</sup></td>
+                                <td data-label="Bit 12">2<sup>0</sup></td>
+                                <td data-label="Bit 11">2<sup>&minus;1</sup></td>
+                                <td data-label="Bit 10">2<sup>&minus;2</sup></td>
+                                <td data-label="Bit 9">2<sup>&minus;3</sup></td>
+                                <td data-label="Bit 8">2<sup>&minus;4</sup></td>
+                                <td data-label="Bit 7">2<sup>&minus;5</sup></td>
+                                <td data-label="Bit 6">2<sup>&minus;6</sup></td>
+                                <td data-label="Bit 5">2<sup>&minus;7</sup></td>
+                                <td data-label="Bit 4">2<sup>&minus;8</sup></td>
+                                <td data-label="Bit 3">2<sup>&minus;9</sup></td>
+                                <td data-label="Bit 2">2<sup>&minus;10</sup></td>
+                                <td data-label="Bit 1">2<sup>&minus;11</sup></td>
+                                <td data-label="Bit 0">2<sup>&minus;12</sup></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p>
+                        Fixed-point numbers are stored as integers. All integers have a range that is determined by: the number of
+                        bits used to encode the integer, and whether the integer is signed or unsigned. For example, a signed 16-bit
+                        integer has <span class="eq">2<sup>16</sup> = 65536</span> possible values ranging from &minus;32768
+                        (<code>0b1000000000000000</code>) to 32767 (<code>0b0111111111111111</code>). If the decimal point is moved
+                        to the left, then the new range will be reduced. Note, though, that the position of the decimal point is not
+                        encoded in the data. So, for example, <code>0b0001000000000000</code> conveys 4096 as an integer, or 1 if
+                        there are 12 fractional bits. Note that the decimal position will have to be conveyed in metadata, comments,
+                        or documentation. This description of the number of integer and fractional bits is called the Q-format.
+                    </p>
+
+                    <p>
+                        The choice of the number of integer and fractional bits is a tradeoff: more fractional bits increases the
+                        precision whilst reducing the numeric range. Fewer fractional bits has the opposite effect. See some examples
+                        below. It's usually preferable to keep the integer range as small as possible with respect to the data, whilst
+                        avoiding overflow, in order to maximise the precision (and hence minimising any numeric error).
+                    </p>
+
+                    <table class="responsive">
+                        <caption data-tablenum="2">Fixed-point ranges.</caption>
+                        <thead>
+                            <tr>
+                                <th>Number of bits</th>
+                                <th>Number of integer bits</th>
+                                <th>Number of fractional bits</th>
+                                <th>Minimum value</th>
+                                <th>Maximum value</th>
+                                <th>Precision</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Number of bits">16</td>
+                                <td data-label="Number of integer bits">16</td>
+                                <td data-label="Number of fractional bits">0</td>
+                                <td data-label="Minimum value">&minus;32768</td>
+                                <td data-label="Maximum value">32767</td>
+                                <td data-label="Precision">1</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Number of bits">16</td>
+                                <td data-label="Number of integer bits">4</td>
+                                <td data-label="Number of fractional bits">12</td>
+                                <td data-label="Minimum value">&minus;8.0</td>
+                                <td data-label="Maximum value">7.999755859375</td>
+                                <td data-label="Precision">0.000244140625</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Number of bits">16</td>
+                                <td data-label="Number of integer bits">1</td>
+                                <td data-label="Number of fractional bits">15</td>
+                                <td data-label="Minimum value">&minus;1.0</td>
+                                <td data-label="Maximum value">0.999969482421875</td>
+                                <td data-label="Precision">0.000030517578125</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Number of bits">16</td>
+                                <td data-label="Number of integer bits">12</td>
+                                <td data-label="Number of fractional bits">14</td>
+                                <td data-label="Minimum value">&minus;2048.0</td>
+                                <td data-label="Maximum value">2047.9375</td>
+                                <td data-label="Precision">0.0625</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h2>Conversion</h2>
+
+                    <p>
+                        Conversion between integer and fractional numbers is straightforward. For a fractional number
+                        <i>x</i> with <i>N</i> fractional bits, the integer value <i>y</i> is calculated as:
+                    </p>
+
+                    <p class="equation">
+                        <span data-eqnum="1" class="eq"><i>y</i> = <i>x</i> &times; 2<sup><i>N</i></sup></span>
+                    </p>
+
+                    <p>
+                        Note that <i>y</i> is necessarily rounded in order to store the value as an integer. This
+                        rounding causes an irreversible loss of accuracy.
+                    </p>
+
+                    <p>
+                        The fractional value can be recovered from the integer with the reverse operation:
+                    </p>
+
+                    <p class="equation">
+                        <span data-eqnum="2" class="eq"><i>x</i> = <i>y</i> &divide; 2<sup><i>N</i></sup></span>
+                    </p>
+
+
+                    <h2>Arithmetic Operations</h2>
+
+                    <p>
+                        But how is this useful for arithmetic? For addition and subtraction, provided that
+                        the operands have the same number of fractional bits, then the operation is unaffected: the
+                        result will have the same number of fractional bits, and can be converted accordingly. Specifically,
+                        if two fractional operands <i>x</i><sub>1</sub> and <i>x</i><sub>2</sub> have <i>N</i> fractional
+                        bits, then the result of adding <i>x</i><sub>1</sub> and <i>x</i><sub>2</sub> will be:
+                    </p>
+
+                    <p class="equation">
+                        <span data-eqnum="3" class="eq"><!--
+                        -->(<i>x</i><sub>1</sub> &times; 2<sup><i>N</i></sup>) + <!--
+                        -->(<i>x</i><sub>2</sub> &times; 2<sup><i>N</i></sup>) = <wbr><!--
+                        -->(<i>x</i><sub>1</sub> + <i>x</i><sub>2</sub>) &times; <!--
+                        -->2<sup><i>N</i></sup><!--
+                        --></span>
+                    </p>
+
+                    <p>
+                        As with all arithmetic operations, care must be taken to avoid an overflow. Most processors will
+                        either saturate or wrap the result in the event of an overflow.
+                    </p>
+
+                    <p>
+                        Multiplication is slightly more complex. The operands are not required to have the same number of
+                        fractional bits, but the number of fractional bits in the result will depend on the
+                        operands. Specifically, if <i>x</i><sub>1</sub> has <i>M</i> fractional bits, and
+                        <i>x</i><sub>2</sub> has <i>N</i> fractional bits, then the result of multiplying
+                        <i>x</i><sub>1</sub> and <i>x</i><sub>2</sub> will be:
+                    </p>
+
+                    <p class="equation">
+                        <span data-eqnum="4" class="eq"><!--
+                        -->(<i>x</i><sub>1</sub> &times; 2<sup><i>M</i></sup>) &times; <!--
+                        -->(<i>x</i><sub>2</sub> &times; 2<sup><i>N</i></sup>) = <wbr><!--
+                        --><i>x</i><sub>1</sub> &times; <i>x</i><sub>2</sub> &times; <!--
+                        -->2<sup><i>M</i> + <i>N</i></sup><!--
+                        --></span>
+                    </p>
+
+                    <p>
+                        In other words, the result will have <span class="eq"><i>M</i> + <i>N</i></span> fractional
+                        bits. The result will also require a word size that is the sum of the operand word sizes.
+                        Depending on the operation, it is usually possible to perform an arithmetic right shift on
+                        the result in order to store it in a smaller word.
+                    </p>
+
+                    <p>
+                        Many DSPs have native support for fixed-point types with one integer bit, i.e. numbers in the
+                        range [&minus;1, 1). For arithmetic operations, this often includes allocating an appropriate
+                        accumulator for the result, and then bit shifting the accumulator output to the original size
+                        and format.
+                    </p>
 
                 </div>
             </div>
