@@ -9,6 +9,10 @@ html, body, input, fieldset, select, textarea, div.ui-tabs {
     background-color: #222;
 }
 
+body {
+    counter-reset: eq;
+}
+
 ul, ol {
     padding-left: 40px;
 }
@@ -72,7 +76,8 @@ p.equation span.eq {
 }
 
 p.equation span.eq::after {
-    content: "("attr(data-eqnum)")";
+    counter-increment: eq;
+    content: "("counter(eq)")";
     float: right;
     position:absolute;
     right: 1.6em;
