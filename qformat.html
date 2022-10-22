@@ -2,14 +2,14 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="description" content="Convert between floating-point values and their Qm.n fixed-point integer representations, and calculate the representation error. Perform arithmetic operations on fixed-point values.">
-        <meta name="keywords" content="q-fomat, fixed-point, floating-point, convert, calculate, calculator, arithmetic">
+        <meta name="description" content="Convert between fractional values and their Qm.n fixed-point integer representations, and calculate the representation error. Perform arithmetic operations on fixed-point values.">
+        <meta name="keywords" content="q-fomat, fixed-point, fractional, convert, calculate, calculator, arithmetic">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Q-format Converter &amp; Calculator</title>
         <meta property="og:title" content="Q-format Converter &amp; Calculator" />
         <meta property="og:url" content="https://chummersone.github.io/qformat.html" />
         <meta property="og:locale" content="en_GB" />
-        <meta property="og:description" content="Convert between floating-point and Qm.n fixed-point values. Perform arithmetic operations on fixed-point values.">
+        <meta property="og:description" content="Convert between fractional and Qm.n fixed-point values. Perform arithmetic operations on fixed-point values.">
         <meta property="og:site_name" content="chummersone.github.io" />
         <meta property="og:type" content="website" />
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
@@ -48,7 +48,7 @@
         <h1>Q-format Converter &amp; Calculator</h1>
 
         <ul>
-            <li>Convert between floating-point values and their <em>Qm.n</em> fixed-point integer representations,
+            <li>Convert between fractional values and their <em>Qm.n</em> fixed-point integer representations,
                 and calculate the representation error.</li>
             <li>Perform arithmetic operations on fixed-point values.</li>
         </ul>
@@ -118,7 +118,7 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
-                                    <label for="maxfloat">Maximum float value</label>
+                                    <label for="maxfloat">Maximum fractional value</label>
                                 </div><!--
                                  --><div class="col w75">
                                     <input id="maxfloat" type="text" value="0" disabled>
@@ -127,7 +127,7 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
-                                    <label for="minfloat">Minimum float value</label>
+                                    <label for="minfloat">Minimum fractional value</label>
                                 </div><!--
                                  --><div class="col w75">
                                     <input id="minfloat" type="text" value="0" disabled>
@@ -187,7 +187,7 @@
                         <fieldset>
                             <legend>Convert</legend>
 
-                            <p>Type an integer or float in the boxes below. Click or tab away to update.</p>
+                            <p>Type an integer or fractional value in the boxes below. Click or tab away to update.</p>
 
                             <div class="control-grp">
                                 <div class="col w25">
@@ -200,7 +200,7 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
-                                    <label for="float">Float</label>
+                                    <label for="float">Fractional value</label>
                                 </div><!--
                                  --><div class="col w75">
                                     <input id="float" type="text" value="0">
@@ -239,12 +239,12 @@
                         <fieldset>
                             <legend>Batch Convert</legend>
 
-                            <p>Type integers or floats in the boxes below separated by commas, spaces or new lines. Click or tab away to update.</p>
+                            <p>Type integers or fractional values in the boxes below separated by commas, spaces or new lines. Click or tab away to update.</p>
 
                             <label for="batch-int">Integers</label>
                             <textarea id="batch-int" rows="6"></textarea>
 
-                            <label for="batch-float">Floats</label>
+                            <label for="batch-float">Fractional values</label>
                             <textarea id="batch-float" rows="6"></textarea>
 
                         </fieldset>
@@ -271,7 +271,7 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
-                                    <label for="left_operand_float">Float value</label>
+                                    <label for="left_operand_float">Fractional value</label>
                                 </div><!--
                                  --><div class="col w75">
                                     <input id="left_operand_float" type="text" value="0">
@@ -426,7 +426,7 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
-                                    <label for="right_operand_float">Float value</label>
+                                    <label for="right_operand_float">Fractional value</label>
                                 </div><!--
                                  --><div class="col w75">
                                     <input id="right_operand_float" type="text" value="0">
@@ -507,7 +507,7 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
-                                    <label for="arithmetic_result_float">Result (Float)</label>
+                                    <label for="arithmetic_result_float">Result (Fractional)</label>
                                 </div><!--
                                  --><div class="col w75">
                                     <input id="arithmetic_result_float" type="text" value="0" disabled>
