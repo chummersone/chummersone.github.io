@@ -324,6 +324,15 @@ class FixedPointConverter {
 
 }
 
+
+function getURLParams(url) {
+    let params = {};
+    new URLSearchParams(url.replace(/^.*?\?/, '?')).forEach(function(value, key) {
+        params[key] = value
+    });
+    return params;
+}
+
 /**
  * Set an error on the form element.
  * @param {String} elem - ID of a form element to which the error should apply.

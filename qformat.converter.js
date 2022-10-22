@@ -20,6 +20,48 @@ $(function() {
     var fixedPointVal = new FixedPointConverter(23, 24, true);
     var batchConvert = new FixedPointConverter(23, 24, true);
 
+    // get query parameters from URL
+    params = getURLParams(window.location.href);
+
+    // info relates query parameters to form controls and variables
+    const getMap = {
+        "numBits": {
+            "controlID": numBitsID,
+            "field": "numBits",
+            "convert": parseInt,
+        },
+        "numFracBits": {
+            "controlID": numFracBitsID,
+            "field": "numFracBits",
+            "convert": parseInt,
+        },
+        "signed": {
+            "controlID": signedID,
+            "field": "signed",
+            "convert": function (x) {return x === 'true';},
+        },
+        "format": {
+            "controlID": formatID,
+            "field": null,
+            "convert": function (x) {return x;},
+        },
+    }
+
+    // process the query parameters to update the form
+    for (let [getParam, spec] of Object.entries(getMap)) {
+        if (params.hasOwnProperty(getParam)) {
+            var val = spec['convert'](params[getParam]);
+            if (typeof variable == "boolean") {
+                $(spec['controlID']).prop('checked', val);
+            } else {
+                $(spec['controlID']).val(val);
+            }
+            if (spec['field']) {
+                fixedPointVal.signed = val;
+            }
+        }
+    }
+
     /**
      * Recalculate the batch inputs.
      */
@@ -101,6 +143,30 @@ $(function() {
         $(maxfloatID).val(fixedPointVal.maxFloat.toString());
         $(minfloatID).val(fixedPointVal.minFloat.toString());
         $(resolutionID).val(fixedPointVal.resolution.toString());
+
+        // update the permalink to restore these settings
+        var url = window.location.origin + window.location.pathname + '#converter?';
+        var first = true;
+        for (let [getParam, spec] of Object.entries(getMap)) {
+            // join the parameters
+            if (first) {
+                first = false;
+            } else {
+                url += '&';
+            }
+            // get the latest value from the form control
+            var $elem = $(spec['controlID']);
+            var val;
+            if ($elem.is(':checkbox')) {
+                val = $elem.prop('checked').toString();
+            } else {
+                val = $elem.val();
+            }
+            // append the query parameters to the url
+            url += getParam + '=' + val;
+
+        }
+        $('a#permalink').attr('href', url);
 
         // update batch conversion
         recalculateBatch();
