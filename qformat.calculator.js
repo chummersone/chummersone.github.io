@@ -92,7 +92,7 @@ $(function() {
             setError('#arithmetic_out_num_bits',
                 'Number of fractional bits in the result is ' + out_copy.numFracBits.toString());
         }
-        
+
         // calculate error
         out_copy._update();
         out_copy._float = out_float;

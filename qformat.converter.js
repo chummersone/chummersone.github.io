@@ -12,6 +12,7 @@ $(function() {
     const labelFormatID = '#labelformat';
     const maxfloatID = '#maxfloat';
     const minfloatID = '#minfloat';
+    const resolutionID = '#resolution';
     const batchIntegerID = '#batch-int';
     const batchFloatID = '#batch-float';
     var format = 'hex';
@@ -87,7 +88,7 @@ $(function() {
         }
     }
 
-    /** 
+    /**
      * Update the main control values.
      */
     function updateConverter() {
@@ -99,6 +100,7 @@ $(function() {
         $(errorDbID).val(fixedPointVal.error_dB.toFixed(3));
         $(maxfloatID).val(fixedPointVal.maxFloat.toString());
         $(minfloatID).val(fixedPointVal.minFloat.toString());
+        $(resolutionID).val(fixedPointVal.resolution.toString());
 
         // update batch conversion
         recalculateBatch();

@@ -3,7 +3,7 @@
 */
 class FixedPointConverter {
 
-    /** 
+    /**
     * Initialise a new fixed-point converter.
     * @param {Integer} numFracBits - Number of fractional bits.
     * @param {Integer} numBits - Word size in bits.
@@ -19,14 +19,14 @@ class FixedPointConverter {
         this._update();
     }
 
-    /** 
+    /**
     * Get the integer value.
     */
     get int() {
         return BigInt(this._int);
     }
 
-    /** 
+    /**
     * Get the integer value.
     * @param {Integer} x - Integer value.
     */
@@ -36,14 +36,14 @@ class FixedPointConverter {
         this._update();
     }
 
-    /** 
+    /**
     * Get the floating-point value.
     */
     get float() {
         return this._float;
     }
 
-    /** 
+    /**
     * Set the floating-point value.
     * @param {Number} x - Floating-point value.
     */
@@ -53,7 +53,7 @@ class FixedPointConverter {
         this._update();
     }
 
-    /** 
+    /**
     * Get the integer value in hexadecimal format (i.e. as a string).
     */
     get hex() {
@@ -65,7 +65,7 @@ class FixedPointConverter {
         }
     }
 
-    /** 
+    /**
     * Set the integer value from a hexadecimal-format string.
     * @param {String} x - Hexadecimal integer value.
     */
@@ -73,7 +73,7 @@ class FixedPointConverter {
         this.int = this._str2int(x, 16);
     }
 
-    /** 
+    /**
     * Get the integer value in binary format (i.e. as a string).
     */
     get bin() {
@@ -85,7 +85,7 @@ class FixedPointConverter {
         }
     }
 
-    /** 
+    /**
     * Set the integer value from a binary-format string.
     * @param {String} x - Binary integer value.
     */
@@ -93,7 +93,7 @@ class FixedPointConverter {
         this.int = this._str2int(x, 2);
     }
 
-    /** 
+    /**
     * Get the fixed-point value.
     */
     get fixed() {
@@ -102,17 +102,17 @@ class FixedPointConverter {
         } else {
             return NaN;
         }
-        
+
     }
 
-    /** 
+    /**
     * Get the number of fractional bits.
     */
     get numFracBits() {
         return this._numFracBits;
     }
 
-    /** 
+    /**
     * Set the number of fractional bits.
     * @param {Integer} x - Number of fractional bits.
     */
@@ -120,15 +120,15 @@ class FixedPointConverter {
         this._numFracBits = x;
         this._update();
     }
-    
-    /** 
+
+    /**
     * Get the word size in bits.
     */
     get numBits() {
         return this._numBits;
     }
 
-    /** 
+    /**
     * Set the word size in bits.
     * @param {Integer} x - Word size in bits.
     */
@@ -137,14 +137,14 @@ class FixedPointConverter {
         this._update();
     }
 
-    /** 
+    /**
     * The value is signed?
     */
     get signed() {
         return this._signed;
     }
 
-    /** 
+    /**
     * Make the value signed.
     * @param {Boolean} x - Value is signed.
     */
@@ -153,35 +153,35 @@ class FixedPointConverter {
         this._update();
     }
 
-    /** 
+    /**
     * Get the number of hexadecimal characters.
     */
     get numHexChars() {
         return Math.ceil(this._numBits / 4);
     }
 
-    /** 
+    /**
     * Get the maximum number of decimal characters.
     */
     get maxNumDecChars() {
         return (2 ** this._numBits).toString().length + 1;
     }
 
-    /** 
+    /**
     * Get the representation error.
     */
     get error() {
         return Math.abs(this._float - this._fixed);
     }
 
-    /** 
+    /**
     * Get the representation error in dB.
     */
     get error_dB() {
         return 20 * Math.log10(this.error);
     }
 
-    /** 
+    /**
     * Signed-ness correction when calculating value range.
     */
     get _signCorrection() {
@@ -192,7 +192,7 @@ class FixedPointConverter {
         }
     }
 
-    /** 
+    /**
     * Minimum floating-point value.
     */
     get minFloat() {
@@ -203,14 +203,21 @@ class FixedPointConverter {
         }
     }
 
-    /** 
+    /**
     * Maximum floating-point value.
     */
     get maxFloat() {
         return (2 ** (this._numBits - this._numFracBits - this._signCorrection)) - (2 ** -this._numFracBits);
     }
 
-    /** 
+    /**
+     * Fractional resolution.
+     */
+    get resolution() {
+        return 2 ** (-this._numFracBits);
+    }
+
+    /**
     * Minimum integer value.
     */
     get minInteger() {
@@ -221,28 +228,28 @@ class FixedPointConverter {
         }
     }
 
-    /** 
+    /**
     * Maximum integer value.
     */
     get maxInteger() {
         return (2 ** (this._numBits - this._signCorrection)) - 1;
     }
 
-    /** 
+    /**
     * Floating-point value is in valid range.
     */
     get floatInRange() {
         return this._float <= this.maxFloat && this._float >= this.minFloat;
     }
 
-    /** 
+    /**
     * Integer value is in valid range.
     */
     get intInRange() {
         return this._int <= this.maxInteger && this._int >= this.minInteger;
     }
 
-    /** 
+    /**
     * Bit-mask for the integer value.
     */
     get _wordMask() {
@@ -253,7 +260,7 @@ class FixedPointConverter {
         }
     }
 
-    /** 
+    /**
     * Convert a string value to an integer.
     * @param {String} intstr - Integer value represented in a string.
     * @param {Integer} base - Numeric base for the conversion.
@@ -270,7 +277,7 @@ class FixedPointConverter {
         return intval;
     }
 
-    /** 
+    /**
     * Mask out-of-range bits.
     * @param {Integer} val - Value to mask.
     * @return {Integer} Masked integer value.
@@ -285,7 +292,7 @@ class FixedPointConverter {
         return val;
     }
 
-    /** 
+    /**
     * Convert a fixed-point integer to its floating-point equivalent.
     * @param {Integer} val - Fixed-point value to convert.
     * @return {Number} Floating-point value.
@@ -294,7 +301,7 @@ class FixedPointConverter {
         return Number(val) / (2 ** this._numFracBits);
     }
 
-    /** 
+    /**
     * Convert a floating-point number to its fixed-point integer equivalent.
     * @param {Integer} val - Fixed-point value to convert.
     * @return {Number} Floating-point value.
@@ -303,7 +310,7 @@ class FixedPointConverter {
         return Math.round(val * (2 ** this._numFracBits));
     }
 
-    /** 
+    /**
     * Update values.
     */
     _update() {
@@ -338,7 +345,7 @@ function clearError(elem) {
     $(elem).siblings('div.error').remove();
 }
 
-/** 
+/**
  * Update the fixed-point conversion and associated errors.
  * @param {String} _numBitsID - ID of the numBits form control.
  * @param {String} _numFracBitsID - ID of the numFracBits form control.
@@ -407,7 +414,7 @@ function updateFixedPointControls(_numBitsID, _numFracBitsID, _integerID, _float
     }
 }
 
-/** 
+/**
  * Add a handler for the num bits control.
  * @param {String} _numBitsControlID - ID of the numBits form control.
  * @param {FixedPointConverter} _fixedPoint - The fixed-point value.
@@ -426,7 +433,7 @@ function addNumBitsHandler(_numBitsControlID, _fixedPoint, _numFracBitsControlID
     });
 }
 
-/** 
+/**
  * Add a handler for the num fractional bits control.
  * @param {String} _numFracBitsControlID - ID of the numFracBits form control.
  * @param {FixedPointConverter} _fixedPoint - The fixed-point value.
@@ -439,7 +446,7 @@ function addNumFracBitsHandler(_numFracBitsControlID, _fixedPoint, callback) {
     });
 }
 
-/** 
+/**
  * Add a handler for the num fractional bits control.
  * @param {String} _signedControlID - ID of the signedness form control.
  * @param {FixedPointConverter} _fixedPoint - The fixed-point value.
@@ -457,7 +464,7 @@ function addSignedHandler(_signedControlID, _fixedPoint, _integerID, callback) {
 }
 
 
-/** 
+/**
  * Add a handler for the format control.
  * @param {String} _formatControlID - ID of the format form control.
  * @param {String} _labelID - ID of the label for the integer control.
@@ -482,7 +489,7 @@ function addFormatHandler(_formatControlID, _labelID, callback) {
     });
 }
 
-/** 
+/**
  * Add a handler for the integer control.
  * @param {String} _intControlID - ID of the integer form control.
  * @param {String} _floatID - ID of the float form control.
@@ -509,7 +516,7 @@ function addIntegerHandler(_intControlID, _floatID, _fixedPoint, _getFormat, cal
     });
 }
 
-/** 
+/**
  * Add a handler for the integer control.
  * @param {String} _floatControlID - ID of the float form control.
  * @param {String} _integerID - ID of the integer control.
