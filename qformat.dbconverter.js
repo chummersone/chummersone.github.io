@@ -3,17 +3,43 @@ $(function() {
     class dBFixedPointConverter extends FixedPointConverter {
 
         /**
+        * Initialise a new fixed-point converter.
+        * @param {Integer} numFracBits - Number of fractional bits.
+        * @param {Integer} numBits - Word size in bits.
+        */
+        constructor(numFracBits, numBits, signed) {
+            super(numFracBits, numBits, signed)
+            this._multiplier = 20.0;
+            this._update();
+        }
+
+        /**
         * Convert linear gain to dB.
         */
         lin2dB(x) {
-            return 20.0 * Math.log10(x);
+            return this._multiplier * Math.log10(x);
         }
 
         /**
         * Convert dB to linear gain.
         */
         dB2lin(x) {
-            return 10.0 ** (x / 20.0);
+            return 10.0 ** (x / this._multiplier);
+        }
+
+        /**
+        * Get the dB multiplier.
+        */
+        get multiplier() {
+            return this._multiplier;
+        }
+
+        /**
+        * Set the dB multiplier.
+        */
+        set multiplier(x) {
+            this._multiplier = x;
+            this._update();
         }
 
         /**
@@ -73,9 +99,9 @@ $(function() {
     const dBbatchFloatID = '#db_batch-float';
     var dBformat = 'hex';
 
-    var dBfixedPointVal = new dBFixedPointConverter(23, 24, true);
+    var dBfixedPointVal = new dBFixedPointConverter(23, 24, false);
     dBfixedPointVal.float = -3.0;
-    var dBbatchConvert = new dBFixedPointConverter(23, 24, true);
+    var dBbatchConvert = new dBFixedPointConverter(23, 24, false);
 
     // info relates query parameters to form controls and variables
     const dBgetMap = {
@@ -98,6 +124,11 @@ $(function() {
             "controlID": dBformatID,
             "field": null,
             "convert": function (x) {dBformat = x; return x;},
+        },
+        "dBmultiplier": {
+            "controlID": '#db_multiplier',
+            "field": "multiplier",
+            "convert": parseFloat,
         },
     }
 
@@ -169,6 +200,12 @@ $(function() {
     $(dBbatchIntegerID).change(function () {
         dBbatchConvert.floatChanged = false;
         recalculateBatch(dBbatchFloatID, dBbatchIntegerID, dBbatchConvert, function() {return dBformat;});
+    });
+
+    // updates following change of floating-point value
+    $('#db_multiplier').change(function () {
+        dBfixedPointVal.multiplier = parseFloat($(this).val());
+        updatedBConverter();
     });
 
     // do these once the page has loaded

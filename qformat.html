@@ -34,13 +34,24 @@
                 } catch(e) {
                     tabIndex = 0;
                 }
-                $('#tabs').tabs({
-                    active : tabIndex,
-                    activate : function(event, ui){
-                        var newTabIndex = ui.newTab.parent().children().index(ui.newTab);
-                        dataStore.setItem(dataIndex, newTabIndex);
-                    }
+                $tabs = $('#tabs');
+                $tabs.tabs({
+                    activate: function(event, ui) {
+                        var scrollTop = $(window).scrollTop();
+                        var query = window.location.hash.split('?')[1];
+                        var queryStr = ''
+                        if (query) {
+                            queryStr = '?' + query
+                        }
+                        window.location.hash = ui.newPanel.attr('id') + queryStr;
+                        $(window).scrollTop(scrollTop);
+                    },
                 });
+                var hash = window.location.hash.split('?')[0];
+                if (hash) {
+                    var index = $('#tabs a[href="' + hash + '"]').parent().index();
+                    $tabs.tabs("option", "active", index);
+                }
             });
         </script>
     </head>
@@ -70,7 +81,7 @@
                         <fieldset>
                             <legend>Q-Format Settings</legend>
 
-                            <p>Choose your conversion options. <a id="remember" href="">Link to these options.</a></p>
+                            <p>Choose your conversion options. <a id="remember" href="">Remember these options.</a></p>
 
                             <div class="control-grp">
                                 <div class="col w25">
@@ -260,7 +271,7 @@
                         <fieldset>
                             <legend>Q-Format Settings</legend>
 
-                            <p>Choose your conversion options. <a id="db_remember" href="">Link to these options.</a></p>
+                            <p>Choose your conversion options. <a id="db_remember" href="">Remember these options.</a></p>
 
                             <div class="control-grp">
                                 <div class="col w25">
@@ -310,6 +321,18 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
+                                    <label for="db_multiplier">dB Multiplier</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <select id="db_multiplier">
+                                        <option value="10">10&times;</option>
+                                        <option value="20" selected>20&times;</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
                                     <label for="db_maxfloat">Maximum dB value</label>
                                 </div><!--
                                  --><div class="col w75">
@@ -332,7 +355,7 @@
                         <fieldset>
                             <legend>Convert</legend>
 
-                            <p>Type an integer or dB value (gain/amplitude) in the boxes below. Click or tab away to update.</p>
+                            <p>Type an integer or dB value in the boxes below. Click or tab away to update.</p>
 
                             <div class="control-grp">
                                 <div class="col w25">
