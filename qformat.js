@@ -542,3 +542,131 @@ function addFloatHandler(_floatControlID, _integerID, _fixedPoint, callback) {
         callback();
     });
 }
+
+/**
+ * Parse query parameters and update the converter.
+ * @param {FixedPointConverter} _fixedPoint - The fixed-point value.
+ * @param {object} paramMap - Map relating query parameters to controls.
+ */
+function updateControlsFromGET(_fixedPoint, paramMap) {
+    // process the query parameters to update the form
+    params = getURLParams(window.location.href);
+    for (let [getParam, spec] of Object.entries(paramMap)) {
+        if (params.hasOwnProperty(getParam)) {
+            var val = spec['convert'](params[getParam]);
+            if (typeof variable == "boolean") {
+                $(spec['controlID']).prop('checked', val);
+            } else {
+                $(spec['controlID']).val(val);
+            }
+            if (spec['field']) {
+                _fixedPoint[spec['field']] = val;
+            }
+        }
+    }
+}
+
+/**
+ * Update the settings link based on the current control values.
+ * @param {string} tabID - ID of the tab containing the controls.
+ * @param {object} paramMap - Map relating query parameters to controls.
+ * @param {string} anchorID - ID of the anchor element to receive the updated URL.
+ */
+function updateLinkHref(tabID, paramMap, anchorID) {
+    // update the permalink to restore these settings
+    var url = window.location.origin + window.location.pathname + '#' + tabID + '?';
+    var first = true;
+    for (let [getParam, spec] of Object.entries(paramMap)) {
+        // join the parameters
+        if (first) {
+            first = false;
+        } else {
+            url += '&';
+        }
+        // get the latest value from the form control
+        var $elem = $(spec['controlID']);
+        var val;
+        if ($elem.is(':checkbox')) {
+            val = $elem.prop('checked').toString();
+        } else {
+            val = $elem.val();
+        }
+        // append the query parameters to the url
+        url += getParam + '=' + val;
+
+    }
+    $('a#' + anchorID).attr('href', url);
+}
+
+/**
+ * Recalculate the batch contents.
+ * @param {string} _batchFloatID - ID of the textarea containing fractional values.
+ * @param {string} _batchIntegerID - ID of the textarea containing integer values.
+ * @param {FixedPointConverter} _fixedPointBatch - The fixed-point converter object.
+ * @param {Function} _getFormat - Callback to get the integer format.
+ */
+function recalculateBatch(_batchFloatID, _batchIntegerID, _fixedPointBatch, _getFormat) {
+    var fmt = _getFormat();
+    var src, dst;
+    if (_fixedPointBatch.floatChanged) {
+        src = _batchFloatID;
+        dst = _batchIntegerID;
+    } else {
+        src = _batchIntegerID;
+        dst = _batchFloatID;
+    }
+    var batchIn = $(src).val();
+    if (batchIn != '') {
+        var rem = batchIn;
+        var out = '';
+        do {
+            let val, delim;
+            const re = /([^\s,;]*?)([\s,;]+)(.*)/imgs;
+            let arr = [...rem.matchAll(re)][0];
+            if (arr) {
+                val = arr[1];
+                delim = arr[2];
+                rem = arr[3];
+            } else {
+                val = rem;
+                delim = '';
+                rem = false;
+            }
+            let strval;
+            if (_fixedPointBatch.floatChanged) {
+                _fixedPointBatch.float = parseFloat(val);
+                switch (fmt) {
+                    case 'hex':
+                        strval = _fixedPointBatch.hex;
+                        break;
+                    case 'bin':
+                        strval = _fixedPointBatch.bin;
+                        break;
+                    default:
+                        strval = _fixedPointBatch.int.toString();
+                }
+                if (!_fixedPointBatch.floatInRange) {
+                    strval = 'NaN';
+                }
+            } else {
+                switch (fmt) {
+                    case 'hex':
+                        _fixedPointBatch.hex = val;
+                        break;
+                    case 'bin':
+                        _fixedPointBatch.bin = val;
+                        break;
+                    default:
+                        _fixedPointBatch.int = parseInt(val);
+                }
+                if (_fixedPointBatch.intInRange) {
+                    strval = _fixedPointBatch.fixed.toString();
+                } else {
+                    strval = 'NaN';
+                }
+            }
+            out += strval + delim;
+        } while (rem);
+        $(dst).val(out);
+    }
+}

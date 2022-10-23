@@ -20,9 +20,6 @@ $(function() {
     var fixedPointVal = new FixedPointConverter(23, 24, true);
     var batchConvert = new FixedPointConverter(23, 24, true);
 
-    // get query parameters from URL
-    params = getURLParams(window.location.href);
-
     // info relates query parameters to form controls and variables
     const getMap = {
         "numBits": {
@@ -43,92 +40,11 @@ $(function() {
         "format": {
             "controlID": formatID,
             "field": null,
-            "convert": function (x) {return x;},
+            "convert": function (x) {format = x; return x;},
         },
     }
 
-    // process the query parameters to update the form
-    for (let [getParam, spec] of Object.entries(getMap)) {
-        if (params.hasOwnProperty(getParam)) {
-            var val = spec['convert'](params[getParam]);
-            if (typeof variable == "boolean") {
-                $(spec['controlID']).prop('checked', val);
-            } else {
-                $(spec['controlID']).val(val);
-            }
-            if (spec['field']) {
-                fixedPointVal.signed = val;
-            }
-        }
-    }
-
-    /**
-     * Recalculate the batch inputs.
-     */
-    function recalculateBatch() {
-        var src, dst;
-        if (batchConvert.floatChanged) {
-            src = batchFloatID;
-            dst = batchIntegerID;
-        } else {
-            src = batchIntegerID;
-            dst = batchFloatID;
-        }
-        var batchIn = $(src).val();
-        if (batchIn != '') {
-            var rem = batchIn;
-            var out = '';
-            do {
-                let val, delim;
-                const re = /([^\s,;]*?)([\s,;]+)(.*)/imgs;
-                let arr = [...rem.matchAll(re)][0];
-                if (arr) {
-                    val = arr[1];
-                    delim = arr[2];
-                    rem = arr[3];
-                } else {
-                    val = rem;
-                    delim = '';
-                    rem = false;
-                }
-                let strval;
-                if (batchConvert.floatChanged) {
-                    batchConvert.float = parseFloat(val);
-                    switch (format) {
-                        case 'hex':
-                            strval = batchConvert.hex;
-                            break;
-                        case 'bin':
-                            strval = batchConvert.bin;
-                            break;
-                        default:
-                            strval = batchConvert.int.toString();
-                    }
-                    if (!batchConvert.floatInRange) {
-                        strval = 'NaN';
-                    }
-                } else {
-                    switch (format) {
-                        case 'hex':
-                            batchConvert.hex = val;
-                            break;
-                        case 'bin':
-                            batchConvert.bin = val;
-                            break;
-                        default:
-                            batchConvert.int = parseInt(val);
-                    }
-                    if (batchConvert.intInRange) {
-                        strval = batchConvert.fixed.toString();
-                    } else {
-                        strval = 'NaN';
-                    }
-                }
-                out += strval + delim;
-            } while (rem);
-            $(dst).val(out);
-        }
-    }
+    updateControlsFromGET(fixedPointVal, getMap);
 
     /**
      * Update the main control values.
@@ -139,37 +55,15 @@ $(function() {
 
         $(realFloatID).val(fixedPointVal.fixed.toString());
         $(floatErrorID).val(fixedPointVal.error.toString());
-        $(errorDbID).val(fixedPointVal.error_dB.toFixed(3));
+        $(errorDbID).val(fixedPointVal.error_dB.toString());
         $(maxfloatID).val(fixedPointVal.maxFloat.toString());
         $(minfloatID).val(fixedPointVal.minFloat.toString());
         $(resolutionID).val(fixedPointVal.resolution.toString());
 
-        // update the permalink to restore these settings
-        var url = window.location.origin + window.location.pathname + '#converter?';
-        var first = true;
-        for (let [getParam, spec] of Object.entries(getMap)) {
-            // join the parameters
-            if (first) {
-                first = false;
-            } else {
-                url += '&';
-            }
-            // get the latest value from the form control
-            var $elem = $(spec['controlID']);
-            var val;
-            if ($elem.is(':checkbox')) {
-                val = $elem.prop('checked').toString();
-            } else {
-                val = $elem.val();
-            }
-            // append the query parameters to the url
-            url += getParam + '=' + val;
-
-        }
-        $('a#permalink').attr('href', url);
+        updateLinkHref('converter', getMap, 'remember');
 
         // update batch conversion
-        recalculateBatch();
+        recalculateBatch(batchFloatID, batchIntegerID, batchConvert, function() {return format;});
     }
 
     /**
@@ -264,17 +158,18 @@ $(function() {
     // updates following change to batch floats
     $(batchFloatID).change(function () {
         batchConvert.floatChanged = true;
-        recalculateBatch();
+        recalculateBatch(batchFloatID, batchIntegerID, batchConvert, function() {return format;});
     });
 
     // updates following change of batch integers
     $(batchIntegerID).change(function () {
         batchConvert.floatChanged = false;
-        recalculateBatch();
+        recalculateBatch(batchFloatID, batchIntegerID, batchConvert, function() {return format;});
     });
 
     // do these once the page has loaded
     updateBitPositionsTable();
     updateConverter();
+    $(formatID).trigger("change");
 
 });

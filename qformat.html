@@ -20,9 +20,10 @@
                 crossorigin="anonymous">
         </script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-        <script src="qformat.js?v=7"></script>
-        <script src="qformat.converter.js?v=7"></script>
-        <script src="qformat.calculator.js?v=7"></script>
+        <script src="qformat.js?v=8"></script>
+        <script src="qformat.converter.js?v=8"></script>
+        <script src="qformat.dbconverter.js?v=8"></script>
+        <script src="qformat.calculator.js?v=8"></script>
         <script>
             $(function() {
                 var dataIndex = 'tab';
@@ -59,6 +60,7 @@
             <div id="tabs">
                 <ul>
                 <li><a href="#converter">Converter</a></li>
+                <li><a href="#db_converter">dB Converter</a></li>
                 <li><a href="#arithmetic">Calculator</a></li>
                 <li><a href="#information">Information</a></li>
                 </ul>
@@ -68,7 +70,7 @@
                         <fieldset>
                             <legend>Q-Format Settings</legend>
 
-                            <p>Choose your conversion options. <a id="permalink" href="">Link to these options.</a></p>
+                            <p>Choose your conversion options. <a id="remember" href="">Link to these options.</a></p>
 
                             <div class="control-grp">
                                 <div class="col w25">
@@ -246,6 +248,140 @@
 
                             <label for="batch-float">Fractional values</label>
                             <textarea id="batch-float" rows="6"></textarea>
+
+                        </fieldset>
+                    </div>
+
+                </div>
+
+                <div class="tab-panel" id="db_converter">
+
+                    <div class="column-container">
+                        <fieldset>
+                            <legend>Q-Format Settings</legend>
+
+                            <p>Choose your conversion options. <a id="db_remember" href="">Link to these options.</a></p>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="db_num_bits">Word size in bits (<em>m+n</em>)</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <select id="db_num_bits">
+                                        <option value="16">16</option>
+                                        <option value="24" selected>24</option>
+                                        <option value="32">32</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="db_num_frac_bits">Fractional bits (<em>n</em>)</label>
+                                </div><!--
+                             --><div class="col w75">
+                                    <select id="db_num_frac_bits">
+                                        <option value="23" selected>23</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="db_signed">Signed?</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <input id="db_signed" type="checkbox">
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="db_format">Integer format</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <select id="db_format">
+                                        <option value="hex" selected>Hexadecimal</option>
+                                        <option value="dec">Decimal</option>
+                                        <option value="bin">Binary</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="db_maxfloat">Maximum dB value</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <input id="db_maxfloat" type="text" value="0" disabled>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="db_minfloat">Minimum dB value</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <input id="db_minfloat" type="text" value="0" disabled>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                    <div class="column-container">
+                        <fieldset>
+                            <legend>Convert</legend>
+
+                            <p>Type an integer or dB value (gain/amplitude) in the boxes below. Click or tab away to update.</p>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="db_integer">Integer (<span id="db_labelformat">hexadecimal</span>)</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <input id="db_integer" type="text" value="0" maxlength="6">
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="db_float">dB value</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <input id="db_float" type="text" value="-3">
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="db_realfloat">Fixed-point dB value</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <input id="db_realfloat" type="text" value="0" disabled>
+                                </div>
+                            </div>
+
+                            <div class="control-grp">
+                                <div class="col w25">
+                                    <label for="db_errordb">Representation error (dB)</label>
+                                </div><!--
+                                 --><div class="col w75">
+                                    <input id="db_errordb" type="text" value="0" disabled>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="column-container">
+                        <fieldset>
+                            <legend>Batch Convert</legend>
+
+                            <p>Type integers or dB values in the boxes below separated by commas, spaces or new lines. Click or tab away to update.</p>
+
+                            <label for="db_batch-int">Integers</label>
+                            <textarea id="db_batch-int" rows="6"></textarea>
+
+                            <label for="db_batch-float">dB values</label>
+                            <textarea id="db_batch-float" rows="6"></textarea>
 
                         </fieldset>
                     </div>
