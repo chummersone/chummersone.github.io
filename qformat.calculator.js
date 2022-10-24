@@ -24,15 +24,15 @@ $(function() {
         switch (operator) {
             case 'add':
                 out_float = lhs.float + rhs.float;
-                out._int = lhs._int + rhs._int;
+                out._int = lhs.int + rhs.int;
                 break;
             case 'subtract':
                 out_float = lhs.float - rhs.float;
-                out._int = lhs._int - rhs._int;
+                out._int = lhs.int - rhs.int;
                 break;
             case 'multiply':
                 out_float = lhs.float * rhs.float;
-                out._int = lhs._int * rhs._int;
+                out._int = lhs.int * rhs.int;
                 break;
         }
         $('#arithmetic_result_float').val(out_float.toString());
