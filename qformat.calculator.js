@@ -99,7 +99,7 @@ $(function() {
         $('#arithmetic_result_fixed').val(out_copy._fixed.toString());
         $('#arithmetic_result_int').val(out_copy.hex);
         $('#arithmetic_result_floaterror').val(out_copy.error.toString());
-        $('#arithmetic_result_errordb').val(out_copy.error_dB.toFixed(3));
+        $('#arithmetic_result_errordb').val(out_copy.error_dB.toString());
 
     }
 

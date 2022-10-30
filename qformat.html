@@ -23,7 +23,7 @@
         <script src="qformat.js?v=9"></script>
         <script src="qformat.converter.js?v=8"></script>
         <script src="qformat.dbconverter.js?v=8"></script>
-        <script src="qformat.calculator.js?v=9"></script>
+        <script src="qformat.calculator.js?v=10"></script>
         <script>
             $(function() {
                 var dataIndex = 'tab';
@@ -706,7 +706,7 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
-                                    <label for="arithmetic_result_errordb">Error (dB)</label>
+                                    <label for="arithmetic_result_errordb"><span class="tooltip" data-text="Error in dB is calculated with reference to the fractional result.">Error (dB)</span></label>
                                 </div><!--
                                  --><div class="col w75">
                                     <input id="arithmetic_result_errordb" type="text" value="0" disabled>
