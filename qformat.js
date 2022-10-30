@@ -178,7 +178,7 @@ class FixedPointConverter {
     * Get the representation error in dB.
     */
     get error_dB() {
-        return 20 * Math.log10(this.error);
+        return 20 * Math.log10(this.error / this._float);
     }
 
     /**
