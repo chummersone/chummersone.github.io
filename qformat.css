@@ -65,24 +65,6 @@ h1, h2, h3, p {
     text-align: left;
 }
 
-p.equation {
-    text-align: center;
-}
-
-p.equation span.eq {
-    display: block;
-    margin-right: 40px;
-    line-height: 3ex;
-}
-
-p.equation span.eq::after {
-    counter-increment: eq;
-    content: "("counter(eq)")";
-    float: right;
-    position:absolute;
-    right: 1.6em;
-}
-
 fieldset {
     width: 100%;
     display: inline-block;
@@ -358,10 +340,6 @@ sup {
 
     .ui-tabs .ui-tabs-panel {
         padding: 1em 0.2em;
-    }
-
-    p.equation span.eq::after {
-        right: 0.4em;
     }
 }
 

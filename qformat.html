@@ -14,7 +14,7 @@
         <meta property="og:type" content="website" />
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
-        <link rel="stylesheet" href="qformat.css?v=18">
+        <link rel="stylesheet" href="qformat.css?v=19">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"
                 integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
                 crossorigin="anonymous">
@@ -24,6 +24,8 @@
         <script src="qformat.converter.js?v=8"></script>
         <script src="qformat.dbconverter.js?v=8"></script>
         <script src="qformat.calculator.js?v=10"></script>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>
             $(function() {
                 var dataIndex = 'tab';
@@ -52,6 +54,7 @@
                     var index = $('#tabs a[href="' + hash + '"]').parent().index();
                     $tabs.tabs("option", "active", index);
                 }
+                window.MathJax = { tex: { tags: 'all' } };
             });
         </script>
     </head>
@@ -321,7 +324,7 @@
 
                             <div class="control-grp">
                                 <div class="col w25">
-                                    <label for="db_multiplier">dB Multiplier</label>
+                                    <label for="db_multiplier">dB Multiplier \(B\)</label>
                                 </div><!--
                                  --><div class="col w75">
                                     <select id="db_multiplier">
@@ -357,8 +360,10 @@
 
                             <p>
                                 Type an integer or dB value in the boxes below. Click or tab away to update.
-                                The converter will convert the dB value to a linear value (1.0 &equiv; 0&nbsp;dB),
-                                and then convert the linear fraction to a fixed-point integer.
+                                The converter will convert the dB value \(x\) to a linear value \(y = 10^{x / B}\),
+                                where \(B\) is the multiplier (10 or 20), and then convert the linear value to a
+                                fixed-point integer. The dB value is calculated by reversing these operations,
+                                with \(x = B\log_{10}y\).
                             </p>
 
                             <div class="control-grp">
@@ -856,24 +861,16 @@
 
                     <p>
                         Conversion between integer and fractional numbers is straightforward. For a fractional number
-                        <i>x</i> with <i>N</i> fractional bits, the integer value <i>y</i> is calculated as:
-                    </p>
-
-                    <p class="equation">
-                        <span class="eq"><i>y</i> = <i>x</i> &times; 2<sup><i>N</i></sup></span>
+                        \(x\) with \(N\) fractional bits, the integer value \(y\) is calculated as: \[y = 2^Nx\]
                     </p>
 
                     <p>
-                        Note that <i>y</i> is necessarily rounded in order to store the value as an integer. This
+                        Note that \(y\) is necessarily rounded in order to store the value as an integer. This
                         rounding causes an irreversible loss of precision.
                     </p>
 
                     <p>
-                        The fractional value can be recovered from the integer with the reverse operation:
-                    </p>
-
-                    <p class="equation">
-                        <span class="eq"><i>x</i> = <i>y</i> &divide; 2<sup><i>N</i></sup></span>
+                        The fractional value can be recovered from the integer with the reverse operation: \[x = \frac{y}{2^N}\]
                     </p>
 
 
@@ -883,17 +880,8 @@
                         But how is this useful for arithmetic? For addition and subtraction, provided that
                         the operands have the same number of fractional bits, then the operation is unaffected: the
                         result will have the same number of fractional bits, and can be converted accordingly. Specifically,
-                        if two fractional operands <i>x</i><sub>1</sub> and <i>x</i><sub>2</sub> have <i>N</i> fractional
-                        bits, then the result of adding them will be:
-                    </p>
-
-                    <p class="equation">
-                        <span class="eq"><!--
-                        -->(<i>x</i><sub>1</sub> &times; 2<sup><i>N</i></sup>) + <!--
-                        -->(<i>x</i><sub>2</sub> &times; 2<sup><i>N</i></sup>) = <wbr><!--
-                        -->(<i>x</i><sub>1</sub> + <i>x</i><sub>2</sub>) &times; <!--
-                        -->2<sup><i>N</i></sup><!--
-                        --></span>
+                        if two fractional operands \(x_1\) and \(x_2\) have \(N\) fractional bits, then the result of adding
+                        them will be: \[2^Nx_1 + 2^Nx_2 = 2^N(x_1 + x_2)\]
                     </p>
 
                     <p>
@@ -904,24 +892,15 @@
                     <p>
                         Multiplication is slightly more complex. The operands are not required to have the same number of
                         fractional bits, but the number of fractional bits in the result will depend on the operands.
-                        Specifically, if <i>x</i><sub>1</sub> has <i>M</i> fractional bits, and <i>x</i><sub>2</sub> has
-                        <i>N</i> fractional bits, then the result of multiplying them will be:
-                    </p>
-
-                    <p class="equation">
-                        <span class="eq"><!--
-                        -->(<i>x</i><sub>1</sub> &times; 2<sup><i>M</i></sup>) &times; <!--
-                        -->(<i>x</i><sub>2</sub> &times; 2<sup><i>N</i></sup>) = <wbr><!--
-                        --><i>x</i><sub>1</sub> &times; <i>x</i><sub>2</sub> &times; <!--
-                        -->2<sup><i>M</i> + <i>N</i></sup><!--
-                        --></span>
+                        Specifically, if \(x_1\) has \(M\) fractional bits, and \(x_2\) has \(N\) fractional bits, then
+                        the result of multiplying them will be: \[2^Mx_1 \cdot 2^Nx_2 = 2^{M + N}x_1x_2\]
                     </p>
 
                     <p>
-                        In other words, the result will have <span class="eq"><i>M</i> + <i>N</i></span> fractional
-                        bits. The result will also require a word size that is the sum of the operand word sizes.
-                        Depending on the operation, it is usually possible to perform an arithmetic right shift on
-                        the result in order to store it in a smaller word.
+                        In other words, the result will have \(M + N\) fractional bits. The result will also require a
+                        word size that is the sum of the operand word sizes. Depending on the operation, it is usually
+                        possible to perform an arithmetic right shift on the result in order to store it in a smaller
+                        word.
                     </p>
 
                     <p>
