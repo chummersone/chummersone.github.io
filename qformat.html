@@ -861,7 +861,7 @@
 
                     <p>
                         Conversion between integer and fractional numbers is straightforward. For a fractional number
-                        \(x\) with \(N\) fractional bits, the integer value \(y\) is calculated as: \[y = 2^Nx\]
+                        \(x\) with \(N\) fractional bits, the integer value \(y\in\mathbb{Z}\) is calculated as: \[y \approx 2^Nx\]
                     </p>
 
                     <p>
@@ -870,7 +870,7 @@
                     </p>
 
                     <p>
-                        The fractional value can be recovered from the integer with the reverse operation: \[x = \frac{y}{2^N}\]
+                        The fractional value can be recovered from the integer with the reverse operation: \[x \approx \frac{y}{2^N}\]
                     </p>
 
 
@@ -881,7 +881,7 @@
                         the operands have the same number of fractional bits, then the operation is unaffected: the
                         result will have the same number of fractional bits, and can be converted accordingly. Specifically,
                         if two fractional operands \(x_1\) and \(x_2\) have \(N\) fractional bits, then the result of adding
-                        them will be: \[2^Nx_1 + 2^Nx_2 = 2^N(x_1 + x_2)\]
+                        them will be: \[2^Nx_1 + 2^Nx_2 \equiv 2^N(x_1 + x_2)\]
                     </p>
 
                     <p>
@@ -893,7 +893,7 @@
                         Multiplication is slightly more complex. The operands are not required to have the same number of
                         fractional bits, but the number of fractional bits in the result will depend on the operands.
                         Specifically, if \(x_1\) has \(M\) fractional bits, and \(x_2\) has \(N\) fractional bits, then
-                        the result of multiplying them will be: \[2^Mx_1 \cdot 2^Nx_2 = 2^{M + N}x_1x_2\]
+                        the result of multiplying them will be: \[2^Mx_1 \cdot 2^Nx_2 \equiv 2^{M + N}x_1x_2\]
                     </p>
 
                     <p>
