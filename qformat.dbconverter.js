@@ -170,11 +170,13 @@ $(function() {
 
     // updates following change of number of fractional bits
     addNumFracBitsHandler(dBnumFracBitsID, dBfixedPointVal, function () {
+        dBbatchConvert.numFracBits = dBfixedPointVal.numFracBits;
         updatedBConverter();
     });
 
     // updates following change of signedness
     addSignedHandler(dBsignedID, dBfixedPointVal, dBintegerID, function() {
+        dBbatchConvert.signed = dBfixedPointVal.signed;
         updatedBConverter();
     });
 
