@@ -133,12 +133,14 @@ $(function() {
 
     // updates following change of number of fractional bits
     addNumFracBitsHandler(numFracBitsID, fixedPointVal, function () {
+        batchConvert.numFracBits = fixedPointVal.numFracBits;
         updateBitPositionsTable();
         updateConverter();
     });
 
     // updates following change of signedness
     addSignedHandler(signedID, fixedPointVal, integerID, function() {
+        batchConvert.signed = fixedPointVal.signed;
         updateBitPositionsTable();
         updateConverter();
     });
