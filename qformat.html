@@ -55,6 +55,12 @@
                     $tabs.tabs("option", "active", index);
                 }
                 window.MathJax = { tex: { tags: 'all' } };
+                $( 'span.tooltip' ).tooltip({
+                    items: "[data-text]",
+                    content: function() {
+                        return $( this ).data('text');
+                    }
+                });
             });
         </script>
     </head>

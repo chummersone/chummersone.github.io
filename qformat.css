@@ -293,26 +293,8 @@ sup {
     margin-left: 0.1em;
 }
 
-.tooltip:before {
-    content: attr(data-text);
-    position: absolute;
-    bottom: 50%;
-    transform: translateX(-25%);
-    left: 50%;
-    margin-left: 15px;
-    width: 180px;
-    padding: 10px;
-    border-radius: 5px;
-    background: #000;
-    color: #bbb;
-    text-align: left;
-    display: none;
+.ui-tooltip-content {
     font-size: 90%;
-}
-
-.tooltip:hover:before {
-    display: block;
-    z-index: 100;
 }
 
 /* Responsive layout - when the screen is less than 444px wide */
