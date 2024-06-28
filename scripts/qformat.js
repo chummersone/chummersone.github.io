@@ -621,7 +621,7 @@ function recalculateBatch(_batchFloatID, _batchIntegerID, _fixedPointBatch, _get
         var out = '';
         do {
             let val, delim;
-            const re = /([^\s,;]*?)([\s,;]+)(.*)/imgs;
+            const re = /([^\[\]\{\}\s,;]*?)([\[\]\{\}\s,;]+)(.*)/imgs;
             let arr = [...rem.matchAll(re)][0];
             if (arr) {
                 val = arr[1];
@@ -633,7 +633,10 @@ function recalculateBatch(_batchFloatID, _batchIntegerID, _fixedPointBatch, _get
                 rem = false;
             }
             let strval;
-            if (_fixedPointBatch.floatChanged) {
+            if ('' == val) {
+                strval = '';
+            }
+            else if (_fixedPointBatch.floatChanged) {
                 _fixedPointBatch.float = parseFloat(val);
                 switch (fmt) {
                     case 'hex':
