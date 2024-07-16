@@ -1,8 +1,13 @@
 html {
     padding: 10px;
     box-sizing: border-box;
-    font-family: sans-serif;
+}
+
+html, .ui-widget {
+    font-family: "Nanum Gothic", sans-serif;
+    font-weight: 400;
     font-size: 16px;
+    font-style: normal;
 }
 
 html, body, input, fieldset, select, textarea, div.ui-tabs {
@@ -81,7 +86,7 @@ legend + * {
 }
 
 legend {
-    font-weight: bold;
+    font-weight: 700;
 }
 
 div#container {
