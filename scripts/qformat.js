@@ -253,11 +253,7 @@ class FixedPointConverter {
     * Bit-mask for the integer value.
     */
     get _wordMask() {
-        if (this._numBits < 64) {
-            return ((BigInt(1) << BigInt(this._numBits)) - 1n);
-        } else {
-            return BigInt(0xFFFFFFFFFFFFFFFFn);
-        }
+        return ((BigInt(1) << BigInt(this._numBits)) - 1n);
     }
 
     /**
