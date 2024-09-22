@@ -168,6 +168,13 @@ class FixedPointConverter {
     }
 
     /**
+     * Check whether specified value is meaningful in double-precision floating-point.
+     */
+    get resolutionLessThanMachineEpsilon() {
+        return this._numFracBits > 52;
+    }
+
+    /**
     * Get the representation error.
     */
     get error() {
@@ -375,6 +382,13 @@ function updateFixedPointControls(_numBitsID, _numFracBitsID, _integerID, _float
     // update control values
     $(_numBitsID + ' option:selected').val(fixedPoint.numBits.toString());
     $(_signedID).prop('checked', fixedPoint.signed);
+
+    // rounding errors for very small numbers
+    if (fixedPoint.resolutionLessThanMachineEpsilon) {
+        setError(_numFracBitsID, "Chosen resolution is less than double-precision machine epsilon. Data will be inaccurate.");
+    } else {
+        clearError(_numFracBitsID);
+    }
 
     // raise errors in UI
     var error = false;
