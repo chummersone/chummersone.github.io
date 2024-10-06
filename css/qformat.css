@@ -302,11 +302,15 @@ sup {
     font-size: 90%;
 }
 
-/* Responsive layout - when the screen is less than 444px wide */
+/* Responsive layout - when the screen is less than 474px wide */
 @media screen and (max-width: 474px) {
     .col.w25, .col.w75 {
         width: 100%;
         margin-top: 0;
+    }
+
+    label {
+        text-align: center;
     }
 
     table#bit-pos {
@@ -336,7 +340,6 @@ sup {
     table.responsive {
         width: 100%;
     }
-
 
 	table.responsive thead, table.responsive tbody,
     table.responsive th, table.responsive td, table.responsive tr
