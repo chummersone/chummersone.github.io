@@ -189,7 +189,7 @@ function showCoefficientTable() {
 
     var fsLabel = document.createElement("label")
     fsLabel.htmlFor = "sampleRate"
-    fsLabel.innerText = "Sample rate"
+    fsLabel.innerText = "Sample rate / Hz"
     var fsSelect = document.createElement("select")
     fsSelect.id = fsLabel.htmlFor
     rates = ["8000", "16000", "32000", "44100", "48000", "96000"]
