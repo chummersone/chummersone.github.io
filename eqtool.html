@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Parametric Equalizer Designer.">
+        <meta name="keywords" content="parametric, equaliser, equalizer, audio, web audio">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Parametric EQ Designer</title>
+        <meta property="og:title" content="Parametric EQ Designer" />
+        <meta property="og:url" content="https://chummersone.github.io/eqtool.html" />
+        <meta property="og:locale" content="en_GB" />
+        <meta property="og:description" content="Parametric Equalizer Designer.">
+        <meta property="og:site_name" content="chummersone.github.io" />
+        <meta property="og:type" content="website" />
+        <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
+        <link rel="stylesheet" href="https://chummersone.github.io/css/qformat.css">
+        <link rel="stylesheet" href="css/eqtool.css?v=1">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js" integrity="sha512-6HrPqAvK+lZElIZ4mZ64fyxIBTsaX5zAFZg2V/2WT+iKPrFzTzvx6QAsLW2OaLwobhMYBog/+bvmIEEGXi0p1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="scripts/eq.js"></script>
+        <script src="scripts/eq.ui-control.js"></script>
+        <script>
+            Chart.defaults.elements.point = {
+                pointStyle: false
+            }
+
+            Chart.defaults.font = {
+                size: 14,
+                family: "'Nanum Gothic', sans-serif",
+                weight: 400,
+            }
+
+            Chart.defaults.borderColor = "#444"
+            Chart.defaults.color = '#ccc';
+            Chart.defaults.animation.duration = 100;
+
+
+            var context = {
+                audioCtx: null,
+                eq: null,
+                audioNode: null,
+            }
+
+            document.addEventListener("DOMContentLoaded", function(event) {
+                context.audioCtx = new AudioContext();
+                var source = context.audioCtx.createMediaElementSource(document.getElementById("audioPlayer"))
+
+                // Add EQ
+                context.eq = new EqDesigner(context.audioCtx, document.getElementById("eqGraphCanvasMag"),
+                                            document.getElementById("eqGraphCanvasPhase"))
+
+                // Connect input
+                source.connect(context.eq.input)
+                context.eq.output.connect(context.audioCtx.destination)
+
+                context.audioNode = document.getElementById("audioPlayer")
+
+                document.getElementById("audioFileInput").addEventListener("change", function(event) {
+                    var file = event.target.files[0]
+                    playAudio(context, file)
+                }, false)
+
+                document.getElementById("addFilterButton").addEventListener("click", function(event) {
+                    addBiquadControl(context)
+                    context.audioCtx.resume();
+                })
+
+                document.getElementById("viewCoefficients").addEventListener("click", function(event) {
+                    var coeffTable = document.createElement("table")
+                    coeffTable.innerHTML = '<thead>' +
+                            '<tr>' +
+                                '<th>a0</th>' +
+                                '<th>a1</th>' +
+                                '<th>a2</th>' +
+                                '<th>b0</th>' +
+                                '<th>b1</th>' +
+                                '<th>b2</th>' +
+                            '</tr>' +
+                        '</thead>' +
+                        '<tbody>' +
+                        '</tbody>'
+
+                    var control = document.createElement("div")
+                    control.className = "control"
+
+                    var fsLabel = document.createElement("label")
+                    fsLabel.htmlFor = "sampleRate"
+                    fsLabel.innerText = "Sample rate"
+                    var fsSelect = document.createElement("select")
+                    fsSelect.id = fsLabel.htmlFor
+                    rates = ["8000", "16000", "32000", "44100", "48000", "96000"]
+                    for (var i = 0; i < rates.length; i++) {
+                        var option = document.createElement("option")
+                        option.value = rates[i]
+                        option.text = rates[i]
+                        fsSelect.appendChild(option)
+                    }
+                    fsSelect.addEventListener("change", function(event) {
+                        var tBody = coeffTable.getElementsByTagName('tbody')[0]
+                        var content = "<tbody>"
+                        var fs = Number(fsSelect.value)
+                        var coefficients = context.eq.coefficients(fs)
+                        coefficients.forEach(function(coeffs) {
+                            content += '<tr>' +
+                                    '<td>' + String(coeffs.a[0]) + '</td>' +
+                                    '<td>' + String(coeffs.a[1]) + '</td>' +
+                                    '<td>' + String(coeffs.a[2]) + '</td>' +
+                                    '<td>' + String(coeffs.b[0]) + '</td>' +
+                                    '<td>' + String(coeffs.b[1]) + '</td>' +
+                                    '<td>' + String(coeffs.b[2]) + '</td>' +
+                                '</tr>'
+                        })
+                        content += "</tbody>"
+                        tBody.innerHTML = content
+                    })
+                    control.append(fsLabel, fsSelect)
+
+                    var info = document.createElement("p")
+                    info.innerHTML = 'Use the <a target="_blank" href="qformat.html">Q-format Converter</a> to convert to fixed-point.'
+
+                    createPopup(control, coeffTable, info)
+                    fsSelect.value = 48000
+                    fsSelect.dispatchEvent(new Event("change"))
+                })
+            })
+        </script>
+    </head>
+
+    <body>
+        <h1>Parametric EQ Designer</h1>
+
+        <div class="controlPanel" id="filterControls"><!--
+
+         --><div class="controlGroup" id="mainControls"><!--
+
+             --><div class="control"><!--
+                 --><p>Choose an audio file to play. Note that different browsers support different audio file formats.</p><!--
+                 --><input type="file" accept="audio/*" id="audioFileInput" /><!--
+             --></div><!--
+             --><div class="control"><!--
+                 --><audio controls id="audioPlayer"><!--
+             --></div><!--
+             --><div class="control"><!--
+                 --><p>Add a filter to the equaliser.</p><!--
+                 --><button id="addFilterButton">Add filter</button><!--
+             --></div><!--
+             --><div class="control"><!--
+                 --><p>View the floating-point filter coefficients.</p><!--
+                 --><button id="viewCoefficients">View coefficients</button><!--
+             --></div><!--
+
+         --></div><!--
+
+        --></div>
+
+        <div class="controlPanel" id="plotControls">
+
+            <div id="eqGraph">
+                <canvas id="eqGraphCanvasMag">Canvas not Supported</canvas>
+                <canvas id="eqGraphCanvasPhase">Canvas not Supported</canvas>
+            </div>
+
+        </div>
+
+    </body>
+</html>
