@@ -42,16 +42,20 @@ div.popup-content, div.controlGroup, div.controlPanel {
     border-radius: 4px;
 }
 
-div#eqGraph {
-
-}
-
 div.controlGroup, div.popup-content div.control {
     padding: 0px;
     display: inline-block;
-    margin: 5px;
+    margin: 5px 0;
     width: 300px;
     vertical-align: top;
+}
+
+div.controlGroup, div.popup-content div.control {
+    margin: 5px;
+}
+
+div.popup-content div.control {
+    margin: 5px 0;
 }
 
 div.controlGroup input, div.controlGroup label {
@@ -59,17 +63,29 @@ div.controlGroup input, div.controlGroup label {
     width: 100%;
 }
 
-div.control {
-    padding: 5px;
-    margin: 5px;
-}
-
 div.controlGroup div.control {
     background-color: #444;
 }
 
+div.control {
+    padding: 5px;
+    margin: 5px 0;
+}
+
+div.controlGroup {
+    padding: 5px;
+}
+
+div.control:first-child {
+    margin-top: 0;
+}
+
+div.control:last-child {
+    margin-bottom: 0;
+}
+
 div.controlPanel {
-    margin: 5px;
+    margin: 5px 0;
 }
 
 audio {
