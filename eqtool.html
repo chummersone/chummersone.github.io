@@ -65,62 +65,18 @@
                     context.audioCtx.resume();
                 })
 
+                document.getElementById("inputGain_number").addEventListener("change", function(event) {
+                    setInputGain(context.eq, event.target.value)
+                    document.getElementById("inputGain").value = event.target.value
+                }, false)
+
+                document.getElementById("inputGain").addEventListener("input", function(event) {
+                    setInputGain(context.eq, event.target.value)
+                    document.getElementById("inputGain_number").value = event.target.value
+                }, false)
+
                 document.getElementById("viewCoefficients").addEventListener("click", function(event) {
-                    var coeffTable = document.createElement("table")
-                    coeffTable.innerHTML = '<thead>' +
-                            '<tr>' +
-                                '<th>a0</th>' +
-                                '<th>a1</th>' +
-                                '<th>a2</th>' +
-                                '<th>b0</th>' +
-                                '<th>b1</th>' +
-                                '<th>b2</th>' +
-                            '</tr>' +
-                        '</thead>' +
-                        '<tbody>' +
-                        '</tbody>'
-
-                    var control = document.createElement("div")
-                    control.className = "control"
-
-                    var fsLabel = document.createElement("label")
-                    fsLabel.htmlFor = "sampleRate"
-                    fsLabel.innerText = "Sample rate"
-                    var fsSelect = document.createElement("select")
-                    fsSelect.id = fsLabel.htmlFor
-                    rates = ["8000", "16000", "32000", "44100", "48000", "96000"]
-                    for (var i = 0; i < rates.length; i++) {
-                        var option = document.createElement("option")
-                        option.value = rates[i]
-                        option.text = rates[i]
-                        fsSelect.appendChild(option)
-                    }
-                    fsSelect.addEventListener("change", function(event) {
-                        var tBody = coeffTable.getElementsByTagName('tbody')[0]
-                        var content = "<tbody>"
-                        var fs = Number(fsSelect.value)
-                        var coefficients = context.eq.coefficients(fs)
-                        coefficients.forEach(function(coeffs) {
-                            content += '<tr>' +
-                                    '<td>' + String(coeffs.a[0]) + '</td>' +
-                                    '<td>' + String(coeffs.a[1]) + '</td>' +
-                                    '<td>' + String(coeffs.a[2]) + '</td>' +
-                                    '<td>' + String(coeffs.b[0]) + '</td>' +
-                                    '<td>' + String(coeffs.b[1]) + '</td>' +
-                                    '<td>' + String(coeffs.b[2]) + '</td>' +
-                                '</tr>'
-                        })
-                        content += "</tbody>"
-                        tBody.innerHTML = content
-                    })
-                    control.append(fsLabel, fsSelect)
-
-                    var info = document.createElement("p")
-                    info.innerHTML = 'Use the <a target="_blank" href="qformat.html">Q-format Converter</a> to convert to fixed-point.'
-
-                    createPopup(control, coeffTable, info)
-                    fsSelect.value = 48000
-                    fsSelect.dispatchEvent(new Event("change"))
+                    showCoefficientTable()
                 })
             })
         </script>
@@ -137,16 +93,20 @@
                  --><p>Choose an audio file to play. Note that different browsers support different audio file formats.</p><!--
                  --><input type="file" accept="audio/*" id="audioFileInput" /><!--
              --></div><!--
+
              --><div class="control"><!--
                  --><audio controls id="audioPlayer"><!--
              --></div><!--
+
              --><div class="control"><!--
-                 --><p>Add a filter to the equaliser.</p><!--
-                 --><button id="addFilterButton">Add filter</button><!--
-             --></div><!--
-             --><div class="control"><!--
-                 --><p>View the floating-point filter coefficients.</p><!--
+                 --><button id="addFilterButton">Add filter</button><br><!--
                  --><button id="viewCoefficients">View coefficients</button><!--
+             --></div><!--
+
+             --><div class="control"><!--
+                 --><label for="inputGain">Input gain / dB</label><!--
+                 --><input type="range" id="inputGain" min="-20" max="20" step="0.1" value="0"><!--
+                 --><input type="number" id="inputGain_number" min="-20" max="20" step="0.1" value="0"><!--
              --></div><!--
 
          --></div><!--

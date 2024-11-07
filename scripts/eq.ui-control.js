@@ -44,6 +44,7 @@ function addBiquadControl(context) {
 
     // Add biquad and its response
     var biquad = context.eq.addBiquad()
+    biquad.type = "peaking"
 
     // The group of biquad controls
     var group = document.createElement("div")
@@ -64,7 +65,9 @@ function addBiquadControl(context) {
         option.text = types[i]
         typeInput.appendChild(option)
     }
-    typeInput.value = biquad.type.defaultValue
+    typeInput.value = biquad.type
+    typeInput.selectedIndex = types.indexOf(biquad.type)
+    typeInput.options[types.indexOf(biquad.type)].selected = true
     typeControl.append(typeLabel, typeInput)
 
     // Add remaining controls
@@ -106,11 +109,11 @@ function addBiquadControl(context) {
         return control
     }
 
-    var freqControl = createNumberInput("biquadFrequency-" + num, "Frequency", 1, 20000, 1, biquad.frequency.defaultValue, biquad.frequency, toMel, function(m) { return Math.round(fromMel(m)) })
+    var freqControl = createNumberInput("biquadFrequency-" + num, "Frequency / Hz", 20, 20000, 1, biquad.frequency.value, biquad.frequency, toMel, function(m) { return Math.round(fromMel(m)) })
 
-    var qControl = createNumberInput("biquadQ-" + num, "Q", 0, 10, 0.0001, biquad.Q.defaultValue, biquad.Q, doNothing, doNothing)
+    var qControl = createNumberInput("biquadQ-" + num, "Q", 0, 10, 0.0001, biquad.Q.value, biquad.Q, doNothing, doNothing)
 
-    var gainControl = createNumberInput("biquadGain-" + num, "Gain", -20, 20, 0.1, biquad.gain.defaultValue, biquad.gain, doNothing, doNothing)
+    var gainControl = createNumberInput("biquadGain-" + num, "Gain / dB", -20, 20, 0.1, biquad.gain.value, biquad.gain, doNothing, doNothing)
 
     var removeButtonDiv = document.createElement("div")
     removeButtonDiv.className = "control"
@@ -159,4 +162,70 @@ function createPopup(content) {
     document.body.append(bg);
 
     return bg
+}
+
+function setInputGain(eq, gainInDB) {
+    eq.input.gain.value = linear(gainInDB)
+    eq.redraw()
+}
+
+function showCoefficientTable() {
+    var coeffTable = document.createElement("table")
+    coeffTable.innerHTML = '<thead>' +
+            '<tr>' +
+                '<th>a0</th>' +
+                '<th>a1</th>' +
+                '<th>a2</th>' +
+                '<th>b0</th>' +
+                '<th>b1</th>' +
+                '<th>b2</th>' +
+            '</tr>' +
+        '</thead>' +
+        '<tbody>' +
+        '</tbody>'
+
+    var control = document.createElement("div")
+    control.className = "control"
+
+    var fsLabel = document.createElement("label")
+    fsLabel.htmlFor = "sampleRate"
+    fsLabel.innerText = "Sample rate"
+    var fsSelect = document.createElement("select")
+    fsSelect.id = fsLabel.htmlFor
+    rates = ["8000", "16000", "32000", "44100", "48000", "96000"]
+    for (var i = 0; i < rates.length; i++) {
+        var option = document.createElement("option")
+        option.value = rates[i]
+        option.text = rates[i]
+        fsSelect.appendChild(option)
+    }
+    fsSelect.addEventListener("change", function(event) {
+        var tBody = coeffTable.getElementsByTagName('tbody')[0]
+        var content = "<tbody>"
+        var fs = Number(fsSelect.value)
+        var coefficients = context.eq.coefficients(fs)
+        coefficients.forEach(function(coeffs) {
+            content += '<tr>' +
+                    '<td>' + String(coeffs.a[0]) + '</td>' +
+                    '<td>' + String(coeffs.a[1]) + '</td>' +
+                    '<td>' + String(coeffs.a[2]) + '</td>' +
+                    '<td>' + String(coeffs.b[0]) + '</td>' +
+                    '<td>' + String(coeffs.b[1]) + '</td>' +
+                    '<td>' + String(coeffs.b[2]) + '</td>' +
+                '</tr>'
+        })
+        content += "</tbody>"
+        tBody.innerHTML = content
+    })
+    control.append(fsLabel, fsSelect)
+
+    var info = document.createElement("p")
+    info.innerHTML = 'Use the <a target="_blank" href="qformat.html">Q-format Converter</a> to convert to fixed-point.'
+
+    createPopup(control, coeffTable, info)
+    var defaultRate = "48000"
+    fsSelect.value = defaultRate
+    fsSelect.selectedIndex = rates.indexOf(defaultRate)
+    fsSelect.options[rates.indexOf(defaultRate)].selected = true
+    fsSelect.dispatchEvent(new Event("change"))
 }

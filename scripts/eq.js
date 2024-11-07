@@ -2,6 +2,10 @@ function dB(x) {
     return 20 * Math.log10(x)
 }
 
+function linear(x) {
+    return 10 ** (x / 20)
+}
+
 function degrees(x) {
     return 180 * (x / Math.PI)
 }
