@@ -39,6 +39,7 @@
                 audioCtx: null,
                 eq: null,
                 audioNode: null,
+                audioFiles: [],
             }
 
             document.addEventListener("DOMContentLoaded", function(event) {
@@ -56,8 +57,11 @@
                 context.audioNode = document.getElementById("audioPlayer")
 
                 document.getElementById("audioFileInput").addEventListener("change", function(event) {
-                    var file = event.target.files[0]
-                    playAudio(context, file)
+
+                    Array.prototype.forEach.call(event.target.files, (file) => {
+                        context.audioFiles.push(new AudioFile(file, context.audioCtx, context.audioNode))
+                    })
+                    context.audioFiles[0].play()
                 }, false)
 
                 document.getElementById("addFilterButton").addEventListener("click", function(event) {
@@ -85,12 +89,12 @@
     <body>
         <h1>Parametric EQ Designer</h1>
 
-        <div class="controlPanel" id="filterControls"><!--
+        <div class="controlPanel" id="audioControls"><!--
 
          --><div class="controlGroup" id="mainControls"><!--
 
              --><div class="control"><!--
-                 --><p>Choose an audio file to play. Note that different browsers support different audio file formats.</p><!--
+                 --><p>Choose audio files to play. Note that different browsers support different audio file formats.</p><!--
                  --><input type="file" accept="audio/*" id="audioFileInput" /><!--
              --></div><!--
 
@@ -98,7 +102,7 @@
                  --><audio controls id="audioPlayer"><!--
              --></div><!--
 
-             --><div class="control"><!--
+             --><div class="control center"><!--
                  --><button id="addFilterButton">Add filter</button><br><!--
                  --><button id="viewCoefficients">View coefficients</button><!--
              --></div><!--
@@ -111,7 +115,19 @@
 
          --></div><!--
 
-        --></div>
+         --><div class="controlGroup" id="playlistGroup"><!--
+
+             --><div class="control" id="playlistControl"><!--
+
+             --></div><!--
+
+         --></div><!--
+
+        --></div><!--
+
+     --><div class="controlPanel" id="filterControls"><!--
+
+     --></div>
 
         <div class="controlPanel" id="plotControls">
 

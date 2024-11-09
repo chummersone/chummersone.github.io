@@ -20,6 +20,44 @@ function doNothing(x) {
     return x
 }
 
+class AudioFile {
+
+    constructor(file, audioCtx, audioNode) {
+        this.audioCtx = audioCtx
+        this.audioNode = audioNode
+        this.file = file
+        this.isFileRead = false
+        this.reader = new FileReader()
+        this.reader.addEventListener("loadend", (e) => {
+            this.isFileRead = true
+        })
+        this.reader.readAsDataURL(file)
+    }
+
+    #doPlayback() {
+        this.audioNode.src = this.reader.result
+        var promise = this.audioNode.play()
+        if (promise) {
+            //Older browsers may not return a promise, according to the MDN website
+            promise.catch((error) => {
+                console.log(error)
+                window.alert("Error loading audio file.\n\nTry a different file, or a different browser.")
+            })
+        }
+        this.audioCtx.resume()
+    }
+
+    play() {
+        if (this.isFileRead) {
+            this.#doPlayback()
+        } else {
+            this.reader.addEventListener("loadend", () => { this.#doPlayback() }, {once: true})
+        }
+
+    }
+
+}
+
 function playAudio(context, file) {
     const reader = new FileReader()
     reader.onloadend = (e) => {
