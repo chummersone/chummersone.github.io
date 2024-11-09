@@ -56,24 +56,53 @@ class AudioFile {
 
     }
 
+    stop() {
+        this.audioNode.pause()
+        this.audioNode.currentTime = 0
+    }
+
 }
 
-function playAudio(context, file) {
-    const reader = new FileReader()
-    reader.onloadend = (e) => {
-        context.audioNode.src = e.target.result
+class Playlist {
 
-        var promise = context.audioNode.play()
-        if (promise) {
-            //Older browsers may not return a promise, according to the MDN website
-            promise.catch((error) => {
-                console.log(error)
-                window.alert("Error loading audio file.\n\nTry a different file, or a different browser.")
-            });
+    constructor(containerID) {
+        this.containerID = containerID
+        this.files = []
+        this.nowPlaying = null
+    }
+
+    addFile(audioFile) {
+        this.files.push(audioFile)
+
+        var trackControls = document.createElement("div")
+        trackControls.className = "trackControls"
+
+        var trackName = document.createElement("div")
+        trackName.className = "trackName"
+        trackName.innerHTML = audioFile.file.name
+
+        trackControls.append(trackName)
+
+        document.getElementById(this.containerID).append(trackControls)
+    }
+
+    play(index) {
+        if (this.nowPlaying) {
+            this.nowPlaying.stop()
         }
-        context.audioCtx.resume()
-    };
-    reader.readAsDataURL(file)
+
+        if (index.constructor.name == "AudioFile") {
+            index = this.files.indexOf(index)
+        }
+        this.nowPlaying = this.files[index]
+        this.nowPlaying.play()
+
+        var that = this
+        this.nowPlaying.audioNode.addEventListener("ended", function(event) {
+            var next = (index + 1) % that.files.length
+            that.play(next)
+        }, {once: true})
+    }
 }
 
 function addBiquadControl(context) {

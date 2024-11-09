@@ -39,7 +39,7 @@
                 audioCtx: null,
                 eq: null,
                 audioNode: null,
-                audioFiles: [],
+                playlist: null,
             }
 
             document.addEventListener("DOMContentLoaded", function(event) {
@@ -56,12 +56,12 @@
 
                 context.audioNode = document.getElementById("audioPlayer")
 
+                context.playlist = new Playlist("playlistControl")
                 document.getElementById("audioFileInput").addEventListener("change", function(event) {
-
                     Array.prototype.forEach.call(event.target.files, (file) => {
-                        context.audioFiles.push(new AudioFile(file, context.audioCtx, context.audioNode))
+                        context.playlist.addFile(new AudioFile(file, context.audioCtx, context.audioNode))
                     })
-                    context.audioFiles[0].play()
+                    context.playlist.play(0)
                 }, false)
 
                 document.getElementById("addFilterButton").addEventListener("click", function(event) {
@@ -95,7 +95,7 @@
 
              --><div class="control"><!--
                  --><p>Choose audio files to play. Note that different browsers support different audio file formats.</p><!--
-                 --><input type="file" accept="audio/*" id="audioFileInput" /><!--
+                 --><input type="file" accept="audio/*" id="audioFileInput" multiple><!--
              --></div><!--
 
              --><div class="control"><!--
