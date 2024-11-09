@@ -61,7 +61,9 @@
                     Array.prototype.forEach.call(event.target.files, (file) => {
                         context.playlist.addFile(new AudioFile(file, context.audioCtx, context.audioNode))
                     })
-                    context.playlist.play(0)
+                    if (!context.playlist.nowPlaying) {
+                        context.playlist.play(0)
+                    }
                 }, false)
 
                 document.getElementById("addFilterButton").addEventListener("click", function(event) {

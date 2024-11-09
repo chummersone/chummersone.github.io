@@ -99,3 +99,40 @@ div.controlPanel {
 audio {
     width: 100%;
 }
+
+div#audioControls {
+    display: flex;
+}
+
+div#mainControls {
+
+}
+
+div#playlistGroup {
+    flex-grow: 100;
+}
+
+div.trackName {
+    padding-left: 4px;
+    padding-top: 2px;
+}
+
+div.trackControls {
+    padding: 1px;
+    vertical-align: middle;
+    display: inline-flex;
+    width: 100%;
+}
+
+div.trackControls *, div.trackControls * span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+div.trackControls button {
+    margin: 1px;
+}
+
+div#nowPlaying {
+    background-color: darkred;
+}

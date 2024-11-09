@@ -79,11 +79,33 @@ class Playlist {
 
         var trackName = document.createElement("div")
         trackName.className = "trackName"
-        trackName.innerHTML = audioFile.file.name
+        trackName.innerHTML = "<span>" + audioFile.file.name + "</span>"
 
-        trackControls.append(trackName)
+        var playButton = document.createElement("button")
+        playButton.innerHTML = "&#9658;"
+        var that = this
+        playButton.addEventListener("click", function(event) {
+            that.play(audioFile)
+        })
+
+        var removeButton = document.createElement("button")
+        removeButton.innerHTML = "&#x2715;"
+        removeButton.addEventListener("click", function(event) {
+            that.removeFile(audioFile)
+        })
+
+        trackControls.append(playButton, removeButton, trackName)
 
         document.getElementById(this.containerID).append(trackControls)
+    }
+
+    removeFile(index) {
+        if (index.constructor.name == "AudioFile") {
+            index = this.files.indexOf(index)
+        }
+        var controls = document.querySelectorAll('.trackControls')
+        controls[index].remove()
+        this.files.splice(index, 1)
     }
 
     play(index) {
@@ -102,6 +124,13 @@ class Playlist {
             var next = (index + 1) % that.files.length
             that.play(next)
         }, {once: true})
+
+        var npElem = document.getElementById("nowPlaying")
+        if (npElem) {
+            npElem.id = ""
+        }
+        var controls = document.querySelectorAll('.trackControls')
+        controls[index].id = "nowPlaying"
     }
 }
 
