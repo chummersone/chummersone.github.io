@@ -41,7 +41,10 @@ class AudioFile {
             //Older browsers may not return a promise, according to the MDN website
             promise.catch((error) => {
                 console.log(error)
-                window.alert("Error loading audio file.\n\nTry a different file, or a different browser.")
+                if (error.code !== 20)
+                {
+                    window.alert("Error loading audio file.\n\nTry a different file, or a different browser.")
+                }
             })
         }
         this.audioCtx.resume()
