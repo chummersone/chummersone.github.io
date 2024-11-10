@@ -94,6 +94,7 @@ div.control:last-child {
 
 div.controlPanel {
     margin: 5px 0;
+    padding: 5px;
 }
 
 audio {
@@ -102,10 +103,6 @@ audio {
 
 div#audioControls {
     display: flex;
-}
-
-div#mainControls {
-
 }
 
 div#playlistGroup {
@@ -135,4 +132,19 @@ div.trackControls button {
 
 div#nowPlaying {
     background-color: darkred;
+}
+
+div#playlistGroup {
+    text-align: center;
+}
+
+div#filterControls, div#playlistGroup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+div#filterControls {
+    min-height: 100px;
 }

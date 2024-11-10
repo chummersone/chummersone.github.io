@@ -68,13 +68,38 @@ class AudioFile {
 
 class Playlist {
 
+    #controlID = "playlistControl"
+
     constructor(containerID) {
         this.containerID = containerID
         this.files = []
         this.nowPlaying = null
+        this.playlistIsEmpty()
+    }
+
+    playlistIsEmpty() {
+        var group = document.getElementById(this.containerID)
+        var info = document.createElement("span")
+        info.innerHTML = 'Click "Choose Files" to add audio files to the playlist'
+        info.id = "playlistInfo"
+        group.append(info)
+        var controls = document.getElementById(this.controlID)
+        if (controls) {
+            controls.remove()
+        }
     }
 
     addFile(audioFile) {
+        var info = document.getElementById("playlistInfo")
+        var controls
+        if (info) {
+            info.remove()
+            controls = document.createElement("div")
+            controls.id = this.controlID
+            controls.className = "control"
+            document.getElementById(this.containerID).append(controls)
+        }
+
         this.files.push(audioFile)
 
         var trackControls = document.createElement("div")
@@ -99,7 +124,7 @@ class Playlist {
 
         trackControls.append(playButton, removeButton, trackName)
 
-        document.getElementById(this.containerID).append(trackControls)
+        document.getElementById(this.controlID).append(trackControls)
     }
 
     removeFile(index) {
@@ -109,6 +134,9 @@ class Playlist {
         var controls = document.querySelectorAll('.trackControls')
         controls[index].remove()
         this.files.splice(index, 1)
+        if (this.files.length == 0) {
+            this.playlistIsEmpty()
+        }
     }
 
     play(index) {
@@ -137,7 +165,20 @@ class Playlist {
     }
 }
 
+function biquadControlsAreEmpty() {
+    var filters = document.getElementById("filterControls")
+    var info = document.createElement("span")
+    info.innerHTML = 'Choose "Add filter" above to add filters to the EQ'
+    info.id = "addFilterInfo"
+    filters.append(info)
+}
+
 function addBiquadControl(context) {
+    var info = document.getElementById("addFilterInfo")
+    if (info) {
+        info.remove()
+    }
+
     const index = context.eq.numBiquads
     const num = String(Date.now())
 
@@ -223,6 +264,9 @@ function addBiquadControl(context) {
         context.eq.removeBiquad(biquad)
         group.remove()
         context.eq.redraw();
+        if (context.eq.biquads.length == 0) {
+            biquadControlsAreEmpty();
+        }
     })
     removeButtonDiv.append(removeButton)
 

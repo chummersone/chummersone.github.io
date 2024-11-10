@@ -56,7 +56,7 @@
 
                 context.audioNode = document.getElementById("audioPlayer")
 
-                context.playlist = new Playlist("playlistControl")
+                context.playlist = new Playlist("playlistGroup")
                 document.getElementById("audioFileInput").addEventListener("change", function(event) {
                     Array.prototype.forEach.call(event.target.files, (file) => {
                         context.playlist.addFile(new AudioFile(file, context.audioCtx, context.audioNode))
@@ -84,6 +84,8 @@
                 document.getElementById("viewCoefficients").addEventListener("click", function(event) {
                     showCoefficientTable()
                 })
+
+                biquadControlsAreEmpty()
             })
         </script>
     </head>
@@ -118,10 +120,6 @@
          --></div><!--
 
          --><div class="controlGroup" id="playlistGroup"><!--
-
-             --><div class="control" id="playlistControl"><!--
-
-             --></div><!--
 
          --></div><!--
 
