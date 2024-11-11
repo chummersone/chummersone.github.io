@@ -68,9 +68,10 @@ class AudioFile {
 
 class Playlist {
 
-    #controlID = "playlistControl"
+    #controlID
 
     constructor(containerID) {
+        this.controlID = "playlistControl"
         this.containerID = containerID
         this.files = []
         this.nowPlaying = null
@@ -188,7 +189,7 @@ function addBiquadControl(context) {
 
     // The group of biquad controls
     var group = document.createElement("div")
-    group.className = "controlGroup"
+    group.className = "controlGroup filter"
 
     // Add the filter type select box
     var typeControl = document.createElement("div")

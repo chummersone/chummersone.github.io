@@ -50,6 +50,13 @@ div.controlGroup, div.popup-content div.control {
     vertical-align: top;
 }
 
+div.controlGroup.filter {
+    min-width: 200px;
+    max-width: 400px;
+    width: auto;
+    flex: 1 1 300px;
+}
+
 div.controlGroup, div.popup-content div.control {
     margin: 5px;
 }
@@ -103,15 +110,25 @@ audio {
 
 div#audioControls {
     display: flex;
+    flex-wrap: wrap;
 }
 
 div#playlistGroup {
-    flex-grow: 100;
+    flex-grow: 5;
+    flex-shrink: 1;
+    min-width: 300px;
+}
+
+div#mainControls {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 300px;
 }
 
 div.trackName {
     padding-left: 4px;
     padding-top: 2px;
+    text-align: left;
 }
 
 div.trackControls {
@@ -136,6 +153,10 @@ div#nowPlaying {
 
 div#playlistGroup {
     text-align: center;
+}
+
+div#playlistControl {
+    width: 100%;
 }
 
 div#filterControls, div#playlistGroup {
