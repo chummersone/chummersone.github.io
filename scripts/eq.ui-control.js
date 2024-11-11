@@ -315,6 +315,7 @@ function setInputGain(eq, gainInDB) {
 
 function showCoefficientTable() {
     var coeffTable = document.createElement("table")
+    coeffTable.className = "responsive"
     coeffTable.innerHTML = '<thead>' +
             '<tr>' +
                 '<th>a0</th>' +
@@ -350,12 +351,12 @@ function showCoefficientTable() {
         var coefficients = context.eq.coefficients(fs)
         coefficients.forEach(function(coeffs) {
             content += '<tr>' +
-                    '<td>' + String(coeffs.a[0]) + '</td>' +
-                    '<td>' + String(coeffs.a[1]) + '</td>' +
-                    '<td>' + String(coeffs.a[2]) + '</td>' +
-                    '<td>' + String(coeffs.b[0]) + '</td>' +
-                    '<td>' + String(coeffs.b[1]) + '</td>' +
-                    '<td>' + String(coeffs.b[2]) + '</td>' +
+                    '<td data-label="a0">' + String(coeffs.a[0]) + '</td>' +
+                    '<td data-label="a1">' + String(coeffs.a[1]) + '</td>' +
+                    '<td data-label="a2">' + String(coeffs.a[2]) + '</td>' +
+                    '<td data-label="b0">' + String(coeffs.b[0]) + '</td>' +
+                    '<td data-label="b1">' + String(coeffs.b[1]) + '</td>' +
+                    '<td data-label="b2">' + String(coeffs.b[2]) + '</td>' +
                 '</tr>'
         })
         content += "</tbody>"
