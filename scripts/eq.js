@@ -197,12 +197,13 @@ class EqDesigner extends ParametricEQ {
                 callback: function(value, index, ticks) {
                     let log = Math.log10(value)
                     if (Math.round(log) == log) {
-                        return value
+                        return value.toString()
                     } else {
                         return ''
                     }
                 },
             },
+            afterBuildTicks: axis => axis.ticks = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000].map(v => ({ value: v }))
         }
 
         this.magPlot = new Chart(magCtx, {
