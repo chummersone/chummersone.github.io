@@ -51,10 +51,8 @@ div.controlGroup, div.popup-content div.control {
 }
 
 div.controlGroup.filter {
-    min-width: 200px;
-    max-width: 400px;
+    display: block;
     width: auto;
-    flex: 1 1 300px;
 }
 
 div.controlGroup, div.popup-content div.control {
@@ -159,11 +157,19 @@ div#playlistControl {
     width: 100%;
 }
 
-div#filterControls, div#playlistGroup {
+div#playlistGroup {
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-wrap: wrap;
+    justify-content: left;
+    align-items: top;
+}
+
+div#filterControls {
+    justify-content: left;
+    align-items: top;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 5px;
 }
 
 div#filterControls {

@@ -80,7 +80,7 @@ class Playlist {
 
     playlistIsEmpty() {
         var group = document.getElementById(this.containerID)
-        var info = document.createElement("span")
+        var info = document.createElement("p")
         info.innerHTML = 'Click "Choose Files" to add audio files to the playlist'
         info.id = "playlistInfo"
         group.append(info)
@@ -168,7 +168,7 @@ class Playlist {
 
 function biquadControlsAreEmpty() {
     var filters = document.getElementById("filterControls")
-    var info = document.createElement("span")
+    var info = document.createElement("p")
     info.innerHTML = 'Choose "Add filter" above to add filters to the EQ'
     info.id = "addFilterInfo"
     filters.append(info)
