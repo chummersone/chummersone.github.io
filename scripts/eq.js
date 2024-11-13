@@ -10,6 +10,8 @@ function degrees(x) {
     return 180 * (x / Math.PI)
 }
 
+const lineColors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+
 class ParametricEQ {
 
     constructor(audioContext) {
@@ -209,7 +211,7 @@ class EqDesigner extends ParametricEQ {
         this.magPlot = new Chart(magCtx, {
             type: 'line',
             data: {
-                datasets: [{data: this.overallMag.map(dB), label: 'Overall'}],
+                datasets: [{data: this.overallMag.map(dB), label: 'Overall', borderColor: "white", backgroundColor: "rgba(0,0,0,0)"}],
                 labels: this.frequency,
             },
             options: {
@@ -226,8 +228,7 @@ class EqDesigner extends ParametricEQ {
                 },
                 plugins: {
                     colors: {
-                        enabled: true,
-                        forceOverride: true,
+                        enabled: false,
                     },
                 },
             },
@@ -236,7 +237,7 @@ class EqDesigner extends ParametricEQ {
         this.phasePlot = new Chart(phsCtx, {
             type: 'line',
             data: {
-                datasets: [{data: this.overallPhase.map(degrees), label: 'Overall'}],
+                datasets: [{data: this.overallPhase.map(degrees), label: 'Overall', borderColor: "white", backgroundColor: "rgba(0,0,0,0)"}],
                 labels: this.frequency,
             },
             options: {
@@ -251,8 +252,7 @@ class EqDesigner extends ParametricEQ {
                 },
                 plugins: {
                     colors: {
-                        enabled: true,
-                        forceOverride: true,
+                        enabled: false,
                     },
                 },
             },
@@ -285,8 +285,9 @@ class EqDesigner extends ParametricEQ {
         this.biquads[this.numBiquads - 1].getFrequencyResponse(this.frequency, magCopy, phaseCopy)
         this.magnitudes.push(magCopy)
         this.phases.push(phaseCopy)
-        this.magPlot.data.datasets.push({data: magCopy.map(dB), label: this.numBiquads})
-        this.phasePlot.data.datasets.push({data: phaseCopy.map(degrees), label: this.numBiquads})
+        var color = lineColors[(this.numBiquads - 1) % lineColors.length]
+        this.magPlot.data.datasets.push({data: magCopy.map(dB), label: this.numBiquads, borderDash: [5, 5], borderColor: color, backgroundColor: "rgba(0,0,0,0)"})
+        this.phasePlot.data.datasets.push({data: phaseCopy.map(degrees), label: this.numBiquads, borderDash: [5, 5], borderColor: color, backgroundColor: "rgba(0,0,0,0)"})
         this.redraw()
         return bq
     }
@@ -299,8 +300,11 @@ class EqDesigner extends ParametricEQ {
             this.magPlot.data.datasets.splice(index + 1, 1)
             this.phasePlot.data.datasets.splice(index + 1, 1)
             for (let i = 0; i < this.numBiquads; i++) {
+                var color = lineColors[i % lineColors.length]
                 this.magPlot.data.datasets[i + 1].label = i + 1
+                this.magPlot.data.datasets[i + 1].borderColor = color
                 this.phasePlot.data.datasets[i + 1].label = i + 1
+                this.phasePlot.data.datasets[i + 1].borderColor = color
             }
             this.redraw()
         }
