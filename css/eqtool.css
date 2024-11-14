@@ -181,7 +181,14 @@ div#filterControls, div#playlistGroup {
 
 div#filterControls p, div#playlistGroup p {
     position: absolute;
-    width: 100%;
     text-align: center;
     padding: 0 5px;
+}
+
+div#playlistGroup p {
+    width: calc(100% - 10px);
+}
+
+div#filterControls p {
+    width: 100%;
 }
