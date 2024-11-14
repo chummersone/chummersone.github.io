@@ -151,7 +151,6 @@ div#playlistControl {
 }
 
 div#playlistGroup {
-    position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: left;
@@ -166,7 +165,7 @@ div#filterControls {
     gap: 5px;
 }
 
-div#filterControls {
+div#filterControls, div#playlistGroup {
     position: relative;
     min-height: 100px;
 }
