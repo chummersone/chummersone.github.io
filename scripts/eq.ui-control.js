@@ -26,16 +26,11 @@ class AudioFile {
         this.audioCtx = audioCtx
         this.audioNode = audioNode
         this.file = file
-        this.isFileRead = false
-        this.reader = new FileReader()
-        this.reader.addEventListener("loadend", (e) => {
-            this.isFileRead = true
-        })
-        this.reader.readAsDataURL(file)
+        this.objectURL = URL.createObjectURL(file)
     }
 
-    #doPlayback() {
-        this.audioNode.src = this.reader.result
+    play() {
+        this.audioNode.src = this.objectURL
         var promise = this.audioNode.play()
         if (promise) {
             //Older browsers may not return a promise, according to the MDN website
@@ -50,15 +45,6 @@ class AudioFile {
         this.audioCtx.resume()
     }
 
-    play() {
-        if (this.isFileRead) {
-            this.#doPlayback()
-        } else {
-            this.reader.addEventListener("loadend", () => { this.#doPlayback() }, {once: true})
-        }
-
-    }
-
     stop() {
         this.audioNode.pause()
         this.audioNode.currentTime = 0
@@ -71,7 +57,7 @@ class Playlist {
     #controlID
 
     constructor(containerID) {
-        this.controlID = "playlistControl"
+        this.#controlID = "playlistControl"
         this.containerID = containerID
         this.files = []
         this.nowPlaying = null
@@ -84,7 +70,7 @@ class Playlist {
         info.innerHTML = 'Click "Choose Files" to add audio files to the playlist'
         info.id = "playlistInfo"
         group.append(info)
-        var controls = document.getElementById(this.controlID)
+        var controls = document.getElementById(this.#controlID)
         if (controls) {
             controls.remove()
         }
@@ -96,7 +82,7 @@ class Playlist {
         if (info) {
             info.remove()
             controls = document.createElement("div")
-            controls.id = this.controlID
+            controls.id = this.#controlID
             controls.className = "control"
             document.getElementById(this.containerID).append(controls)
         }
@@ -125,7 +111,7 @@ class Playlist {
 
         trackControls.append(playButton, removeButton, trackName)
 
-        document.getElementById(this.controlID).append(trackControls)
+        document.getElementById(this.#controlID).append(trackControls)
     }
 
     removeFile(index) {
