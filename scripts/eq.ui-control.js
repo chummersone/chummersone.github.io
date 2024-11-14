@@ -299,7 +299,7 @@ function setInputGain(eq, gainInDB) {
     eq.redraw()
 }
 
-function showCoefficientTable() {
+function showCoefficientTable(eq) {
     var coeffTable = document.createElement("table")
     coeffTable.className = "responsive"
     coeffTable.innerHTML = '<thead>' +
@@ -331,10 +331,26 @@ function showCoefficientTable() {
         fsSelect.appendChild(option)
     }
     fsSelect.addEventListener("change", function(event) {
+        var existingError = document.getElementById("coeffError")
+        if (existingError) {
+            existingError.remove()
+        }
+        var fs = Number(fsSelect.value)
+        var maxFrequency = 0
+        eq.biquads.forEach((filter) => {
+            maxFrequency = Math.max(maxFrequency, filter.frequency.value)
+        })
+        if (maxFrequency > (fs / 2)) {
+            var error = document.createElement("div")
+            error.id = "coeffError"
+            error.innerHTML = "One or more filter frequencies exceed the Nyquist limit. The response of the given coefficients will differ from the plotted EQ."
+            error.className = "error"
+            control.append(error)
+        }
+
         var tBody = coeffTable.getElementsByTagName('tbody')[0]
         var content = "<tbody>"
-        var fs = Number(fsSelect.value)
-        var coefficients = context.eq.coefficients(fs)
+        var coefficients = eq.coefficients(fs)
         coefficients.forEach(function(coeffs) {
             content += '<tr>' +
                     '<td data-label="a0">' + String(coeffs.a[0]) + '</td>' +
