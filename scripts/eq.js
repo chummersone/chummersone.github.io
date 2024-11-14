@@ -10,7 +10,28 @@ function degrees(x) {
     return 180 * (x / Math.PI)
 }
 
-const lineColors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+const lineColors = [
+    '#00ff00',
+    '#ff00ff',
+    '#007fff',
+    '#ff7f00',
+    '#7fbf7f',
+    '#7f2181',
+    '#ff0000',
+    '#d1fc04',
+    '#f77ecf',
+    '#487a02',
+    '#0000ff',
+    '#00ffff',
+    '#00ff7f',
+    '#007f7f',
+    '#00007f',
+    '#8196fe',
+    '#f1d77c',
+    '#86f8f1',
+    '#850dfe',
+    '#860500',
+]
 
 class ParametricEQ {
 
