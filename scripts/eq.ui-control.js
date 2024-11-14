@@ -242,7 +242,7 @@ function addBiquadControl(context) {
     var gainControl = createNumberInput("biquadGain-" + num, "Gain / dB", -40, 20, 0.1, biquad.gain.value, biquad.gain, doNothing, doNothing)
 
     var removeButtonDiv = document.createElement("div")
-    removeButtonDiv.className = "control"
+    removeButtonDiv.className = "control center"
     var removeButton = document.createElement("button")
     removeButton.id = "biquadDelete-" + num
     removeButton.innerHTML = "Delete"

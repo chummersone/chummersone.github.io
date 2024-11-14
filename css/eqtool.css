@@ -95,6 +95,20 @@ div.control:last-child {
     margin-bottom: 0;
 }
 
+div.control.center {
+    width: 100%;
+    display: grid;
+    grid-auto-flow: row;
+    grid-auto-columns: 1fr;
+    grid-template-columns: fit-content(100%);
+    justify-content: center;
+}
+
+div.control.center button {
+    width: calc(100% - 10px);
+    margin: 5px;
+}
+
 div.controlPanel {
     margin: 5px 0;
     padding: 5px;
