@@ -86,7 +86,16 @@
                 })
 
                 document.getElementById("remember").addEventListener("click", function(event) {
-                    window.location.href = window.location.href.replace(window.location.hash, "") + "#" + encodeURI(context.eq.stringify());
+                    var eqUrl = window.location.href.replace(window.location.hash, "").replace(/#+$/, "")+ "#" + encodeURI(context.eq.stringify());
+                    //window.location.href =
+                    var hashInfo = document.createElement("p")
+                    hashInfo.style = "word-break: break-all;"
+                    hashInfo.innerHTML = 'Use the following URL to recall this EQ:<br><a href="' + eqUrl + '">' + eqUrl + '</a>'
+                    var popup = createPopup(hashInfo)
+                    hashInfo.addEventListener("click", function(event) {
+                        window.location.href = eqUrl
+                        popup.remove()
+                    })
                 })
 
                 biquadControlsAreEmpty()
@@ -124,8 +133,8 @@
 
              --><div class="control center"><!--
                  --><button id="addFilterButton">Add filter</button><br><!--
-                 --><button id="viewCoefficients">View coefficients</button><!--
-                 --><p><a id="remember">Remember this EQ</a></p><!--
+                 --><button id="viewCoefficients">View coefficients</button><br><!--
+                 --><button id="remember">Remember this EQ</button><!--
              --></div><!--
 
              --><div class="control"><!--

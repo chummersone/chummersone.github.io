@@ -101,7 +101,7 @@ class ParametricEQ {
     #stringifyFilter(biquad) {
         var obj = {
             type: biquad.type,
-            frequency: biquad.frequency.value,
+            freq: biquad.frequency.value,
             Q: biquad.Q.value,
             gain: biquad.gain.value,
         }

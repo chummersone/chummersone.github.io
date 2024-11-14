@@ -385,7 +385,7 @@ function loadEqFromString(context, eqString) {
         var biquadObj = JSON.parse(biquadString)
         var bq = addBiquadControl(context)
         bq.type = biquadObj.type
-        bq.frequency.value = biquadObj.frequency
+        bq.frequency.value = biquadObj.freq
         bq.Q.value = biquadObj.Q
         bq.gain.value = biquadObj.gain
 
