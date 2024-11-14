@@ -1,10 +1,3 @@
-html {
-    font-family: "Nanum Gothic", sans-serif;
-    font-weight: 400;
-    font-size: 12px;
-    font-style: normal;
-}
-
 th, td {
     text-align: center;
 }
@@ -158,6 +151,7 @@ div#playlistControl {
 }
 
 div#playlistGroup {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: left;
@@ -173,5 +167,13 @@ div#filterControls {
 }
 
 div#filterControls {
+    position: relative;
     min-height: 100px;
+}
+
+div#filterControls p, div#playlistGroup p {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    padding: 0 5px;
 }
