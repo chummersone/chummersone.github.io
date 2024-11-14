@@ -2,6 +2,10 @@ th, td {
     text-align: center;
 }
 
+input:disabled {
+    color: gray;
+}
+
 div.popup-bg {
     position: fixed;
     width: 100%;
