@@ -379,9 +379,8 @@ function showCoefficientTable(eq) {
 }
 
 function loadEqFromString(context, eqString) {
-    biquadStrings = eqString.split('&')
-    biquadStrings.forEach((biquadString) => {
-        var biquadObj = JSON.parse(biquadString)
+    biquads = JSON.parse(eqString)
+    biquads.forEach((biquadObj) => {
         var bq = addBiquadControl(context)
         bq.type = biquadObj.type
         bq.frequency.value = biquadObj.freq

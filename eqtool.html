@@ -17,8 +17,8 @@
         <link rel="stylesheet" href="css/qformat.css?v=5">
         <link rel="stylesheet" href="css/eqtool.css?v=4">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js" integrity="sha512-6HrPqAvK+lZElIZ4mZ64fyxIBTsaX5zAFZg2V/2WT+iKPrFzTzvx6QAsLW2OaLwobhMYBog/+bvmIEEGXi0p1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <script src="scripts/eq.js?v=5"></script>
-        <script src="scripts/eq.ui-control.js?v=5"></script>
+        <script src="scripts/eq.js?v=6"></script>
+        <script src="scripts/eq.ui-control.js?v=6"></script>
         <script>
             Chart.defaults.elements.point = {
                 pointStyle: false
@@ -90,7 +90,7 @@
                 })
 
                 document.getElementById("remember").addEventListener("click", function(event) {
-                    var eqUrl = window.location.href.replace(window.location.hash, "").replace(/#+$/, "")+ "#" + encodeURI(context.eq.stringify());
+                    var eqUrl = window.location.href.replace(window.location.hash, "").replace(/#+$/, "")+ "#inputGain=" + document.getElementById("inputGain").value + "&eq=" + encodeURI(context.eq.stringify());
                     var hashInfo = document.createElement("p")
                     hashInfo.style = "word-break: break-all;"
                     hashInfo.innerHTML = 'Use the following URL to recall this EQ:<br><a href="' + eqUrl + '">' + eqUrl + '</a>'
@@ -107,7 +107,20 @@
                 var hash = window.location.hash.split('?')[0];
                 if (hash) {
                     hash = hash.replace(/^\#+/i, '')
-                    loadEqFromString(context, decodeURI(hash))
+                    hash.split("&").forEach((keyval) => {
+                        keyValArr = keyval.split("=")
+                        switch (keyValArr[0]) {
+                            case "eq":
+                                loadEqFromString(context, decodeURI(keyValArr[1]))
+                                break;
+                            case "inputGain":
+                                var inputGain = document.getElementById("inputGain_number")
+                                inputGain.value = keyValArr[1]
+                                inputGain.dispatchEvent(new Event("change"))
+                                break;
+                        }
+                    })
+
                 }
 
                 window.addEventListener('beforeunload', function(event) {
