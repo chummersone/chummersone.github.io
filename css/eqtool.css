@@ -79,10 +79,6 @@ div.control {
     margin: 5px 0;
 }
 
-div.controlGroup, div.control, div.controlPanel {
-    min-height: 40px;
-}
-
 div.control button {
     margin: 2px 0;
 }

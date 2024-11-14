@@ -67,7 +67,7 @@ class Playlist {
     playlistIsEmpty() {
         var group = document.getElementById(this.containerID)
         var info = document.createElement("p")
-        info.innerHTML = 'Click "Choose Files" to add audio files to the playlist'
+        info.innerHTML = 'Click "Choose Files" to add audio files to the playlist. Note that different browsers <a href="https://caniuse.com/?search=audio%20format">support different audio file formats</a>.'
         info.id = "playlistInfo"
         group.append(info)
         var controls = document.getElementById(this.#controlID)

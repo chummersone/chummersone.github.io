@@ -14,11 +14,11 @@
         <meta property="og:type" content="website" />
         <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
-        <link rel="stylesheet" href="css/qformat.css?v=3">
-        <link rel="stylesheet" href="css/eqtool.css?v=3">
+        <link rel="stylesheet" href="css/qformat.css?v=4">
+        <link rel="stylesheet" href="css/eqtool.css?v=4">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js" integrity="sha512-6HrPqAvK+lZElIZ4mZ64fyxIBTsaX5zAFZg2V/2WT+iKPrFzTzvx6QAsLW2OaLwobhMYBog/+bvmIEEGXi0p1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <script src="scripts/eq.js?v=3"></script>
-        <script src="scripts/eq.ui-control.js?v=3"></script>
+        <script src="scripts/eq.js?v=4"></script>
+        <script src="scripts/eq.ui-control.js?v=4"></script>
         <script>
             Chart.defaults.elements.point = {
                 pointStyle: false
@@ -118,12 +118,15 @@
             The overall response arises from connecting the filters in series.
         </p>
 
+        <p>
+            Note that the Web Audio API does not currently support <a href="https://github.com/WebAudio/web-audio-api/issues/2428">setting the Q for low- and high-shelf filters</a>.
+        </p>
+
         <div class="controlPanel" id="audioControls"><!--
 
          --><div class="controlGroup" id="mainControls"><!--
 
              --><div class="control"><!--
-                 --><p>Choose audio files to play. Note that different browsers support different audio file formats.</p><!--
                  --><input type="file" accept="audio/*" id="audioFileInput" multiple><!--
              --></div><!--
 
@@ -131,16 +134,16 @@
                  --><audio controls id="audioPlayer"><!--
              --></div><!--
 
-             --><div class="control center"><!--
-                 --><button id="addFilterButton">Add filter</button><br><!--
-                 --><button id="viewCoefficients">View coefficients</button><br><!--
-                 --><button id="remember">Remember this EQ</button><!--
-             --></div><!--
-
              --><div class="control"><!--
                  --><label for="inputGain">Input gain / dB</label><!--
                  --><input type="range" id="inputGain" min="-20" max="20" step="0.1" value="0"><!--
                  --><input type="number" id="inputGain_number" min="-20" max="20" step="0.1" value="0"><!--
+             --></div><!--
+
+             --><div class="control center"><!--
+                 --><button id="addFilterButton">Add filter</button><br><!--
+                 --><button id="viewCoefficients">View coefficients</button><br><!--
+                 --><button id="remember">Remember this EQ</button><!--
              --></div><!--
 
          --></div><!--
