@@ -204,13 +204,15 @@ class ParametricEQ {
 
 class EqDesigner extends ParametricEQ {
 
-    #numPoints; // number of frequency points
-    #fmin = 10;
-    #fmax = 20000;
+    #numPoints // number of frequency points
+    #fmin = 10
+    #fmax = 20000
 
     constructor(audioContext, magCtx, phsCtx) {
 
         super(audioContext)
+
+        this.redrawCallback = null
 
         this.#numPoints = 256
         this.frequency = new Float32Array(this.#numPoints)
@@ -369,6 +371,10 @@ class EqDesigner extends ParametricEQ {
 
         this.magPlot.update()
         this.phasePlot.update()
+
+        if (this.redrawCallback) {
+            this.redrawCallback()
+        }
     }
 
 }

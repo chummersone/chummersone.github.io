@@ -14,11 +14,11 @@
         <meta property="og:type" content="website" />
         <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
-        <link rel="stylesheet" href="css/qformat.css?v=4">
+        <link rel="stylesheet" href="css/qformat.css?v=5">
         <link rel="stylesheet" href="css/eqtool.css?v=4">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js" integrity="sha512-6HrPqAvK+lZElIZ4mZ64fyxIBTsaX5zAFZg2V/2WT+iKPrFzTzvx6QAsLW2OaLwobhMYBog/+bvmIEEGXi0p1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <script src="scripts/eq.js?v=4"></script>
-        <script src="scripts/eq.ui-control.js?v=4"></script>
+        <script src="scripts/eq.js?v=5"></script>
+        <script src="scripts/eq.ui-control.js?v=5"></script>
         <script>
             Chart.defaults.elements.point = {
                 pointStyle: false
@@ -40,15 +40,19 @@
                 eq: null,
                 audioNode: null,
                 playlist: null,
+                saved: true,
             }
 
             document.addEventListener("DOMContentLoaded", function(event) {
-                context.audioCtx = new AudioContext();
+                context.audioCtx = new AudioContext()
                 var source = context.audioCtx.createMediaElementSource(document.getElementById("audioPlayer"))
 
                 // Add EQ
                 context.eq = new EqDesigner(context.audioCtx, document.getElementById("eqGraphCanvasMag"),
                                             document.getElementById("eqGraphCanvasPhase"))
+                context.eq.redrawCallback = function() {
+                    context.saved = false
+                }
 
                 // Connect input
                 source.connect(context.eq.input)
@@ -87,12 +91,12 @@
 
                 document.getElementById("remember").addEventListener("click", function(event) {
                     var eqUrl = window.location.href.replace(window.location.hash, "").replace(/#+$/, "")+ "#" + encodeURI(context.eq.stringify());
-                    //window.location.href =
                     var hashInfo = document.createElement("p")
                     hashInfo.style = "word-break: break-all;"
                     hashInfo.innerHTML = 'Use the following URL to recall this EQ:<br><a href="' + eqUrl + '">' + eqUrl + '</a>'
                     var popup = createPopup(hashInfo)
                     hashInfo.addEventListener("click", function(event) {
+                        context.saved = true
                         window.location.href = eqUrl
                         popup.remove()
                     })
@@ -105,6 +109,13 @@
                     hash = hash.replace(/^\#+/i, '')
                     loadEqFromString(context, decodeURI(hash))
                 }
+
+                window.addEventListener('beforeunload', function(event) {
+                    if (!context.saved) {
+                        event.preventDefault();
+                    }
+                    event.returnValue = '';
+                });
             })
         </script>
     </head>

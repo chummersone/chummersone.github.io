@@ -229,7 +229,7 @@ label {
     vertical-align: middle;
 }
 
-input, textarea, select, option {
+input:not([type='file']), textarea, select, option {
     font-family: monospace;
 }
 

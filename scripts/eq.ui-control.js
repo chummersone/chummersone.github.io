@@ -54,10 +54,9 @@ class AudioFile {
 
 class Playlist {
 
-    #controlID
+    #controlID = "playlistControl"
 
     constructor(containerID) {
-        this.#controlID = "playlistControl"
         this.containerID = containerID
         this.files = []
         this.nowPlaying = null
@@ -224,7 +223,7 @@ function addBiquadControl(context) {
         slider.addEventListener("input", function(event) {
             number.value = convertFrom(slider.value)
             param.value = number.value
-            context.eq.redraw();
+            context.eq.redraw()
         })
         number.addEventListener("change", function(event) {
             slider.value = convertTo(number.value)
@@ -250,9 +249,9 @@ function addBiquadControl(context) {
     removeButton.addEventListener("click", function(event) {
         context.eq.removeBiquad(biquad)
         group.remove()
-        context.eq.redraw();
+        context.eq.redraw()
         if (context.eq.biquads.length == 0) {
-            biquadControlsAreEmpty();
+            biquadControlsAreEmpty()
         }
     })
     removeButtonDiv.append(removeButton)
@@ -265,13 +264,13 @@ function addBiquadControl(context) {
         Array.prototype.slice.call(gainControl.getElementsByTagName('input')).forEach(function(elem) {
             elem.disabled = !enableMatrix[biquad.type]["gain"]
         })
-        context.eq.redraw();
+        context.eq.redraw()
     })
 
     // Add the controls to the group
     group.append(typeControl, freqControl, qControl, gainControl, removeButtonDiv)
     typeInput.dispatchEvent(new Event("change"))
-    context.eq.redraw();
+    context.eq.redraw()
     document.getElementById("filterControls").append(group)
 
     return biquad
@@ -291,7 +290,7 @@ function createPopup(content) {
         bg.remove()
     })
 
-    document.body.append(bg);
+    document.body.append(bg)
 
     return bg
 }
@@ -394,8 +393,8 @@ function loadEqFromString(context, eqString) {
 
         function getAllIdMatches(elem, regEx) {
             return Array.prototype.slice.call(elem.querySelectorAll('*')).filter(function (el) {
-                return (new RegExp(regEx)).test(el.id);
-            });
+                return (new RegExp(regEx)).test(el.id)
+            })
           }
 
         var typeInput = controls[index].querySelector("[id^='biquadType-']")
