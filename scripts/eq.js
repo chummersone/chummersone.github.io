@@ -259,7 +259,7 @@ class EqDesigner extends ParametricEQ {
                             text: 'Magnitude / dB',
                             display: true,
                         },
-                        min: -20,
+                        min: -40,
                         max: 20,
                     },
                 },
