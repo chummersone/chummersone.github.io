@@ -85,7 +85,17 @@
                     showCoefficientTable(context.eq)
                 })
 
+                document.getElementById("remember").addEventListener("click", function(event) {
+                    window.location.href = window.location.href.replace(window.location.hash, "") + "#" + encodeURI(context.eq.stringify());
+                })
+
                 biquadControlsAreEmpty()
+
+                var hash = window.location.hash.split('?')[0];
+                if (hash) {
+                    hash = hash.replace(/^\#+/i, '')
+                    loadEqFromString(context, decodeURI(hash))
+                }
             })
         </script>
     </head>
@@ -115,6 +125,7 @@
              --><div class="control center"><!--
                  --><button id="addFilterButton">Add filter</button><br><!--
                  --><button id="viewCoefficients">View coefficients</button><!--
+                 --><p><a id="remember">Remember this EQ</a></p><!--
              --></div><!--
 
              --><div class="control"><!--

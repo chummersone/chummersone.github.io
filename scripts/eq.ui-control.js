@@ -273,6 +273,8 @@ function addBiquadControl(context) {
     typeInput.dispatchEvent(new Event("change"))
     context.eq.redraw();
     document.getElementById("filterControls").append(group)
+
+    return biquad
 }
 
 function createPopup(content) {
@@ -375,4 +377,42 @@ function showCoefficientTable(eq) {
     fsSelect.selectedIndex = rates.indexOf(defaultRate)
     fsSelect.options[rates.indexOf(defaultRate)].selected = true
     fsSelect.dispatchEvent(new Event("change"))
+}
+
+function loadEqFromString(context, eqString) {
+    biquadStrings = eqString.split('&')
+    biquadStrings.forEach((biquadString) => {
+        var biquadObj = JSON.parse(biquadString)
+        var bq = addBiquadControl(context)
+        bq.type = biquadObj.type
+        bq.frequency.value = biquadObj.frequency
+        bq.Q.value = biquadObj.Q
+        bq.gain.value = biquadObj.gain
+
+        var controls = document.getElementsByClassName("controlGroup filter")
+        var index = context.eq.biquads.indexOf(bq)
+
+        function getAllIdMatches(elem, regEx) {
+            return Array.prototype.slice.call(elem.querySelectorAll('*')).filter(function (el) {
+                return (new RegExp(regEx)).test(el.id);
+            });
+          }
+
+        var typeInput = controls[index].querySelector("[id^='biquadType-']")
+        typeInput.value = bq.type
+        typeInput.dispatchEvent(new Event("change"))
+
+        var frequencyInput = getAllIdMatches(controls[index], '^biquadFrequency-.+_number$')[0]
+        frequencyInput.value = bq.frequency.value
+        frequencyInput.dispatchEvent(new Event("change"))
+
+        var qInput = getAllIdMatches(controls[index], '^biquadQ-.+_number$')[0]
+        qInput.value = bq.Q.value
+        qInput.dispatchEvent(new Event("change"))
+
+        var gainInput = getAllIdMatches(controls[index], '^biquadGain-.+_number$')[0]
+        gainInput.value = bq.gain.value
+        gainInput.dispatchEvent(new Event("change"))
+
+    })
 }

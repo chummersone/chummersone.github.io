@@ -98,6 +98,21 @@ class ParametricEQ {
         return this.biquads.length
     }
 
+    #stringifyFilter(biquad) {
+        var obj = {
+            type: biquad.type,
+            frequency: biquad.frequency.value,
+            Q: biquad.Q.value,
+            gain: biquad.gain.value,
+        }
+        return JSON.stringify(obj)
+    }
+
+    stringify() {
+        var biquads = this.biquads.map(this.#stringifyFilter)
+        return biquads.join("&")
+    }
+
     coefficients(fs) {
         var coeffs = []
         this.biquads.forEach(function(biquad) {

@@ -6,6 +6,10 @@ input:disabled {
     color: gray;
 }
 
+.center * {
+    text-align: center;
+}
+
 div.popup-bg {
     position: fixed;
     width: 100%;
