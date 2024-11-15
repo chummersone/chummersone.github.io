@@ -154,7 +154,7 @@ class Playlist {
 function biquadControlsAreEmpty() {
     var filters = document.getElementById("filterControls")
     var info = document.createElement("p")
-    info.innerHTML = 'Choose "Add filter" above to add filters to the EQ'
+    info.innerHTML = 'Choose "Add Filter" above to add filters to the EQ'
     info.id = "addFilterInfo"
     filters.append(info)
 }
@@ -184,7 +184,7 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     typeControl.className = "control"
     var typeLabel = document.createElement("label")
     typeLabel.htmlFor = "biquadType-" + num
-    typeLabel.innerText = "Filter type"
+    typeLabel.innerText = "Filter Type"
     var typeInput = document.createElement("select")
     typeInput.id = typeLabel.htmlFor
     types = ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch"]
