@@ -18,7 +18,7 @@
         <link rel="stylesheet" href="css/eqtool.css?v=6">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js" integrity="sha512-6HrPqAvK+lZElIZ4mZ64fyxIBTsaX5zAFZg2V/2WT+iKPrFzTzvx6QAsLW2OaLwobhMYBog/+bvmIEEGXi0p1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="scripts/eq.js?v=6"></script>
-        <script src="scripts/eq.ui-control.js?v=7"></script>
+        <script src="scripts/eq.ui-control.js?v=8"></script>
         <script>
             Chart.defaults.elements.point = {
                 pointStyle: false
@@ -71,8 +71,8 @@
                 }, false)
 
                 document.getElementById("addFilterButton").addEventListener("click", function(event) {
-                    addBiquadControl(context)
-                    context.audioCtx.resume();
+                    addBiquadControl(context, "peaking", 1000, 1, 0)
+                    context.audioCtx.resume()
                 })
 
                 document.getElementById("inputGain_number").addEventListener("change", function(event) {

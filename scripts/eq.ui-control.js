@@ -159,7 +159,7 @@ function biquadControlsAreEmpty() {
     filters.append(info)
 }
 
-function addBiquadControl(context) {
+function addBiquadControl(context, type, frequency, Q, gain) {
     var info = document.getElementById("addFilterInfo")
     if (info) {
         info.remove()
@@ -170,7 +170,10 @@ function addBiquadControl(context) {
 
     // Add biquad and its response
     var biquad = context.eq.addBiquad()
-    biquad.type = "peaking"
+    biquad.type = type
+    biquad.frequency.value = frequency
+    biquad.Q.value = Q
+    biquad.gain.value = gain
 
     // The group of biquad controls
     var group = document.createElement("div")
@@ -241,8 +244,8 @@ function addBiquadControl(context) {
 
     var gainControl = createNumberInput("biquadGain-" + num, "Gain / dB", -40, 20, 0.1, biquad.gain.value, biquad.gain, doNothing, doNothing)
 
-    var removeButtonDiv = document.createElement("div")
-    removeButtonDiv.className = "control center"
+    var buttonDiv = document.createElement("div")
+    buttonDiv.className = "control"
     var removeButton = document.createElement("button")
     removeButton.id = "biquadDelete-" + num
     removeButton.innerHTML = "Delete"
@@ -254,7 +257,15 @@ function addBiquadControl(context) {
             biquadControlsAreEmpty()
         }
     })
-    removeButtonDiv.append(removeButton)
+    buttonDiv.append(removeButton)
+
+    var copyButton = document.createElement("button")
+    copyButton.id = "biquadCopy-" + num
+    copyButton.innerHTML = "Copy"
+    copyButton.addEventListener("click", function(event) {
+        addBiquadControl(context, biquad.type, biquad.frequency.value, biquad.Q.value, biquad.gain.value)
+    })
+    buttonDiv.append(copyButton)
 
     typeInput.addEventListener("change", function(event) {
         biquad.type = event.target.value
@@ -268,7 +279,7 @@ function addBiquadControl(context) {
     })
 
     // Add the controls to the group
-    group.append(typeControl, freqControl, qControl, gainControl, removeButtonDiv)
+    group.append(typeControl, freqControl, qControl, gainControl, buttonDiv)
     typeInput.dispatchEvent(new Event("change"))
     context.eq.redraw()
     document.getElementById("filterControls").append(group)
@@ -381,36 +392,6 @@ function showCoefficientTable(eq) {
 function loadEqFromString(context, eqString) {
     biquads = JSON.parse(eqString)
     biquads.forEach((biquadObj) => {
-        var bq = addBiquadControl(context)
-        bq.type = biquadObj.type
-        bq.frequency.value = biquadObj.freq
-        bq.Q.value = biquadObj.Q
-        bq.gain.value = biquadObj.gain
-
-        var controls = document.getElementsByClassName("controlGroup filter")
-        var index = context.eq.biquads.indexOf(bq)
-
-        function getAllIdMatches(elem, regEx) {
-            return Array.prototype.slice.call(elem.querySelectorAll('*')).filter(function (el) {
-                return (new RegExp(regEx)).test(el.id)
-            })
-          }
-
-        var typeInput = controls[index].querySelector("[id^='biquadType-']")
-        typeInput.value = bq.type
-        typeInput.dispatchEvent(new Event("change"))
-
-        var frequencyInput = getAllIdMatches(controls[index], '^biquadFrequency-.+_number$')[0]
-        frequencyInput.value = bq.frequency.value
-        frequencyInput.dispatchEvent(new Event("change"))
-
-        var qInput = getAllIdMatches(controls[index], '^biquadQ-.+_number$')[0]
-        qInput.value = bq.Q.value
-        qInput.dispatchEvent(new Event("change"))
-
-        var gainInput = getAllIdMatches(controls[index], '^biquadGain-.+_number$')[0]
-        gainInput.value = bq.gain.value
-        gainInput.dispatchEvent(new Event("change"))
-
+        addBiquadControl(context, biquadObj.type, biquadObj.freq, biquadObj.Q, biquadObj.gain)
     })
 }

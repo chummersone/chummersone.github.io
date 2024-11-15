@@ -77,10 +77,7 @@ div.controlGroup div.control {
 div.control {
     padding: 5px;
     margin: 5px 0;
-}
-
-div.control button, div.control .button {
-    margin: 2px 0;
+    text-align: center;
 }
 
 div.controlGroup {
@@ -155,6 +152,7 @@ div.trackControls *, div.trackControls * span {
 
 div.trackControls button, div.trackControls .button {
     margin: 1px;
+    padding: 2px 6px;
 }
 
 div#nowPlaying {
@@ -204,7 +202,7 @@ div#filterControls p {
 }
 
 button, .button {
-    margin: 0;
+    margin: 5px;
     padding: 0;
     border: none;
     background: none;
