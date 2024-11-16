@@ -1,27 +1,58 @@
+/**
+ * Matrix defining which parameters are available for a given filter type.
+ */
 const enableMatrix = {
-    lowpass: { Q: true, gain: false},
-    highpass: { Q: true, gain: false},
-    bandpass: { Q: true, gain: false},
-    lowshelf: { Q: false, gain: true},
-    highshelf: { Q: false, gain: true},
-    peaking: { Q: true, gain: true},
-    notch: { Q: true, gain: false},
+    lowpass: { Q: true, gain: false },
+    highpass: { Q: true, gain: false },
+    bandpass: { Q: true, gain: false },
+    lowshelf: { Q: false, gain: true },
+    highshelf: { Q: false, gain: true },
+    peaking: { Q: true, gain: true },
+    notch: { Q: true, gain: false },
 }
 
+/**
+ * Convert a frequency in Hz to mels.
+ *
+ * @param {number} f Frequency in Hz.
+ * @return {number} Frequency in mels.
+ */
 function toMel(f) {
     return 2595 * Math.log10(1 + (f / 700))
 }
 
+/**
+ * Convert a frequency in mels to Hz.
+ *
+ * @param {number} m Frequency in mels.
+ * @return {number} Frequency in Hz.
+ */
 function fromMel(m) {
     return 700 * ((10 ** (m / 2595)) - 1)
 }
 
+/**
+ * Callback to perform no conversion on the specified number.
+ *
+ * @param {number} x The input number.
+ * @return {number} The unmodified input.
+ */
 function doNothing(x) {
     return x
 }
 
+/**
+ * Class for controlling the playback of an audio file.
+ */
 class AudioFile {
 
+    /**
+     *  Creates an instance of AudioFile.
+     * @param {File} file The File object representing the user file.
+     * @param {AudioContext} audioCtx The active audio context used to play back the file.
+     * @param {AudioNode} audioNode The audio node to which the file should be associated.
+     * @memberof AudioFile
+     */
     constructor(file, audioCtx, audioNode) {
         this.audioCtx = audioCtx
         this.audioNode = audioNode
@@ -29,15 +60,18 @@ class AudioFile {
         this.objectURL = URL.createObjectURL(file)
     }
 
+    /**
+     * Play the audio file.
+     * @memberof AudioFile
+     */
     play() {
         this.audioNode.src = this.objectURL
         var promise = this.audioNode.play()
         if (promise) {
-            //Older browsers may not return a promise, according to the MDN website
+            // Older browsers may not return a promise, according to the MDN website
             promise.catch((error) => {
                 console.log(error)
-                if (error.code !== 20)
-                {
+                if (error.code !== 20) {
                     window.alert("Error loading audio file.\n\nTry a different file, or a different browser.")
                 }
             })
@@ -45,6 +79,10 @@ class AudioFile {
         this.audioCtx.resume()
     }
 
+    /**
+     * Stop audio file playback.
+     * @memberof AudioFile
+     */
     stop() {
         this.audioNode.pause()
         this.audioNode.currentTime = 0
@@ -52,10 +90,19 @@ class AudioFile {
 
 }
 
+/**
+ * Class for managing a playlist of audio files.
+ */
 class Playlist {
 
+    /** ID of the element containing the playlist items. */
     #controlID = "playlistControl"
 
+    /**
+     *  Creates an instance of Playlist.
+     * @param {string} containerID ID of the element containing the playlist.
+     * @memberof Playlist
+     */
     constructor(containerID) {
         this.containerID = containerID
         this.files = []
@@ -63,6 +110,10 @@ class Playlist {
         this.playlistIsEmpty()
     }
 
+    /**
+     * Handling of an empty playlist.
+     * @memberof Playlist
+     */
     playlistIsEmpty() {
         var group = document.getElementById(this.containerID)
         var info = document.createElement("p")
@@ -75,10 +126,17 @@ class Playlist {
         }
     }
 
+    /**
+     * Add an audio file to the playlist.
+     *
+     * @param {AudioFile} audioFile The audio file object to add.
+     * @memberof Playlist
+     */
     addFile(audioFile) {
         var info = document.getElementById("playlistInfo")
         var controls
         if (info) {
+            // Remove instructions shown when playlist is empty
             info.remove()
             controls = document.createElement("div")
             controls.id = this.#controlID
@@ -86,8 +144,10 @@ class Playlist {
             document.getElementById(this.containerID).append(controls)
         }
 
+        // Add the file to the playlist
         this.files.push(audioFile)
 
+        // Add the controls and text for the audio file
         var trackControls = document.createElement("div")
         trackControls.className = "trackControls"
 
@@ -98,13 +158,13 @@ class Playlist {
         var playButton = document.createElement("button")
         playButton.innerHTML = "&#9658;"
         var that = this
-        playButton.addEventListener("click", function(event) {
+        playButton.addEventListener("click", function (event) {
             that.play(audioFile)
         })
 
         var removeButton = document.createElement("button")
         removeButton.innerHTML = "&#x2715;"
-        removeButton.addEventListener("click", function(event) {
+        removeButton.addEventListener("click", function (event) {
             that.removeFile(audioFile)
         })
 
@@ -113,6 +173,12 @@ class Playlist {
         document.getElementById(this.#controlID).append(trackControls)
     }
 
+    /**
+     * Remove a file from the playlist.
+     *
+     * @param {number|AudioFile} index The index, or audio file object, of the audio file to remove.
+     * @memberof Playlist
+     */
     removeFile(index) {
         if (index.constructor.name == "AudioFile") {
             index = this.files.indexOf(index)
@@ -125,23 +191,33 @@ class Playlist {
         }
     }
 
+    /**
+     * Play an audio file from the playlist.
+     *
+     * @param {number|AudioFile} index The index, or audio file object, of the audio file to play.
+     * @memberof Playlist
+     */
     play(index) {
+        // Stop any currently playing audio
         if (this.nowPlaying) {
             this.nowPlaying.stop()
         }
 
+        // Play the file
         if (index.constructor.name == "AudioFile") {
             index = this.files.indexOf(index)
         }
         this.nowPlaying = this.files[index]
         this.nowPlaying.play()
 
+        // Play the next song when this one has ended
         var that = this
-        this.nowPlaying.audioNode.addEventListener("ended", function(event) {
+        this.nowPlaying.audioNode.addEventListener("ended", function (event) {
             var next = (index + 1) % that.files.length
             that.play(next)
-        }, {once: true})
+        }, { once: true })
 
+        // Update UI to highlight current song
         var npElem = document.getElementById("nowPlaying")
         if (npElem) {
             npElem.id = ""
@@ -151,6 +227,9 @@ class Playlist {
     }
 }
 
+/**
+ * Handling of an empty EQ.
+ */
 function biquadControlsAreEmpty() {
     var filters = document.getElementById("filterControls")
     var info = document.createElement("p")
@@ -159,13 +238,24 @@ function biquadControlsAreEmpty() {
     filters.append(info)
 }
 
+/**
+ * Add a new biquad control to the EQ.
+ *
+ * @param {object} context The active page context.
+ * @param {string} type The biquad filter type.
+ * @param {number} frequency The biquad filter frequency.
+ * @param {number} Q The biquad filter Q.
+ * @param {number} gain The biquad filter gain.
+ * @return {BiquadFilterNode} The created filter node.
+ */
 function addBiquadControl(context, type, frequency, Q, gain) {
     var info = document.getElementById("addFilterInfo")
     if (info) {
+        // If the EQ was empty, remove the instructions
         info.remove()
     }
 
-    const index = context.eq.numBiquads
+    // random number for IDs
     const num = String(Date.now())
 
     // Add biquad and its response
@@ -201,12 +291,16 @@ function addBiquadControl(context, type, frequency, Q, gain) {
 
     // Add remaining controls
     function createNumberInput(id, text, min, max, step, value, param, convertTo, convertFrom) {
+        // Create the parent div
         var control = document.createElement("div")
         control.className = "control"
+
+        // Create the label
         var label = document.createElement("label")
         label.htmlFor = id
         label.innerText = text
 
+        // Create the slider
         var slider = document.createElement("input")
         slider.type = 'range'
         slider.id = id
@@ -215,6 +309,7 @@ function addBiquadControl(context, type, frequency, Q, gain) {
         slider.step = (convertTo(max) - convertTo(min)) / ((max - min) / step)
         slider.value = convertTo(value)
 
+        // Create the number input
         var number = document.createElement("input")
         number.type = 'number'
         number.id = id + '_number'
@@ -223,33 +318,41 @@ function addBiquadControl(context, type, frequency, Q, gain) {
         number.step = step
         number.value = value
 
-        slider.addEventListener("input", function(event) {
+        // Add listeners for when controls are changed
+        slider.addEventListener("input", function (event) {
             number.value = convertFrom(slider.value)
             param.value = number.value
             context.eq.redraw()
         })
-        number.addEventListener("change", function(event) {
+        number.addEventListener("change", function (event) {
             slider.value = convertTo(number.value)
             param.value = number.value
             context.eq.redraw()
         })
 
+        // Add the controls to the parent div
         control.append(label, slider, number)
         return control
     }
 
-    var freqControl = createNumberInput("biquadFrequency-" + num, "Frequency / Hz", 20, 20000, 1, biquad.frequency.value, biquad.frequency, toMel, function(m) { return Math.round(fromMel(m)) })
+    // Create the frequency control
+    var freqControl = createNumberInput("biquadFrequency-" + num, "Frequency / Hz", 20, 20000, 1, biquad.frequency.value, biquad.frequency, toMel, function (m) { return Math.round(fromMel(m)) })
 
+    // Create the Q control
     var qControl = createNumberInput("biquadQ-" + num, "Q", 0, 10, 0.0001, biquad.Q.value, biquad.Q, doNothing, doNothing)
 
+    // Create the gain control
     var gainControl = createNumberInput("biquadGain-" + num, "Gain / dB", -40, 20, 0.1, biquad.gain.value, biquad.gain, doNothing, doNothing)
 
+    // Add a div for the buttons
     var buttonDiv = document.createElement("div")
     buttonDiv.className = "control"
+
+    // Add the remove button
     var removeButton = document.createElement("button")
     removeButton.id = "biquadDelete-" + num
     removeButton.innerHTML = "Delete"
-    removeButton.addEventListener("click", function(event) {
+    removeButton.addEventListener("click", function (event) {
         context.eq.removeBiquad(biquad)
         group.remove()
         context.eq.redraw()
@@ -259,20 +362,22 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     })
     buttonDiv.append(removeButton)
 
+    // Add the copy button
     var copyButton = document.createElement("button")
     copyButton.id = "biquadCopy-" + num
     copyButton.innerHTML = "Copy"
-    copyButton.addEventListener("click", function(event) {
+    copyButton.addEventListener("click", function (event) {
         addBiquadControl(context, biquad.type, biquad.frequency.value, biquad.Q.value, biquad.gain.value)
     })
     buttonDiv.append(copyButton)
 
-    typeInput.addEventListener("change", function(event) {
+    // Handle change of the filter type
+    typeInput.addEventListener("change", function (event) {
         biquad.type = event.target.value
-        Array.prototype.slice.call(qControl.getElementsByTagName('input')).forEach(function(elem) {
+        Array.prototype.slice.call(qControl.getElementsByTagName('input')).forEach(function (elem) {
             elem.disabled = !enableMatrix[biquad.type]["Q"]
         })
-        Array.prototype.slice.call(gainControl.getElementsByTagName('input')).forEach(function(elem) {
+        Array.prototype.slice.call(gainControl.getElementsByTagName('input')).forEach(function (elem) {
             elem.disabled = !enableMatrix[biquad.type]["gain"]
         })
         context.eq.redraw()
@@ -287,6 +392,12 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     return biquad
 }
 
+/**
+ * Create a popup to overlay the page content.
+ *
+ * @param {HTMLElement} content Content of the popup.
+ * @return {HTMLElement} The popup parent container.
+ */
 function createPopup(content) {
     var bg = document.createElement("div")
     bg.className = "popup-bg"
@@ -296,7 +407,7 @@ function createPopup(content) {
         popup.append(arguments[i])
     }
     bg.append(popup)
-    bg.addEventListener("click", function(event) {
+    bg.addEventListener("click", function (event) {
         if (event.target !== this) return;
         bg.remove()
     })
@@ -306,30 +417,43 @@ function createPopup(content) {
     return bg
 }
 
+/**
+ * Set the EQ input gain.
+ *
+ * @param {ParametricEQ} eq The parametric EQ to update.
+ * @param {number} gainInDB The gain in dB.
+ */
 function setInputGain(eq, gainInDB) {
     eq.input.gain.value = linear(gainInDB)
     eq.redraw()
 }
 
+/**
+ * Show the EQ filter coefficients.
+ *
+ * @param {ParametricEQ} eq The EQ for which the coefficients should be shown.
+ */
 function showCoefficientTable(eq) {
     var coeffTable = document.createElement("table")
     coeffTable.className = "responsive"
     coeffTable.innerHTML = '<thead>' +
-            '<tr>' +
-                '<th>a0</th>' +
-                '<th>a1</th>' +
-                '<th>a2</th>' +
-                '<th>b0</th>' +
-                '<th>b1</th>' +
-                '<th>b2</th>' +
-            '</tr>' +
+        '<tr>' +
+        '<th>a0</th>' +
+        '<th>a1</th>' +
+        '<th>a2</th>' +
+        '<th>b0</th>' +
+        '<th>b1</th>' +
+        '<th>b2</th>' +
+        '</tr>' +
         '</thead>' +
         '<tbody>' +
         '</tbody>'
 
+    // Create the parent
     var control = document.createElement("div")
     control.className = "control"
 
+    // Add a control for the sample rate
     var fsLabel = document.createElement("label")
     fsLabel.htmlFor = "sampleRate"
     fsLabel.innerText = "Sample rate / Hz"
@@ -342,16 +466,23 @@ function showCoefficientTable(eq) {
         option.text = rates[i]
         fsSelect.appendChild(option)
     }
-    fsSelect.addEventListener("change", function(event) {
+
+    // Handle sample rate changes, to recreate the table
+    fsSelect.addEventListener("change", function (event) {
         var existingError = document.getElementById("coeffError")
         if (existingError) {
+            // Remove any pre-existing errors
             existingError.remove()
         }
+
+        // Find any frequencies that exceed Nyquist
         var fs = Number(fsSelect.value)
         var maxFrequency = 0
         eq.biquads.forEach((filter) => {
             maxFrequency = Math.max(maxFrequency, filter.frequency.value)
         })
+
+        // Create error message if any frequencies exceed Nyquist
         if (maxFrequency > (fs / 2)) {
             var error = document.createElement("div")
             error.id = "coeffError"
@@ -360,28 +491,35 @@ function showCoefficientTable(eq) {
             control.append(error)
         }
 
+        // Insert the coefficients
         var tBody = coeffTable.getElementsByTagName('tbody')[0]
         var content = "<tbody>"
         var coefficients = eq.coefficients(fs)
-        coefficients.forEach(function(coeffs) {
+        coefficients.forEach(function (coeffs) {
             content += '<tr>' +
-                    '<td data-label="a0">' + String(coeffs.a[0]) + '</td>' +
-                    '<td data-label="a1">' + String(coeffs.a[1]) + '</td>' +
-                    '<td data-label="a2">' + String(coeffs.a[2]) + '</td>' +
-                    '<td data-label="b0">' + String(coeffs.b[0]) + '</td>' +
-                    '<td data-label="b1">' + String(coeffs.b[1]) + '</td>' +
-                    '<td data-label="b2">' + String(coeffs.b[2]) + '</td>' +
+                '<td data-label="a0">' + String(coeffs.a[0]) + '</td>' +
+                '<td data-label="a1">' + String(coeffs.a[1]) + '</td>' +
+                '<td data-label="a2">' + String(coeffs.a[2]) + '</td>' +
+                '<td data-label="b0">' + String(coeffs.b[0]) + '</td>' +
+                '<td data-label="b1">' + String(coeffs.b[1]) + '</td>' +
+                '<td data-label="b2">' + String(coeffs.b[2]) + '</td>' +
                 '</tr>'
         })
         content += "</tbody>"
-        tBody.innerHTML = content
+        tBody.innerHTML = content // overwrite the table body content
     })
+
+    // Add the sample rate control
     control.append(fsLabel, fsSelect)
 
+    // Add conversion info
     var info = document.createElement("p")
     info.innerHTML = 'Use the <a target="_blank" href="qformat.html">Q-format Converter</a> to convert to fixed-point.'
 
+    // Create the popup
     createPopup(control, coeffTable, info)
+
+    // Trigger filling in of the table
     var defaultRate = "48000"
     fsSelect.value = defaultRate
     fsSelect.selectedIndex = rates.indexOf(defaultRate)
@@ -389,6 +527,11 @@ function showCoefficientTable(eq) {
     fsSelect.dispatchEvent(new Event("change"))
 }
 
+/**
+ * Remove all filters from the EQ.
+ *
+ * @param {object} context The active page context.
+ */
 function removeAllFilters(context) {
     var filtersDiv = document.getElementById("filterControls")
     var filterControls = filtersDiv.querySelectorAll("*")
@@ -400,25 +543,40 @@ function removeAllFilters(context) {
     }
 }
 
+/**
+ * Get the URL hash that describes the EQ.
+ *
+ * @param {object} context The active page context.
+ * @return {string} The hash string.
+ */
 function getHash(context) {
     return window.location.href.replace(window.location.hash, "").replace(/#+$/, "") +
         "#inputGain=" + document.getElementById("inputGain").value +
         "&eq=" + encodeURI(context.eq.stringify())
 }
 
+/**
+ * Show the EQ URL in a popup window.
+ *
+ * @param {object} context The active page context.
+ */
 function showEqURI(context) {
     var eqUrl = getHash(context)
     var hashInfo = document.createElement("p")
     hashInfo.style = "word-break: break-all;"
     hashInfo.innerHTML = 'Use the following URL to recall this EQ:<br><a href="' + eqUrl + '">' + eqUrl + '</a>'
     var popup = createPopup(hashInfo)
-    hashInfo.addEventListener("click", function(event) {
+    hashInfo.addEventListener("click", function (event) {
         context.saved = true
         window.location.href = eqUrl
         popup.remove()
     })
 }
-
+/**
+ * Parse the URL hash and generate the EQ.
+ *
+ * @param {object} context The active page context.
+ */
 function parseHash(context) {
     var hash = window.location.hash.split('?')[0];
     if (hash) {
@@ -439,6 +597,12 @@ function parseHash(context) {
     }
 }
 
+/**
+ * Load an EQ from a given URL hash string.
+ *
+ * @param {object} context The active page context.
+ * @param {string} eqString The decoded URL hash string describing the EQ.
+ */
 function loadEqFromString(context, eqString) {
     biquads = JSON.parse(eqString)
     biquads.forEach((biquadObj) => {
