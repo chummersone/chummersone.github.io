@@ -609,3 +609,165 @@ function loadEqFromString(context, eqString) {
         addBiquadControl(context, biquadObj.type, biquadObj.freq, biquadObj.Q, biquadObj.gain)
     })
 }
+/**
+ * Class for managing a UI audio player.
+ */
+class AudioPlayer {
+
+    #playIcon = "&#9658;"
+    #pauseIcon = "&#9208;"
+
+    /**
+     *  Creates an instance of AudioPlayer.
+     * @param {string} containerID The ID of the player container.
+     * @param {AudioNode} audioNode The audio node that handles actual playback functionality.
+     * @memberof AudioPlayer
+     */
+    constructor(containerID, audioNode) {
+        this.audioNode = audioNode
+        this.container = document.getElementById(containerID)
+
+        // Create play/pause button
+        this.playPauseButton = document.createElement("button")
+        this.playPauseButton.className = "audioPlayer-play"
+        this.playPauseButton.innerHTML = this.#playIcon
+
+        // Create span to show current time
+        this.currentTimeSpan = document.createElement("span")
+        this.currentTimeSpan.className = "audioPlayer-current-time time"
+        this.currentTimeSpan.innerHTML = "00:00"
+
+        // Create the seek slider
+        this.seek = document.createElement("input")
+        this.seek.type = "range"
+        this.seek.className = "audioPlayer-seek-slider"
+        this.seek.max = "100"
+        this.seek.min = "0"
+        this.seek.step = "0.1"
+        this.seek.value = "0"
+
+        // Create span to show duration
+        this.durationSpan = document.createElement("span")
+        this.durationSpan.className = "audioPlayer-duration time"
+        this.durationSpan.innerHTML = "00:00"
+
+        // Insert the element in to the page
+        this.container.append(this.playPauseButton, this.currentTimeSpan, this.seek, this.durationSpan)
+
+        // States
+        this.trackDuration = 0
+        this.seeking = false
+        this.ready = false
+        this.playing = false
+        var that = this
+
+        // Browser can start playing audio
+        this.audioNode.addEventListener("canplay", function(event) {
+            that.ready = true
+        })
+
+        // Play has started
+        this.audioNode.addEventListener("play", function(event) {
+            that.playing = true
+            that.handlePlay()
+        })
+
+        // Play has started after pause
+        this.audioNode.addEventListener("playing", function(event) {
+            that.playing = true
+            that.handlePlay()
+        })
+
+        // Playback is paused
+        this.audioNode.addEventListener("pause", function(event) {
+            that.playing = false
+            that.handlePause()
+        })
+
+        // Update the current time
+        this.audioNode.addEventListener("timeupdate", function(event) {
+            if (that.seeking) return;
+            var currentTime = event.target.currentTime
+            var progress = 100 * currentTime / that.trackDuration
+            that.currentTimeSpan.innerHTML = that.sToTime(currentTime)
+            that.seek.value = progress
+        })
+
+        // Update the duration
+        this.audioNode.addEventListener("durationchange", function(event) {
+            that.trackDuration = event.target.duration
+            that.durationSpan.innerHTML = that.sToTime(that.trackDuration)
+        })
+
+        // Handle clicking on seek bar
+        this.seek.addEventListener("input", function(event) {
+            if (that.playing) {
+                that.seeking = true
+                var pos = Number(event.target.value)
+                var time = (pos / 100) * that.trackDuration
+                that.audioNode.currentTime = time
+                that.currentTimeSpan.innerHTML = that.sToTime(time)
+                that.seeking = false
+            }
+        })
+
+        // Handle clicking play/pause button
+        this.playPauseButton.addEventListener("click", function(event) {
+            if (that.ready) {
+                if (that.playing) {
+                    that.audioNode.pause()
+                    that.handlePause()
+                } else {
+                    that.audioNode.play()
+                    that.handlePlay()
+                }
+            }
+        })
+    }
+
+    /**
+     * Handle initiation of playback.
+     *
+     * @memberof AudioPlayer
+     */
+    handlePlay() {
+        this.playPauseButton.innerHTML = this.#pauseIcon
+    }
+
+    /**
+     * Handle playback pause.
+     *
+     * @memberof AudioPlayer
+     */
+    handlePause() {
+        this.playPauseButton.innerHTML = this.#playIcon
+    }
+
+    /**
+     * Convert time in seconds to displayed time.
+     *
+     * @param {number} t Time in seconds.
+     * @return {string} Displayed time.
+     * @memberof AudioPlayer
+     */
+    sToTime(t) {
+        var time = ""
+        if (this.trackDuration > 3600) {
+            time += this.padZero(parseInt((t / (60 * 60)) % 24)) + ":"
+        }
+        time += this.padZero(parseInt((t / (60)) % 60)) + ":" +
+                this.padZero(parseInt((t) % 60))
+        return time
+    }
+
+    /**
+     * Pad a number with a leading zero.
+     *
+     * @param {number|string} v Value to pad.
+     * @return {string} Padded number.
+     * @memberof AudioPlayer
+     */
+    padZero(v) {
+        return (v < 10) ? "0" + v : v;
+    }
+}

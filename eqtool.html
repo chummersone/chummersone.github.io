@@ -15,10 +15,10 @@
         <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
         <link rel="stylesheet" href="css/qformat.css?v=5">
-        <link rel="stylesheet" href="css/eqtool.css?v=8">
+        <link rel="stylesheet" href="css/eqtool.css?v=9">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js" integrity="sha512-6HrPqAvK+lZElIZ4mZ64fyxIBTsaX5zAFZg2V/2WT+iKPrFzTzvx6QAsLW2OaLwobhMYBog/+bvmIEEGXi0p1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="scripts/eq.js?v=6"></script>
-        <script src="scripts/eq.ui-control.js?v=9"></script>
+        <script src="scripts/eq.ui-control.js?v=10"></script>
         <script>
             Chart.defaults.elements.point = {
                 pointStyle: false
@@ -40,6 +40,7 @@
                 eq: null,
                 audioNode: null,
                 playlist: null,
+                audioPlayer: null,
                 saved: true,
             }
 
@@ -59,6 +60,9 @@
                 context.eq.output.connect(context.audioCtx.destination)
 
                 context.audioNode = document.getElementById("audioPlayer")
+
+                // Init audio player
+                context.audioPlayer = new AudioPlayer("audio-player-container", context.audioNode)
 
                 context.playlist = new Playlist("playlistGroup")
                 document.getElementById("audioFileInput").addEventListener("change", function(event) {
@@ -150,7 +154,8 @@
              --></div><!--
 
              --><div class="control"><!--
-                 --><audio controls id="audioPlayer"><!--
+                 --><audio controls id="audioPlayer"></audio><!--
+                 --><div class="audioPlayer" id="audio-player-container"></div><!--
              --></div><!--
 
              --><div class="control"><!--
