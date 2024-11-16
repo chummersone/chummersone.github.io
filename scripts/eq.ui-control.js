@@ -664,37 +664,36 @@ class AudioPlayer {
         var that = this
 
         // Browser can start playing audio
-        this.audioNode.addEventListener("canplay", function(event) {
+        this.audioNode.addEventListener("canplay", function (event) {
             that.ready = true
         })
 
         // Play has started
-        this.audioNode.addEventListener("play", function(event) {
+        this.audioNode.addEventListener("play", function (event) {
             that.playing = true
             that.handlePlay()
         })
 
         // Play has started after pause
-        this.audioNode.addEventListener("playing", function(event) {
+        this.audioNode.addEventListener("playing", function (event) {
             that.playing = true
             that.handlePlay()
         })
 
         // Playback is paused
-        this.audioNode.addEventListener("pause", function(event) {
+        this.audioNode.addEventListener("pause", function (event) {
             that.playing = false
             that.handlePause()
         })
 
-        // Playback is paused
-        this.audioNode.addEventListener("emptied", function(event) {
-            that.ready = false
-            that.playing = false
-            that.handlePause()
-        })
+        // Playback stopped for some reason
+        this.audioNode.addEventListener("emptied", function (event) { that.abort() })
+        this.audioNode.addEventListener("error", function (event) { that.abort() })
+        this.audioNode.addEventListener("stalled", function (event) { that.abort() })
+        this.audioNode.addEventListener("suspend", function (event) { that.abort() })
 
         // Update the current time
-        this.audioNode.addEventListener("timeupdate", function(event) {
+        this.audioNode.addEventListener("timeupdate", function (event) {
             if (that.seeking) return;
             var currentTime = event.target.currentTime
             var progress = currentTime
@@ -703,21 +702,15 @@ class AudioPlayer {
         })
 
         // Update the duration
-        this.audioNode.addEventListener("durationchange", function(event) {
-            that.trackDuration = event.target.duration
-            that.seek.max = event.target.duration
-            that.durationSpan.innerHTML = that.sToTime(that.trackDuration)
-            if (that.duration == 0) {
-                that.ready = false
-            }
+        this.audioNode.addEventListener("durationchange", function (event) {
+            that.updateDuration(event.target.duration)
         })
 
         // Handle clicking on seek bar
-        this.seek.addEventListener("input", function(event) {
+        this.seek.addEventListener("input", function (event) {
             if (that.ready) {
                 that.seeking = true
-                var pos = Number(event.target.value)
-                var time = pos
+                var time = Number(event.target.value)
                 that.audioNode.currentTime = time
                 that.currentTimeSpan.innerHTML = that.sToTime(time)
                 that.seeking = false
@@ -725,7 +718,7 @@ class AudioPlayer {
         })
 
         // Handle clicking play/pause button
-        this.playPauseButton.addEventListener("click", function(event) {
+        this.playPauseButton.addEventListener("click", function (event) {
             if (that.ready) {
                 if (that.playing) {
                     that.audioNode.pause()
@@ -769,7 +762,7 @@ class AudioPlayer {
             time += this.padZero(parseInt((t / (60 * 60)) % 24)) + ":"
         }
         time += this.padZero(parseInt((t / (60)) % 60)) + ":" +
-                this.padZero(parseInt((t) % 60))
+            this.padZero(parseInt((t) % 60))
         return time
     }
 
@@ -782,5 +775,32 @@ class AudioPlayer {
      */
     padZero(v) {
         return (v < 10) ? "0" + v : v;
+    }
+
+    /**
+     * Update based on the audio file duration.
+     *
+     * @param {number} duration New audio file duration.
+     * @memberof AudioPlayer
+     */
+    updateDuration(duration) {
+        this.trackDuration = duration
+        this.seek.max = duration
+        this.durationSpan.innerHTML = this.sToTime(duration)
+        if (duration == 0) {
+            this.ready = false
+        }
+    }
+
+    /**
+     * Abort the playback.
+     *
+     * @memberof AudioPlayer
+     */
+    abort() {
+        this.ready = false
+        this.playing = false
+        this.seek.max = 0
+        this.handlePause()
     }
 }
