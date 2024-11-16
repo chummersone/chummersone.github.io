@@ -130,6 +130,12 @@ div#mainControls {
     flex-grow: 1;
     flex-shrink: 1;
     min-width: 300px;
+    display: flex;
+    flex-flow: column;
+}
+
+div#mainControls div.control:last-child {
+    flex-grow: 1;
 }
 
 div.trackName {
@@ -177,7 +183,7 @@ div#filterControls {
     justify-content: left;
     align-items: top;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 5px;
 }
 

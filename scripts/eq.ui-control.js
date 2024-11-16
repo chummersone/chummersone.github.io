@@ -213,8 +213,10 @@ class Playlist {
         // Play the next song when this one has ended
         var that = this
         this.nowPlaying.audioNode.addEventListener("ended", function (event) {
-            var next = (index + 1) % that.files.length
-            that.play(next)
+            if (that.files.length > 0) {
+                var next = (index + 1) % that.files.length
+                that.play(next)
+            }
         }, { once: true })
 
         // Update UI to highlight current song
