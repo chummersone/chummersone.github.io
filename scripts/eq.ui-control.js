@@ -643,7 +643,7 @@ class AudioPlayer {
         this.seek = document.createElement("input")
         this.seek.type = "range"
         this.seek.className = "audioPlayer-seek-slider"
-        this.seek.max = "100"
+        this.seek.max = "0"
         this.seek.min = "0"
         this.seek.step = "0.1"
         this.seek.value = "0"
@@ -686,11 +686,18 @@ class AudioPlayer {
             that.handlePause()
         })
 
+        // Playback is paused
+        this.audioNode.addEventListener("emptied", function(event) {
+            that.ready = false
+            that.playing = false
+            that.handlePause()
+        })
+
         // Update the current time
         this.audioNode.addEventListener("timeupdate", function(event) {
             if (that.seeking) return;
             var currentTime = event.target.currentTime
-            var progress = 100 * currentTime / that.trackDuration
+            var progress = currentTime
             that.currentTimeSpan.innerHTML = that.sToTime(currentTime)
             that.seek.value = progress
         })
@@ -698,15 +705,19 @@ class AudioPlayer {
         // Update the duration
         this.audioNode.addEventListener("durationchange", function(event) {
             that.trackDuration = event.target.duration
+            that.seek.max = event.target.duration
             that.durationSpan.innerHTML = that.sToTime(that.trackDuration)
+            if (that.duration == 0) {
+                that.ready = false
+            }
         })
 
         // Handle clicking on seek bar
         this.seek.addEventListener("input", function(event) {
-            if (that.playing) {
+            if (that.ready) {
                 that.seeking = true
                 var pos = Number(event.target.value)
-                var time = (pos / 100) * that.trackDuration
+                var time = pos
                 that.audioNode.currentTime = time
                 that.currentTimeSpan.innerHTML = that.sToTime(time)
                 that.seeking = false
