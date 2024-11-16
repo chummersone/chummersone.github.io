@@ -252,3 +252,56 @@ button:focus, .button:focus {
 label.button input[type="file"] {
     display: none;
 }
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    height: 2rem;
+    margin: 5px 0px;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    background: #222;
+    height: 0.5rem;
+}
+
+  input[type="range"]::-moz-range-track {
+    background: #222;
+    height: 0.5rem;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -0.5rem;
+    background-color: #ccc;
+    height: 1.5rem;
+    width: 1rem;
+    border-radius: 4px;
+ }
+
+ input[type="range"]::-moz-range-thumb {
+    border: none;
+    border-radius: 4px;
+    background-color: #ccc;
+    height: 1.5rem;
+    width: 1rem;
+}
+
+input[type="range"]:focus {
+    outline: none;
+}
+
+input[type="range"]:focus::-webkit-slider-thumb {
+    border: 1px solid #053a5f;
+    outline: 3px solid #053a5f;
+    outline-offset: 0.125rem;
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+    border: 1px solid #053a5f;
+    outline: 3px solid #053a5f;
+    outline-offset: 0.125rem;
+}
