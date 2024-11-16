@@ -156,14 +156,14 @@ class Playlist {
         trackName.innerHTML = "<span>" + audioFile.file.name + "</span>"
 
         var playButton = document.createElement("button")
-        playButton.innerHTML = "&#9658;"
+        playButton.innerHTML = '<i class="fa fa-play"></i>'
         var that = this
         playButton.addEventListener("click", function (event) {
             that.play(audioFile)
         })
 
         var removeButton = document.createElement("button")
-        removeButton.innerHTML = "&#x2715;"
+        removeButton.innerHTML = '<i class="fa fa-close"></i>'
         removeButton.addEventListener("click", function (event) {
             that.removeFile(audioFile)
         })
@@ -351,7 +351,7 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     // Add the remove button
     var removeButton = document.createElement("button")
     removeButton.id = "biquadDelete-" + num
-    removeButton.innerHTML = "Delete"
+    removeButton.innerHTML = '<i class="fa fa-close"></i>'
     removeButton.addEventListener("click", function (event) {
         context.eq.removeBiquad(biquad)
         group.remove()
@@ -365,7 +365,7 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     // Add the copy button
     var copyButton = document.createElement("button")
     copyButton.id = "biquadCopy-" + num
-    copyButton.innerHTML = "Copy"
+    copyButton.innerHTML = '<i class="fa fa-copy"></i>'
     copyButton.addEventListener("click", function (event) {
         addBiquadControl(context, biquad.type, biquad.frequency.value, biquad.Q.value, biquad.gain.value)
     })
@@ -614,8 +614,8 @@ function loadEqFromString(context, eqString) {
  */
 class AudioPlayer {
 
-    #playIcon = "&#9658;"
-    #pauseIcon = "&#9208;"
+    #playIcon = '<i class="fa fa-play"></i>'
+    #pauseIcon = '<i class="fa fa-pause"></i>'
 
     /**
      *  Creates an instance of AudioPlayer.
