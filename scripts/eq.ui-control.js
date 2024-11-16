@@ -389,6 +389,56 @@ function showCoefficientTable(eq) {
     fsSelect.dispatchEvent(new Event("change"))
 }
 
+function removeAllFilters(context) {
+    var filtersDiv = document.getElementById("filterControls")
+    var filterControls = filtersDiv.querySelectorAll("*")
+    Array.prototype.forEach.call(filterControls, (eqFilter) => {
+        eqFilter.remove()
+    })
+    for (i = context.eq.numBiquads - 1; i >= 0; i--) {
+        context.eq.removeBiquad(i)
+    }
+}
+
+function getHash(context) {
+    return window.location.href.replace(window.location.hash, "").replace(/#+$/, "") +
+        "#inputGain=" + document.getElementById("inputGain").value +
+        "&eq=" + encodeURI(context.eq.stringify())
+}
+
+function showEqURI(context) {
+    var eqUrl = getHash(context)
+    var hashInfo = document.createElement("p")
+    hashInfo.style = "word-break: break-all;"
+    hashInfo.innerHTML = 'Use the following URL to recall this EQ:<br><a href="' + eqUrl + '">' + eqUrl + '</a>'
+    var popup = createPopup(hashInfo)
+    hashInfo.addEventListener("click", function(event) {
+        context.saved = true
+        window.location.href = eqUrl
+        popup.remove()
+    })
+}
+
+function parseHash(context) {
+    var hash = window.location.hash.split('?')[0];
+    if (hash) {
+        hash = hash.replace(/^\#+/i, '')
+        hash.split("&").forEach((keyval) => {
+            keyValArr = keyval.split("=")
+            switch (keyValArr[0]) {
+                case "eq":
+                    loadEqFromString(context, decodeURI(keyValArr[1]))
+                    break;
+                case "inputGain":
+                    var inputGain = document.getElementById("inputGain_number")
+                    inputGain.value = keyValArr[1]
+                    inputGain.dispatchEvent(new Event("change"))
+                    break;
+            }
+        })
+    }
+}
+
 function loadEqFromString(context, eqString) {
     biquads = JSON.parse(eqString)
     biquads.forEach((biquadObj) => {

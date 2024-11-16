@@ -15,10 +15,10 @@
         <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://chummersone.github.io/assets/css/style.css?v=f6040d589f1187e6eaa1ec97f2b3af33299fb0ad">
         <link rel="stylesheet" href="css/qformat.css?v=5">
-        <link rel="stylesheet" href="css/eqtool.css?v=6">
+        <link rel="stylesheet" href="css/eqtool.css?v=7">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js" integrity="sha512-6HrPqAvK+lZElIZ4mZ64fyxIBTsaX5zAFZg2V/2WT+iKPrFzTzvx6QAsLW2OaLwobhMYBog/+bvmIEEGXi0p1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="scripts/eq.js?v=6"></script>
-        <script src="scripts/eq.ui-control.js?v=8"></script>
+        <script src="scripts/eq.ui-control.js?v=9"></script>
         <script>
             Chart.defaults.elements.point = {
                 pointStyle: false
@@ -104,26 +104,14 @@
 
                 biquadControlsAreEmpty()
 
-                var hash = window.location.hash.split('?')[0];
-                if (hash) {
-                    hash = hash.replace(/^\#+/i, '')
-                    hash.split("&").forEach((keyval) => {
-                        keyValArr = keyval.split("=")
-                        switch (keyValArr[0]) {
-                            case "eq":
-                                loadEqFromString(context, decodeURI(keyValArr[1]))
-                                break;
-                            case "inputGain":
-                                var inputGain = document.getElementById("inputGain_number")
-                                inputGain.value = keyValArr[1]
-                                inputGain.dispatchEvent(new Event("change"))
-                                break;
-                        }
-                    })
+                parseHash(context)
 
-                }
+                window.addEventListener("hashchange", function(event) {
+                    removeAllFilters(context)
+                    parseHash(context)
+                })
 
-                window.addEventListener('beforeunload', function(event) {
+                window.addEventListener("beforeunload", function(event) {
                     if (!context.saved) {
                         event.preventDefault();
                     }
