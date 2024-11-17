@@ -156,6 +156,7 @@ class Playlist {
         trackName.innerHTML = "<span>" + audioFile.file.name + "</span>"
 
         var playButton = document.createElement("button")
+        playButton.title = "Play this track"
         playButton.innerHTML = '<i class="fa-solid fa-play"></i>'
         var that = this
         playButton.addEventListener("click", function (event) {
@@ -163,6 +164,7 @@ class Playlist {
         })
 
         var removeButton = document.createElement("button")
+        removeButton.title = "Remove from playlist"
         removeButton.innerHTML = '<i class="fa-solid fa-close"></i>'
         removeButton.addEventListener("click", function (event) {
             that.removeFile(audioFile)
@@ -353,6 +355,7 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     // Add the remove button
     var removeButton = document.createElement("button")
     removeButton.id = "biquadDelete-" + num
+    removeButton.title = "Delete filter"
     removeButton.innerHTML = '<i class="fa-solid fa-close"></i>'
     removeButton.addEventListener("click", function (event) {
         context.eq.removeBiquad(biquad)
@@ -367,6 +370,7 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     // Add the copy button
     var copyButton = document.createElement("button")
     copyButton.id = "biquadCopy-" + num
+    copyButton.title = "Copy filter"
     copyButton.innerHTML = '<i class="fa-solid fa-copy"></i>'
     copyButton.addEventListener("click", function (event) {
         addBiquadControl(context, biquad.type, biquad.frequency.value, biquad.Q.value, biquad.gain.value)
@@ -631,6 +635,7 @@ class AudioPlayer {
 
         // Create play/pause button
         this.playPauseButton = document.createElement("button")
+        this.playPauseButton.title = "Pause/play"
         this.playPauseButton.className = "audioPlayer-play"
         this.playPauseButton.innerHTML = this.#playIcon
 
