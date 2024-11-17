@@ -5,7 +5,7 @@ th, td {
 }
 
 input:disabled {
-    color: gray;
+    color: rgba(0,0,0,0);
 }
 
 .center * {
