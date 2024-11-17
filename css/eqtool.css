@@ -233,9 +233,11 @@ button, .button {
     text-align: center;
 }
 
-button:hover, .button:hover {
-    background-color: #333;
-    transform: scale(1.05);
+@media (hover: hover) {
+    button:hover, .button:hover {
+        background-color: #333;
+        transform: scale(1.05);
+    }
 }
 
 button:focus, .button:focus {
