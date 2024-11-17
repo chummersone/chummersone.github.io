@@ -66,7 +66,7 @@ class AudioFile {
      */
     play() {
         this.audioNode.src = this.objectURL
-        var promise = this.audioNode.play()
+        let promise = this.audioNode.play()
         if (promise) {
             // Older browsers may not return a promise, according to the MDN website
             promise.catch((error) => {
@@ -115,12 +115,12 @@ class Playlist {
      * @memberof Playlist
      */
     playlistIsEmpty() {
-        var group = document.getElementById(this.containerID)
-        var info = document.createElement("p")
+        const group = document.getElementById(this.containerID)
+        const info = document.createElement("p")
         info.innerHTML = 'Click "Choose Files" to add audio files to the playlist. Note that different browsers <a href="https://caniuse.com/?search=audio%20format">support different audio file formats</a>.'
         info.id = "playlistInfo"
         group.append(info)
-        var controls = document.getElementById(this.#controlID)
+        const controls = document.getElementById(this.#controlID)
         if (controls) {
             controls.remove()
         }
@@ -133,8 +133,8 @@ class Playlist {
      * @memberof Playlist
      */
     addFile(audioFile) {
-        var info = document.getElementById("playlistInfo")
-        var controls
+        const info = document.getElementById("playlistInfo")
+        let controls
         if (info) {
             // Remove instructions shown when playlist is empty
             info.remove()
@@ -148,22 +148,22 @@ class Playlist {
         this.files.push(audioFile)
 
         // Add the controls and text for the audio file
-        var trackControls = document.createElement("div")
+        const trackControls = document.createElement("div")
         trackControls.className = "trackControls"
 
-        var trackName = document.createElement("div")
+        const trackName = document.createElement("div")
         trackName.className = "trackName"
         trackName.innerHTML = "<span>" + audioFile.file.name + "</span>"
 
-        var playButton = document.createElement("button")
+        const playButton = document.createElement("button")
         playButton.title = "Play this track"
         playButton.innerHTML = '<i class="fa-solid fa-play"></i>'
-        var that = this
+        const that = this
         playButton.addEventListener("click", function (event) {
             that.play(audioFile)
         })
 
-        var removeButton = document.createElement("button")
+        const removeButton = document.createElement("button")
         removeButton.title = "Remove from playlist"
         removeButton.innerHTML = '<i class="fa-solid fa-close"></i>'
         removeButton.addEventListener("click", function (event) {
@@ -185,7 +185,7 @@ class Playlist {
         if (index.constructor.name == "AudioFile") {
             index = this.files.indexOf(index)
         }
-        var controls = document.querySelectorAll('.trackControls')
+        const controls = document.querySelectorAll('.trackControls')
         controls[index].remove()
         this.files.splice(index, 1)
         if (this.files.length == 0) {
@@ -213,20 +213,20 @@ class Playlist {
         this.nowPlaying.play()
 
         // Play the next song when this one has ended
-        var that = this
+        const that = this
         this.nowPlaying.audioNode.addEventListener("ended", function (event) {
             if (that.files.length > 0) {
-                var next = (index + 1) % that.files.length
+                let next = (index + 1) % that.files.length
                 that.play(next)
             }
         }, { once: true })
 
         // Update UI to highlight current song
-        var npElem = document.getElementById("nowPlaying")
+        const npElem = document.getElementById("nowPlaying")
         if (npElem) {
             npElem.id = ""
         }
-        var controls = document.querySelectorAll('.trackControls')
+        const controls = document.querySelectorAll('.trackControls')
         controls[index].id = "nowPlaying"
     }
 }
@@ -235,8 +235,8 @@ class Playlist {
  * Handling of an empty EQ.
  */
 function biquadControlsAreEmpty() {
-    var filters = document.getElementById("filterControls")
-    var info = document.createElement("p")
+    const filters = document.getElementById("filterControls")
+    const info = document.createElement("p")
     info.innerHTML = 'Choose "Add Filter" above to add filters to the EQ'
     info.id = "addFilterInfo"
     filters.append(info)
@@ -253,7 +253,7 @@ function biquadControlsAreEmpty() {
  * @return {BiquadFilterNode} The created filter node.
  */
 function addBiquadControl(context, type, frequency, Q, gain) {
-    var info = document.getElementById("addFilterInfo")
+    const info = document.getElementById("addFilterInfo")
     if (info) {
         // If the EQ was empty, remove the instructions
         info.remove()
@@ -263,27 +263,27 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     const num = String(Date.now())
 
     // Add biquad and its response
-    var biquad = context.eq.addBiquad()
+    const biquad = context.eq.addBiquad()
     biquad.type = type
     biquad.frequency.value = frequency
     biquad.Q.value = Q
     biquad.gain.value = gain
 
     // The group of biquad controls
-    var group = document.createElement("div")
+    const group = document.createElement("div")
     group.className = "controlGroup filter"
 
     // Add the filter type select box
-    var typeControl = document.createElement("div")
+    const typeControl = document.createElement("div")
     typeControl.className = "control"
-    var typeLabel = document.createElement("label")
+    const typeLabel = document.createElement("label")
     typeLabel.htmlFor = "biquadType-" + num
     typeLabel.innerText = "Filter Type"
-    var typeInput = document.createElement("select")
+    const typeInput = document.createElement("select")
     typeInput.id = typeLabel.htmlFor
     types = ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch"]
-    for (var i = 0; i < types.length; i++) {
-        var option = document.createElement("option")
+    for (let i = 0; i < types.length; i++) {
+        const option = document.createElement("option")
         option.value = types[i]
         option.text = types[i]
         typeInput.appendChild(option)
@@ -296,16 +296,16 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     // Add remaining controls
     function createNumberInput(id, text, min, max, step, value, param, convertTo, convertFrom) {
         // Create the parent div
-        var control = document.createElement("div")
+        const control = document.createElement("div")
         control.className = "control"
 
         // Create the label
-        var label = document.createElement("label")
+        const label = document.createElement("label")
         label.htmlFor = id
         label.innerText = text
 
         // Create the slider
-        var slider = document.createElement("input")
+        const slider = document.createElement("input")
         slider.type = 'range'
         slider.id = id
         slider.min = convertTo(min)
@@ -314,7 +314,7 @@ function addBiquadControl(context, type, frequency, Q, gain) {
         slider.value = convertTo(value)
 
         // Create the number input
-        var number = document.createElement("input")
+        const number = document.createElement("input")
         number.type = 'number'
         number.id = id + '_number'
         number.min = min
@@ -340,20 +340,20 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     }
 
     // Create the frequency control
-    var freqControl = createNumberInput("biquadFrequency-" + num, "Frequency / Hz", 20, 20000, 1, biquad.frequency.value, biquad.frequency, toMel, function (m) { return Math.round(fromMel(m)) })
+    const freqControl = createNumberInput("biquadFrequency-" + num, "Frequency / Hz", 20, 20000, 1, biquad.frequency.value, biquad.frequency, toMel, function (m) { return Math.round(fromMel(m)) })
 
     // Create the Q control
-    var qControl = createNumberInput("biquadQ-" + num, "Q", 0, 10, 0.0001, biquad.Q.value, biquad.Q, doNothing, doNothing)
+    const qControl = createNumberInput("biquadQ-" + num, "Q", 0, 10, 0.0001, biquad.Q.value, biquad.Q, doNothing, doNothing)
 
     // Create the gain control
-    var gainControl = createNumberInput("biquadGain-" + num, "Gain / dB", -40, 20, 0.1, biquad.gain.value, biquad.gain, doNothing, doNothing)
+    const gainControl = createNumberInput("biquadGain-" + num, "Gain / dB", -40, 20, 0.1, biquad.gain.value, biquad.gain, doNothing, doNothing)
 
     // Add a div for the buttons
-    var buttonDiv = document.createElement("div")
+    const buttonDiv = document.createElement("div")
     buttonDiv.className = "control"
 
     // Add the remove button
-    var removeButton = document.createElement("button")
+    const removeButton = document.createElement("button")
     removeButton.id = "biquadDelete-" + num
     removeButton.title = "Delete filter"
     removeButton.innerHTML = '<i class="fa-solid fa-close"></i>'
@@ -368,7 +368,7 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     buttonDiv.append(removeButton)
 
     // Add the copy button
-    var copyButton = document.createElement("button")
+    const copyButton = document.createElement("button")
     copyButton.id = "biquadCopy-" + num
     copyButton.title = "Copy filter"
     copyButton.innerHTML = '<i class="fa-solid fa-copy"></i>'
@@ -406,19 +406,19 @@ function addBiquadControl(context, type, frequency, Q, gain) {
  */
 function createPopup(content) {
     // Create basic popup
-    var bg = document.createElement("div")
+    const bg = document.createElement("div")
     bg.className = "popup-bg"
-    var popup = document.createElement("div")
+    const popup = document.createElement("div")
     popup.className = "popup-content"
-    for (var i = 0; i < arguments.length; i++) {
+    for (let i = 0; i < arguments.length; i++) {
         popup.append(arguments[i])
     }
 
     // Add a close button
-    var close = document.createElement("div")
+    const close = document.createElement("div")
     close.className = "control"
     close.style = "width:100%;"
-    var closeButton = document.createElement("button")
+    const closeButton = document.createElement("button")
     closeButton.innerHTML = "Close"
     close.append(closeButton)
     popup.append(close)
@@ -451,7 +451,7 @@ function setInputGain(eq, gainInDB) {
  * @param {ParametricEQ} eq The EQ for which the coefficients should be shown.
  */
 function showCoefficientTable(eq) {
-    var coeffTable = document.createElement("table")
+    const coeffTable = document.createElement("table")
     coeffTable.className = "responsive"
     coeffTable.innerHTML = '<thead>' +
         '<tr>' +
@@ -467,18 +467,18 @@ function showCoefficientTable(eq) {
         '</tbody>'
 
     // Create the parent
-    var control = document.createElement("div")
+    const control = document.createElement("div")
     control.className = "control"
 
     // Add a control for the sample rate
-    var fsLabel = document.createElement("label")
+    const fsLabel = document.createElement("label")
     fsLabel.htmlFor = "sampleRate"
     fsLabel.innerText = "Sample rate / Hz"
-    var fsSelect = document.createElement("select")
+    const fsSelect = document.createElement("select")
     fsSelect.id = fsLabel.htmlFor
     rates = ["8000", "16000", "32000", "44100", "48000", "96000"]
-    for (var i = 0; i < rates.length; i++) {
-        var option = document.createElement("option")
+    for (let i = 0; i < rates.length; i++) {
+        const option = document.createElement("option")
         option.value = rates[i]
         option.text = rates[i]
         fsSelect.appendChild(option)
@@ -486,22 +486,22 @@ function showCoefficientTable(eq) {
 
     // Handle sample rate changes, to recreate the table
     fsSelect.addEventListener("change", function (event) {
-        var existingError = document.getElementById("coeffError")
+        const existingError = document.getElementById("coeffError")
         if (existingError) {
             // Remove any pre-existing errors
             existingError.remove()
         }
 
         // Find any frequencies that exceed Nyquist
-        var fs = Number(fsSelect.value)
-        var maxFrequency = 0
+        let fs = Number(fsSelect.value)
+        let maxFrequency = 0
         eq.biquads.forEach((filter) => {
             maxFrequency = Math.max(maxFrequency, filter.frequency.value)
         })
 
         // Create error message if any frequencies exceed Nyquist
         if (maxFrequency > (fs / 2)) {
-            var error = document.createElement("div")
+            const error = document.createElement("div")
             error.id = "coeffError"
             error.innerHTML = "One or more filter frequencies exceed the Nyquist limit. The response of the given coefficients will differ from the plotted EQ."
             error.className = "error"
@@ -509,9 +509,9 @@ function showCoefficientTable(eq) {
         }
 
         // Insert the coefficients
-        var tBody = coeffTable.getElementsByTagName('tbody')[0]
-        var content = "<tbody>"
-        var coefficients = eq.coefficients(fs)
+        const tBody = coeffTable.getElementsByTagName('tbody')[0]
+        let content = "<tbody>"
+        const coefficients = eq.coefficients(fs)
         coefficients.forEach(function (coeffs) {
             content += '<tr>' +
                 '<td data-label="a0">' + String(coeffs.a[0]) + '</td>' +
@@ -530,14 +530,14 @@ function showCoefficientTable(eq) {
     control.append(fsLabel, fsSelect)
 
     // Add conversion info
-    var info = document.createElement("p")
+    const info = document.createElement("p")
     info.innerHTML = 'Use the <a target="_blank" href="qformat.html">Q-format Converter</a> to convert to fixed-point.'
 
     // Create the popup
-    var bg = createPopup(control, coeffTable, info)
+    const bg = createPopup(control, coeffTable, info)
 
     // Trigger filling in of the table
-    var defaultRate = "48000"
+    let defaultRate = "48000"
     fsSelect.value = defaultRate
     fsSelect.selectedIndex = rates.indexOf(defaultRate)
     fsSelect.options[rates.indexOf(defaultRate)].selected = true
@@ -550,8 +550,8 @@ function showCoefficientTable(eq) {
  * @param {object} context The active page context.
  */
 function removeAllFilters(context) {
-    var filtersDiv = document.getElementById("filterControls")
-    var filterControls = filtersDiv.querySelectorAll("*")
+    const filtersDiv = document.getElementById("filterControls")
+    const filterControls = filtersDiv.querySelectorAll("*")
     Array.prototype.forEach.call(filterControls, (eqFilter) => {
         eqFilter.remove()
     })
@@ -578,11 +578,11 @@ function getHash(context) {
  * @param {object} context The active page context.
  */
 function showEqURI(context) {
-    var eqUrl = getHash(context)
-    var hashInfo = document.createElement("p")
+    let eqUrl = getHash(context)
+    const hashInfo = document.createElement("p")
     hashInfo.style = "word-break: break-all;"
     hashInfo.innerHTML = 'Use the following URL to recall this EQ:<br><a href="' + eqUrl + '">' + eqUrl + '</a>'
-    var popup = createPopup(hashInfo)
+    const popup = createPopup(hashInfo)
     hashInfo.addEventListener("click", function (event) {
         context.saved = true
         window.location.href = eqUrl
@@ -595,7 +595,7 @@ function showEqURI(context) {
  * @param {object} context The active page context.
  */
 function parseHash(context) {
-    var hash = window.location.hash.split('?')[0];
+    let hash = window.location.hash.split('?')[0];
     if (hash) {
         hash = hash.replace(/^\#+/i, '')
         hash.split("&").forEach((keyval) => {
@@ -605,7 +605,7 @@ function parseHash(context) {
                     loadEqFromString(context, decodeURI(keyValArr[1]))
                     break;
                 case "inputGain":
-                    var inputGain = document.getElementById("inputGain_number")
+                    const inputGain = document.getElementById("inputGain_number")
                     inputGain.value = keyValArr[1]
                     inputGain.dispatchEvent(new Event("change"))
                     break;
@@ -677,7 +677,7 @@ class AudioPlayer {
         this.seeking = false
         this.ready = false
         this.playing = false
-        var that = this
+        const that = this
 
         // Browser can start playing audio
         this.audioNode.addEventListener("canplay", function (event) {
@@ -709,10 +709,9 @@ class AudioPlayer {
         // Update the current time
         this.audioNode.addEventListener("timeupdate", function (event) {
             if (that.seeking) return;
-            var currentTime = event.target.currentTime
-            var progress = currentTime
+            let currentTime = event.target.currentTime
             that.currentTimeSpan.innerHTML = that.sToTime(currentTime)
-            that.seek.value = progress
+            that.seek.value = currentTime
         })
 
         // Update the duration
@@ -724,7 +723,7 @@ class AudioPlayer {
         this.seek.addEventListener("input", function (event) {
             if (that.ready) {
                 that.seeking = true
-                var time = Number(event.target.value)
+                let time = Number(event.target.value)
                 that.audioNode.currentTime = time
                 that.currentTimeSpan.innerHTML = that.sToTime(time)
                 that.seeking = false
@@ -771,7 +770,7 @@ class AudioPlayer {
      * @memberof AudioPlayer
      */
     sToTime(t) {
-        var time = ""
+        let time = ""
         if (this.trackDuration > 3600) {
             time += this.padZero(parseInt((t / (60 * 60)) % 24)) + ":"
         }

@@ -21,51 +21,43 @@
         <script src="scripts/eq.js?v=6"></script>
         <script src="scripts/eq.ui-control.js?v=15"></script>
         <script>
-            Chart.defaults.elements.point = {
-                pointStyle: false
-            }
-
-            Chart.defaults.font = {
-                size: 14,
-                family: "'Nanum Gothic', sans-serif",
-                weight: 400,
-            }
-
-            Chart.defaults.borderColor = "#444"
-            Chart.defaults.color = '#ccc';
-            Chart.defaults.animation.duration = 100;
-
-
-            var context = {
-                audioCtx: null,
-                eq: null,
-                audioNode: null,
-                playlist: null,
-                audioPlayer: null,
-                saved: true,
-            }
-
             document.addEventListener("DOMContentLoaded", function(event) {
-                context.audioCtx = new AudioContext()
-                var source = context.audioCtx.createMediaElementSource(document.getElementById("audioPlayer"))
+                // Chart defaults
+                Chart.defaults.font = {
+                    size: 14,
+                    family: "'Nanum Gothic', sans-serif",
+                    weight: 400,
+                }
+                Chart.defaults.elements.point.pointStyle = false
+                Chart.defaults.borderColor = "#444"
+                Chart.defaults.color = '#ccc';
+                Chart.defaults.animation.duration = 100;
 
-                // Add EQ
-                context.eq = new EqDesigner(context.audioCtx, document.getElementById("eqGraphCanvasMag"),
-                                            document.getElementById("eqGraphCanvasPhase"))
+                // Initialise the context for the page
+                const audioCtx = new AudioContext()
+                const audioNode = document.getElementById("audioPlayer")
+                const context = {
+                    audioCtx: audioCtx,
+                    eq: new EqDesigner(audioCtx, document.getElementById("eqGraphCanvasMag"), document.getElementById("eqGraphCanvasPhase")),
+                    audioNode: audioNode,
+                    playlist: new Playlist("playlistGroup"),
+                    audioPlayer: new AudioPlayer("audio-player-container", audioNode),
+                    saved: true,
+                }
+
+                // Callback executed when plots are redrawn
                 context.eq.redrawCallback = function() {
                     context.saved = false
                 }
 
-                // Connect input
+                // Connect audio node to EQ input
+                const source = context.audioCtx.createMediaElementSource(context.audioNode)
                 source.connect(context.eq.input)
+
+                // Connect EQ output to audio context destination
                 context.eq.output.connect(context.audioCtx.destination)
 
-                context.audioNode = document.getElementById("audioPlayer")
-
-                // Init audio player
-                context.audioPlayer = new AudioPlayer("audio-player-container", context.audioNode)
-
-                context.playlist = new Playlist("playlistGroup")
+                // User is adding files to the playlist
                 document.getElementById("audioFileInput").addEventListener("change", function(event) {
                     Array.prototype.forEach.call(event.target.files, (file) => {
                         context.playlist.addFile(new AudioFile(file, context.audioCtx, context.audioNode))
@@ -75,31 +67,35 @@
                     }
                 }, false)
 
+                // User is adding a filter
                 document.getElementById("addFilterButton").addEventListener("click", function(event) {
                     addBiquadControl(context, "peaking", 1000, 1, 0)
-                    context.audioCtx.resume()
                 })
 
+                // User is changing the EQ input gain number
                 document.getElementById("inputGain_number").addEventListener("change", function(event) {
                     setInputGain(context.eq, event.target.value)
                     document.getElementById("inputGain").value = event.target.value
                 }, false)
 
+                // User is changing the input gain slider
                 document.getElementById("inputGain").addEventListener("input", function(event) {
                     setInputGain(context.eq, event.target.value)
                     document.getElementById("inputGain_number").value = event.target.value
                 }, false)
 
+                // Show the filter coefficients table
                 document.getElementById("viewCoefficients").addEventListener("click", function(event) {
                     showCoefficientTable(context.eq)
                 })
 
-                document.getElementById("remember").addEventListener("click", function(event) {
-                    var eqUrl = window.location.href.replace(window.location.hash, "").replace(/#+$/, "")+ "#inputGain=" + document.getElementById("inputGain").value + "&eq=" + encodeURI(context.eq.stringify());
-                    var hashInfo = document.createElement("p")
+                // Save the EQ by showing the URL to recall it
+                document.getElementById("save").addEventListener("click", function(event) {
+                    const eqUrl = getHash(context)
+                    const hashInfo = document.createElement("p")
                     hashInfo.style = "word-break: break-all;"
                     hashInfo.innerHTML = 'Use the following URL to recall this EQ:<br><a href="' + eqUrl + '">' + eqUrl + '</a>'
-                    var popup = createPopup(hashInfo)
+                    const popup = createPopup(hashInfo)
                     hashInfo.addEventListener("click", function(event) {
                         context.saved = true
                         window.location.href = eqUrl
@@ -107,15 +103,19 @@
                     })
                 })
 
+                // EQ is always empty until the URL hash (if any) is parsed
                 biquadControlsAreEmpty()
 
+                // Parse the URL hash
                 parseHash(context)
 
+                // Handle hash change, which should create a new EQ
                 window.addEventListener("hashchange", function(event) {
                     removeAllFilters(context)
                     parseHash(context)
                 })
 
+                // Confirm loss of EQ
                 window.addEventListener("beforeunload", function(event) {
                     if (!context.saved) {
                         event.preventDefault();
@@ -151,7 +151,7 @@
                  --><label class="button" for="audioFileInput"><input type="file" accept="audio/*" id="audioFileInput" multiple>Choose Files</label><!--
                  --><button id="addFilterButton">Add Filter</button><!--
                  --><button id="viewCoefficients">View Coefficients</button><!--
-                 --><button id="remember">Save</button><!--
+                 --><button id="save">Save</button><!--
              --></div><!--
 
              --><div class="control"><!--
