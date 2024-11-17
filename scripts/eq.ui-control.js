@@ -117,7 +117,7 @@ class Playlist {
     playlistIsEmpty() {
         const group = document.getElementById(this.containerID)
         const info = document.createElement("p")
-        info.innerHTML = 'Click "Choose Files" to add audio files to the playlist. Note that different browsers <a href="https://caniuse.com/?search=audio%20format">support different audio file formats</a>.'
+        info.innerHTML = 'Click "Choose Files" or drop audio files here<br><br>Note that different browsers <a href="https://caniuse.com/?search=audio%20format">support different audio file formats</a>'
         info.id = "playlistInfo"
         group.append(info)
         const controls = document.getElementById(this.#controlID)
@@ -173,6 +173,10 @@ class Playlist {
         trackControls.append(playButton, removeButton, trackName)
 
         document.getElementById(this.#controlID).append(trackControls)
+
+        if (!this.nowPlaying) {
+            this.play(this.files.length - 1)
+        }
     }
 
     /**

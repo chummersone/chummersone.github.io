@@ -124,6 +124,8 @@ div#playlistGroup {
     flex-grow: 5;
     flex-shrink: 1;
     min-width: 300px;
+    background: url(../img/cloud-upload-alt.svg) no-repeat center center;
+    background-size: clamp(30px, 80%, 250px) clamp(30px, 80%, 250px);
 }
 
 div#mainControls {
