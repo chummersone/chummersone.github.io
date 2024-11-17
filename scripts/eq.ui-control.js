@@ -705,8 +705,6 @@ class AudioPlayer {
         // Playback stopped for some reason
         this.audioNode.addEventListener("emptied", function (event) { that.abort() })
         this.audioNode.addEventListener("error", function (event) { that.abort() })
-        this.audioNode.addEventListener("stalled", function (event) { that.abort() })
-        this.audioNode.addEventListener("suspend", function (event) { that.abort() })
 
         // Update the current time
         this.audioNode.addEventListener("timeupdate", function (event) {
