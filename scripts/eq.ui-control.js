@@ -405,6 +405,7 @@ function addBiquadControl(context, type, frequency, Q, gain) {
  * @return {HTMLElement} The popup parent container.
  */
 function createPopup(content) {
+    // Create basic popup
     var bg = document.createElement("div")
     bg.className = "popup-bg"
     var popup = document.createElement("div")
@@ -412,12 +413,22 @@ function createPopup(content) {
     for (var i = 0; i < arguments.length; i++) {
         popup.append(arguments[i])
     }
+
+    // Add a close button
+    var close = document.createElement("div")
+    close.className = "control"
+    close.style = "width:100%;"
+    var closeButton = document.createElement("button")
+    closeButton.innerHTML = "Close"
+    close.append(closeButton)
+    popup.append(close)
+    closeButton.addEventListener("click", function (event) { bg.remove() })
+
     bg.append(popup)
     bg.addEventListener("click", function (event) {
         if (event.target !== this) return;
         bg.remove()
     })
-
     document.body.append(bg)
 
     return bg
@@ -523,7 +534,7 @@ function showCoefficientTable(eq) {
     info.innerHTML = 'Use the <a target="_blank" href="qformat.html">Q-format Converter</a> to convert to fixed-point.'
 
     // Create the popup
-    createPopup(control, coeffTable, info)
+    var bg = createPopup(control, coeffTable, info)
 
     // Trigger filling in of the table
     var defaultRate = "48000"

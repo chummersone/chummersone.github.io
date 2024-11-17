@@ -32,6 +32,8 @@ div.popup-bg {
 div.popup-content {
     padding: 20px;
     max-width: 95vw;
+    max-height: 90vh;
+    overflow: scroll;
 }
 
 div.popup-content label:not(.button) {
@@ -220,6 +222,7 @@ button, .button {
     -moz-appearance: none;
     padding: 5px 10px;
     border: 2px solid #000;
+    background-color: #444;
     border-radius: 5px;
     color: #fff;
     outline: none;
