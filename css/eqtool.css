@@ -1,3 +1,5 @@
+/* Main layout */
+
 th, td {
     text-align: center;
 }
@@ -113,10 +115,6 @@ div.controlPanel {
     padding: 5px;
 }
 
-audio {
-    width: 100%;
-}
-
 div#audioControls {
     display: flex;
     flex-wrap: wrap;
@@ -208,6 +206,8 @@ div#filterControls p {
     width: 100%;
 }
 
+/* Buttons */
+
 button, .button {
     margin: 5px;
     padding: 0;
@@ -263,6 +263,8 @@ label.button input[type="file"] {
     display: none;
 }
 
+/* Input range slider */
+
 input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
@@ -315,6 +317,8 @@ input[type="range"]:focus::-moz-range-thumb {
     outline: 3px solid #053a5f;
     outline-offset: 0.125rem;
 }
+
+/* Audio player */
 
 audio {
     display: none;
