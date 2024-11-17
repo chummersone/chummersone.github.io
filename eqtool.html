@@ -47,6 +47,7 @@
 
                 // Callback executed when plots are redrawn
                 context.eq.redrawCallback = function() {
+                    console.trace()
                     context.saved = false
                 }
 
@@ -122,6 +123,9 @@
                     }
                     event.returnValue = '';
                 });
+
+                // Finished loading, so state must be unmodified
+                context.saved = true
             })
         </script>
     </head>
