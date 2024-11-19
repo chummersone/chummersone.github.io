@@ -263,6 +263,13 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     if (info) {
         // If the EQ was empty, remove the instructions
         info.remove()
+
+        // Add header row
+        let filterControls = document.getElementById("filterControls")
+        let row = document.createElement("div")
+        row.className = "eq-row"
+        row.innerHTML = '<div class="eq-control">Filter</div><div class="eq-control">Freq / Hz</div><div class="eq-control">Q</div><div class="eq-control">Gain / dB</div>'
+        filterControls.append(row)
     }
 
     // random number for IDs
@@ -277,16 +284,12 @@ function addBiquadControl(context, type, frequency, Q, gain) {
 
     // The group of biquad controls
     const group = document.createElement("div")
-    group.className = "controlGroup filter"
+    group.className = "eq-row"
 
     // Add the filter type select box
     const typeControl = document.createElement("div")
-    typeControl.className = "control"
-    const typeLabel = document.createElement("label")
-    typeLabel.htmlFor = "biquadType-" + num
-    typeLabel.innerText = "Filter Type"
+    typeControl.className = "eq-control"
     const typeInput = document.createElement("select")
-    typeInput.id = typeLabel.htmlFor
     types = ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch"]
     for (let i = 0; i < types.length; i++) {
         const option = document.createElement("option")
@@ -297,27 +300,13 @@ function addBiquadControl(context, type, frequency, Q, gain) {
     typeInput.value = biquad.type
     typeInput.selectedIndex = types.indexOf(biquad.type)
     typeInput.options[types.indexOf(biquad.type)].selected = true
-    typeControl.append(typeLabel, typeInput)
+    typeControl.append(typeInput)
 
     // Add remaining controls
-    function createNumberInput(id, text, min, max, step, value, param, convertTo, convertFrom) {
+    function createNumberInput(id, min, max, step, value, param) {
         // Create the parent div
         const control = document.createElement("div")
-        control.className = "control"
-
-        // Create the label
-        const label = document.createElement("label")
-        label.htmlFor = id
-        label.innerText = text
-
-        // Create the slider
-        const slider = document.createElement("input")
-        slider.type = 'range'
-        slider.id = id
-        slider.min = convertTo(min)
-        slider.max = convertTo(max)
-        slider.step = (convertTo(max) - convertTo(min)) / ((max - min) / step)
-        slider.value = convertTo(value)
+        control.className = "eq-control"
 
         // Create the number input
         const number = document.createElement("input")
@@ -329,34 +318,28 @@ function addBiquadControl(context, type, frequency, Q, gain) {
         number.value = value
 
         // Add listeners for when controls are changed
-        slider.addEventListener("input", function (event) {
-            number.value = convertFrom(slider.value)
-            param.value = number.value
-            context.eq.redraw()
-        })
         number.addEventListener("change", function (event) {
-            slider.value = convertTo(number.value)
             param.value = number.value
             context.eq.redraw()
         })
 
         // Add the controls to the parent div
-        control.append(label, slider, number)
+        control.append(number)
         return control
     }
 
     // Create the frequency control
-    const freqControl = createNumberInput("biquadFrequency-" + num, "Frequency / Hz", 20, 20000, 1, biquad.frequency.value, biquad.frequency, toMel, function (m) { return Math.round(fromMel(m)) })
+    const freqControl = createNumberInput("biquadFrequency-" + num, 20, 20000, 1, biquad.frequency.value, biquad.frequency)
 
     // Create the Q control
-    const qControl = createNumberInput("biquadQ-" + num, "Q", 0, 10, 0.0001, biquad.Q.value, biquad.Q, doNothing, doNothing)
+    const qControl = createNumberInput("biquadQ-" + num, 0, 10, 0.0001, biquad.Q.value, biquad.Q)
 
     // Create the gain control
-    const gainControl = createNumberInput("biquadGain-" + num, "Gain / dB", -40, 20, 0.1, biquad.gain.value, biquad.gain, doNothing, doNothing)
+    const gainControl = createNumberInput("biquadGain-" + num, -40, 20, 0.1, biquad.gain.value, biquad.gain)
 
     // Add a div for the buttons
     const buttonDiv = document.createElement("div")
-    buttonDiv.className = "control"
+    buttonDiv.className = "eq-control"
 
     // Add the remove button
     const removeButton = document.createElement("button")

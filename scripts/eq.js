@@ -308,25 +308,33 @@ class EqDesigner extends ParametricEQ {
         this.overallPhase = new Float32Array(this.#numPoints)
 
         // Common x-axis configuration
-        const xconfig = {
+        const xconfig_common = {
             type: 'logarithmic',
             min: this.#fmin,
             max: this.#fmax,
-            title: {
-                text: 'Frequency / Hz',
-                display: true,
-            },
             ticks: {
                 callback: function(value, index, ticks) {
-                    let log = Math.log10(value)
-                    if (Math.round(log) == log) {
-                        return value.toString()
-                    } else {
-                        return ''
+                    switch (value) {
+                        case 10:
+                            return "10";
+                        case 100:
+                            return "100";
+                        case 1000:
+                            return "1k"
+                        case 10000:
+                            return "10k"
                     }
+                    return "";
                 },
+                autoSkip: false,
             },
             afterBuildTicks: axis => axis.ticks = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000].map(v => ({ value: v }))
+        }
+        const xconfig_mag = Object.assign({}, xconfig_common)
+        const xconfig_phase = Object.assign({}, xconfig_common)
+        xconfig_phase.title = {
+            text: 'Frequency / Hz',
+            display: true,
         }
 
         // The magnitude plot
@@ -337,8 +345,9 @@ class EqDesigner extends ParametricEQ {
                 labels: this.frequency,
             },
             options: {
+                maintainAspectRatio: false,
                 scales: {
-                    x: xconfig,
+                    x: xconfig_mag,
                     y: {
                         title: {
                             text: 'Magnitude / dB',
@@ -364,8 +373,9 @@ class EqDesigner extends ParametricEQ {
                 labels: this.frequency,
             },
             options: {
+                maintainAspectRatio: false,
                 scales: {
-                    x: xconfig,
+                    x: xconfig_phase,
                     y: {
                         title: {
                             text: 'Phase / °',

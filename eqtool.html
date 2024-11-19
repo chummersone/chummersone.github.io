@@ -32,6 +32,7 @@
                 Chart.defaults.borderColor = "#444"
                 Chart.defaults.color = '#ccc';
                 Chart.defaults.animation.duration = 100;
+                Chart.defaults.plugins.legend.display = false
 
                 // Initialise the context for the page
                 const audioCtx = new AudioContext()
@@ -192,20 +193,23 @@
 
          --></div><!--
 
-        --></div><!--
+     --></div><!--
 
-     --><div class="controlPanel" id="filterControls"><!--
+     --><div class="controlPanel" id="eq"><!--
+
+         --><div class="controlPanel" id="filterControls"><!--
+         --></div><!--
+
+         --><div class="controlPanel" id="eqGraph"><!--
+             --><div class="graph"><!--
+                 --><canvas id="eqGraphCanvasMag">Canvas not Supported</canvas><!--
+             --></div><!--
+             --><div class="graph"><!--
+                 --><canvas id="eqGraphCanvasPhase">Canvas not Supported</canvas><!--
+             --></div><!--
+         --></div><!--
 
      --></div>
-
-        <div class="controlPanel" id="plotControls">
-
-            <div id="eqGraph">
-                <canvas id="eqGraphCanvasMag">Canvas not Supported</canvas>
-                <canvas id="eqGraphCanvasPhase">Canvas not Supported</canvas>
-            </div>
-
-        </div>
 
     </body>
 </html>
