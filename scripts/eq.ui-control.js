@@ -268,7 +268,7 @@ function addBiquadControl(context, type, frequency, Q, gain) {
         let filterControls = document.getElementById("filterControls")
         let row = document.createElement("div")
         row.className = "eq-row"
-        row.innerHTML = '<div class="eq-control">Filter</div><div class="eq-control">Freq / Hz</div><div class="eq-control">Q</div><div class="eq-control">Gain / dB</div>'
+        row.innerHTML = '<div class="eq-control">Filter</div><div class="eq-control">Freq / Hz</div><div class="eq-control">Q</div><div class="eq-control">Gain / dB</div><div></div>'
         filterControls.append(row)
     }
 
