@@ -233,6 +233,7 @@ button, .button {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     text-align: center;
+    cursor: pointer;
 }
 
 @media (hover: hover) {

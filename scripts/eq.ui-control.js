@@ -222,6 +222,8 @@ class Playlist {
             if (that.files.length > 0) {
                 let next = (index + 1) % that.files.length
                 that.play(next)
+            } else {
+                that.nowPlaying = null
             }
         }, { once: true })
 
