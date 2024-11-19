@@ -130,14 +130,15 @@
                 window.addEventListener("hashchange", function(event) {
                     removeAllFilters(context)
                     parseHash(context)
+                    context.saved = true
                 })
 
                 // Confirm loss of EQ
                 window.addEventListener("beforeunload", function(event) {
                     if (!context.saved) {
-                        event.preventDefault();
+                        event.preventDefault()
                     }
-                    event.returnValue = '';
+                    event.returnValue = ''
                 });
 
                 // Finished loading, so state must be unmodified
