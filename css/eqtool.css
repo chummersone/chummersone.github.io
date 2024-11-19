@@ -35,7 +35,7 @@ div.popup-content {
     padding: 20px;
     max-width: 95vw;
     max-height: 90vh;
-    overflow: scroll;
+    overflow: auto;
 }
 
 div.popup-content label:not(.button) {
