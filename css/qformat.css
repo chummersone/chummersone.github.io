@@ -8,6 +8,7 @@ html, .ui-widget {
     font-weight: 400;
     font-size: 14px;
     font-style: normal;
+    font-display: swap;
 }
 
 html, body, input, fieldset, select, textarea, div.ui-tabs {
