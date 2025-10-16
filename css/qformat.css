@@ -172,6 +172,22 @@ select {
     background-size: .65em auto, 100%;
 }
 
+select {
+    text-align-last: right;
+}
+
+option, select {
+    padding-right: 26px;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    margin-left: 6px;
+    opacity: 1;
+}
+input[type=number] {
+    -moz-appearance:textfield;
+}
+
 input[type=text], input[type=number], select, textarea, table {
     border: 1px solid #ccc;
     border-radius: 4px;
