@@ -245,7 +245,7 @@ class ParametricEQ {
                     bcoeff[1] = 2 * a * ((a - 1) - ((a + 1) * (Math.cos(w0))))
                     bcoeff[2] = a * ((a + 1) - ((a - 1) * (Math.cos(w0))) - (2 * as * asqrt))
                     acoeff[0] = (a + 1) + ((a - 1) * (Math.cos(w0))) + (2 * as * asqrt)
-                    acoeff[1] = -2 * a * ((a - 1) + ((a + 1) * (Math.cos(w0))))
+                    acoeff[1] = -2 * ((a - 1) + ((a + 1) * (Math.cos(w0))))
                     acoeff[2] = (a + 1) + ((a - 1) * (Math.cos(w0))) - (2 * as * asqrt)
                     break
                 case "highshelf":
@@ -253,7 +253,7 @@ class ParametricEQ {
                     bcoeff[1] = -2 * a * ((a - 1) + ((a + 1) * (Math.cos(w0))))
                     bcoeff[2] = a * ((a + 1) + ((a - 1) * (Math.cos(w0))) - (2 * as * asqrt))
                     acoeff[0] = (a + 1) - ((a - 1) * (Math.cos(w0))) + (2 * as * asqrt)
-                    acoeff[1] = 2 * a * ((a - 1) - ((a + 1) * (Math.cos(w0))))
+                    acoeff[1] = 2 * ((a - 1) - ((a + 1) * (Math.cos(w0))))
                     acoeff[2] = (a + 1) - ((a - 1) * (Math.cos(w0))) - (2 * as * asqrt)
                     break
             }
